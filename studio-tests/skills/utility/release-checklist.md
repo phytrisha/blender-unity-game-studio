@@ -67,8 +67,8 @@ Fixture defaults.
 ### Case 1: Happy Path — PC Build on the Steam Tier
 
 **Fixture:**
-- `platform.cert_tier: steam`; `project.stage: Polish`; `engine.name: Godot`
-- `src/` has 40 source files containing 3 TODO, 1 FIXME and 0 HACK comments
+- `platform.cert_tier: steam`; `project.stage: Polish`; `engine.name: Unity`
+- `Assets/` has 40 source files containing 3 TODO, 1 FIXME and 0 HACK comments
 - `production/milestones/` holds the current milestone
 - `production/qa/bugs/` holds `BUG-0003.md` (S1, `**Status**: Closed`) and
   `BUG-0004.md` (S4, `**Status**: Open`); `modes.rigor` is unset (`workflow: minimal`)
@@ -149,8 +149,8 @@ Fixture defaults.
 
 **Fixture:**
 - `platform.cert_tier: steam`
-- No `engine.name`, no legacy engine value, and none of `src/`, `Assets/`,
-  `Source/` exists (code root unresolved)
+- No `engine.name`, no legacy engine value, and no `Assets/` folder exists
+  (code root unresolved)
 - No test output directories or CI logs
 - `production/qa/bugs/` holds one bug, `BUG-0002.md` (S2, `**Status**: Closed`)
 
@@ -201,8 +201,8 @@ Fixture defaults.
 
 **Fixture:**
 - `platform.cert_tier: steam`; `project.stage: Polish`
-- No `engine.name`, no legacy engine value, and none of `src/`, `Assets/`,
-  `Source/` exists (code root unresolved)
+- No `engine.name`, no legacy engine value, and no `Assets/` folder exists
+  (code root unresolved)
 - CI test output exists
 - `production/qa/bugs/BUG-0007.md` is an S1 (Critical) bug with `**Status**: Open`
 

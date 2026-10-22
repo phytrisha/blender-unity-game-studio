@@ -38,8 +38,8 @@ fi
 input=$(cat)
 
 # --- Parse JSON (jq with grep fallback) ---
-# project_dir first: current_dir follows every `cd`, so after `cd src` the
-# status line looked for project.yaml in src/ and fell back to guessing.
+# project_dir first: current_dir follows every `cd`, so after `cd Assets` the
+# status line looked for project.yaml in Assets/ and fell back to guessing.
 if command -v jq &>/dev/null; then
   model=$(echo "$input" | jq -r '.model.display_name // "Unknown"')
   used_pct=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
@@ -126,8 +126,8 @@ if [ -z "$stage" ]; then
   fi
 
   # Count source files (language-agnostic) under the engine's code root --
-  # src/, Assets/ or Source/ (directory-structure.md). Counting src/ alone left
-  # every Unity and Unreal project at 0, so this ladder never reached
+  # Assets/ on Unity (directory-structure.md). Counting src/ alone left
+  # every Unity project at 0, so this ladder never reached
   # Production. Capped at the threshold below: the status line runs on every
   # turn, and Unity's Assets/ can hold thousands of files, so find stops at 10.
   code_root=""
@@ -135,7 +135,7 @@ if [ -z "$stage" ]; then
     code_root=$(cd "$cwd" 2>/dev/null && resolve_code_root 2>/dev/null | cut -f1)
   fi
   if [ -n "$code_root" ] && [ -d "$cwd/$code_root" ]; then
-    src_count=$(find "$cwd/$code_root" -type f \( -name "*.gd" -o -name "*.cs" -o -name "*.cpp" -o -name "*.h" -o -name "*.py" -o -name "*.rs" -o -name "*.lua" -o -name "*.tscn" -o -name "*.tres" \) 2>/dev/null | head -n 10 | wc -l | tr -d ' ')
+    src_count=$(find "$cwd/$code_root" -type f \( -name "*.cs" -o -name "*.cpp" -o -name "*.h" -o -name "*.py" -o -name "*.rs" -o -name "*.lua" -o -name "*.tscn" -o -name "*.tres" \) 2>/dev/null | head -n 10 | wc -l | tr -d ' ')
   fi
 
   # Check for ADRs (signals Pre-Production phase)

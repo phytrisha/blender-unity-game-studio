@@ -29,7 +29,7 @@ content.
 
 **Accessibility**: Stack counts and quality tiers must have text or icon alternatives to color coding. Tooltip is the primary accessibility mechanism — ensure it is reachable by keyboard and screen reader. Locked slots must announce "locked" to screen readers.
 
-**Implementation Notes**: [Godot: Custom `Control` node. Quality border implemented as a `StyleBoxFlat` swapped based on rarity — avoid using `modulate` color for quality, as it affects the icon color. Drag and drop implemented via `get_drag_data()` and `can_drop_data()` / `drop_data()` override methods.]
+**Implementation Notes**: [Unity (uGUI): a slot prefab with a frame `Image` whose sprite is swapped by rarity — avoid tinting the icon `Image` for quality, as it changes the icon's colour. Drag and drop via the EventSystem drag interfaces (`IBeginDragHandler`, `IDragHandler`, `IEndDragHandler`, `IDropHandler`). In UI Toolkit, a custom `VisualElement` with a USS class per rarity.]
 
 ---
 
@@ -54,11 +54,11 @@ any context where an ability must show availability state.
 
 **Accessibility**: All cooldown/charge information must have a numeric value (screen reader cannot parse radial overlays). The cooldown timer number satisfies this. Ability names and descriptions must be exposed to screen readers via tooltip.
 
-**Implementation Notes**: [Godot: Custom `TextureButton` subclass with overlay
-`Control` nodes for cooldown radial and charge pips. The cooldown radial uses a
-custom shader on a `ColorRect` rotating a mask — or implement with a
-`ProgressBar` styled as circular if engine supports it. Verify against
-engine-reference/godot/ for Godot 4.7 shader support for this pattern.]
+**Implementation Notes**: [Unity (uGUI): a `Button` prefab with overlay `Image`
+children for the cooldown radial and charge pips. The cooldown radial is an `Image`
+set to Filled / Radial 360 with `fillAmount` driven by the remaining time, or a
+custom shader on a mask. Verify against docs/engine-reference/unity/ for the
+pinned version before relying on a specific UI API.]
 
 ---
 
@@ -82,10 +82,10 @@ critical player resource. Health, mana, stamina, shield, fuel.
 
 **Accessibility**: The current value must be accessible as a number (tooltip or persistent display, or both). Color-coded threshold states must have non-color backups (icon, flashing, or audio visual warning). Warning state at 25% must have a visual signal independent of the color change.
 
-**Implementation Notes**: [Godot: Two overlapping `ProgressBar` nodes for ghost
-bar effect — back bar holds previous value (drains via Tween), front bar holds
-current value (updates instantly). Threshold states trigger `StyleBoxFlat` swaps
-on the front bar. Ghost bar Tween duration is tunable as a designer parameter.]
+**Implementation Notes**: [Unity (uGUI): two overlapping filled `Image` bars for the
+ghost effect — the back bar holds the previous value (drains over time), the front
+bar holds the current value (updates instantly). Threshold states swap the front
+bar's sprite or colour. The ghost drain duration is a designer-tunable parameter.]
 
 ---
 
@@ -112,12 +112,12 @@ delivered through a character. All dialogue that has a speaker.
 
 **Accessibility**: Subtitles are always enabled by default for all voiced dialogue. Typewriter animation speed is a user setting (see accessibility-requirements.md). The dialogue box must not auto-advance — players must control pacing. Speaker name is always shown. All choice buttons must be navigable by keyboard and gamepad. Choices must be accessible to screen readers with position announced.
 
-**Implementation Notes**: [Godot: `RichTextLabel` with `bbcode_enabled` for
-formatting. Typewriter effect via `visible_characters` property animated by a
-`Timer`. Bind the advance input to a function that either skips typewriter
-(sets `visible_characters = -1`) or advances the dialogue state. Speaker name
-displayed in a separate `Label` above or beside the box. Dialogue data loaded from
-JSON or a dedicated dialogue format (e.g., Dialogic, Yarn Spinner for Godot).]
+**Implementation Notes**: [Unity: a TextMeshPro text component with rich-text tags
+for formatting. Typewriter effect by stepping `maxVisibleCharacters` from a
+coroutine. Bind the advance input to a function that either skips the typewriter
+(shows every character) or advances the dialogue state. Speaker name in a separate
+text element above or beside the box. Dialogue data loaded from JSON, a
+ScriptableObject, or a dedicated dialogue tool (e.g. Ink, Yarn Spinner for Unity).]
 
 ---
 
@@ -141,7 +141,7 @@ when the player enters the interaction zone, disappears when they leave.
 
 **Accessibility**: The button icon must be accompanied by a text label — do not rely on icon alone (some players use custom button labels or adaptive controllers with non-standard icons). The prompt must be positioned to not overlap character health or critical HUD information.
 
-**Implementation Notes**: [Godot: Attach as a `Node3D` child (or `Node2D` child in 2D) of the interactable object. Use a `BillboardMesh` or a `SubViewport` with a UI scene for 3D games — this keeps the prompt facing the camera without code. Update the button icon texture based on `Input.get_joy_name()` or keyboard detection via `InputEventKey` vs `InputEventJoypadButton`. Hold progress implemented as an `AnimationPlayer` or `Tween` on a radial mask shader.]
+**Implementation Notes**: [Unity: a world-space `Canvas` (or a sprite) as a child of the interactable object, turned to face the camera each frame (billboard). Swap the button icon by the active control scheme (keyboard and mouse vs gamepad) as the Input System reports it. Hold progress as a filled radial `Image` driven by the hold time, or an animation on a radial mask shader.]
 
 ---
 
@@ -166,10 +166,10 @@ damage, critical damage, healing, miss.
 
 **Accessibility**: Damage numbers are purely supplementary feedback — they must never be the only way to understand combat state. Health bars are the authoritative source. Provide an option to disable damage numbers entirely (some players find them visually overwhelming). When disabled, the game must remain fully playable.
 
-**Implementation Notes**: [Godot: Pool of `Label3D` (3D games) or `Label` (2D games)
-instances recycled via an object pool. Each instance is given a random small
-horizontal offset on spawn (±20px) to reduce overlap. Float animation via
-`Tween` on `position.y` and `modulate.a`. Critical hit scale-pop via Tween
-with `EASE_OUT` on scale followed by linear settle.]
+**Implementation Notes**: [Unity: a pool of TextMeshPro text instances (world-space
+for 3D games, screen-space for 2D) recycled via an object pool. Each instance gets a
+random small horizontal offset on spawn (±20px) to reduce overlap. Float animation
+on its local position and a `CanvasGroup` alpha. Critical hit scale-pop: ease-out on
+scale, then a linear settle.]
 
 ---

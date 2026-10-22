@@ -5,7 +5,7 @@
 `/regression-suite [update | audit | report]` maintains `tests/regression-suite.md`,
 a curated manifest of existing tests that guard critical paths and fixed bugs.
 `audit` maps each GDD acceptance criterion (scoped by workflow tier) to tests in
-`tests/unit/[system]/` and `tests/integration/[system]/` as COVERED / PARTIAL /
+`Assets/Tests/EditMode/[System]/` and `Assets/Tests/PlayMode/[System]/` (Unity compiles tests only under `Assets/`) as COVERED / PARTIAL /
 MISSING / EXEMPT, raising MISSING formula or state-machine criteria to HIGH
 PRIORITY. `update` checks bugs in `production/qa/bugs/` with `Status: Closed` or
 `Status: Fixed` for a regression test (HAS / MISSING REGRESSION TEST) and appends
@@ -64,7 +64,7 @@ Fixture defaults.
 - `design/gdd/systems-index.md` lists `combat`; `design/gdd/combat.md` has 4
   acceptance criteria: a damage formula, a hit-stun state transition, a
   knockback rule and a HUD damage-number display
-- `tests/unit/combat/` has tests for hit-stun (all cases) and knockback (happy
+- `Assets/Tests/EditMode/Combat/` has tests for hit-stun (all cases) and knockback (happy
   path only); nothing tests the damage formula
 - `tests/regression-suite.md` exists
 
@@ -85,7 +85,7 @@ Fixture defaults.
 **Assertions:**
 - [ ] Each criterion gets one of COVERED / PARTIAL / MISSING / EXEMPT, matching the fixture
 - [ ] The HUD criterion is EXEMPT and excluded from the coverage rate
-- [ ] The damage-formula gap is HIGH PRIORITY with a `tests/unit/combat/` path
+- [ ] The damage-formula gap is HIGH PRIORITY with a `Assets/Tests/EditMode/Combat/` path
 - [ ] The manifest is written only after the "May I write/update" ask
 - [ ] Verdict is COMPLETE and `/test-helpers` is suggested
 
@@ -98,7 +98,7 @@ Fixture defaults.
 - `production/sprints/sprint-007.md` is the current sprint plan; its one
   `Status: Complete` story is `production/epics/inventory/story-003.md`
 - `production/qa/bugs/BUG-0012.md` has `Status: Closed`, system `inventory`
-- No test under `tests/unit/inventory/` or `tests/integration/inventory/`
+- No test under `Assets/Tests/EditMode/Inventory/` or `Assets/Tests/PlayMode/Inventory/`
   references BUG-0012 or its failure scenario
 - `tests/regression-suite.md` has 6 registered tests
 
@@ -107,7 +107,7 @@ Fixture defaults.
 **Expected behavior:**
 1. Skill reads the sprint plan's completed stories and the closed bugs
 2. BUG-0012 is MISSING REGRESSION TEST, with suggested path
-   `tests/unit/inventory/[bug-slug]_regression_test.[ext]` and the note
+   `Assets/Tests/EditMode/Inventory/[BugSlug]RegressionTests.cs` and the note
    "Without this test, this bug can silently return in a future sprint."
 3. Report shows the Bug Regression Coverage table with BUG-0012 marked NO
 4. After the "May I write/update" ask, new entries are appended with targeted
@@ -117,7 +117,7 @@ Fixture defaults.
 
 **Assertions:**
 - [ ] BUG-0012 is reported as MISSING REGRESSION TEST
-- [ ] The suggested path follows `tests/unit/[system]/[bug-slug]_regression_test.[ext]`
+- [ ] The suggested path follows `Assets/Tests/EditMode/[System]/[BugSlug]RegressionTests.cs`
 - [ ] No existing manifest entry is removed
 - [ ] The next-sprint story recommendation appears because bug regression gaps > 0
 - [ ] Verdict is COMPLETE after approval
@@ -152,7 +152,7 @@ Fixture defaults.
 **Fixture:**
 - `qa.level: standard`; workflow tier `full`; `project.stage: Polish`
 - `design/gdd/` holds GDDs with acceptance criteria
-- `tests/unit/`, `tests/integration/` and `tests/regression/` contain no files
+- `Assets/Tests/EditMode/`, `Assets/Tests/PlayMode/` and `tests/regression/` contain no files
 - The user approves the manifest write
 
 **Input:** `/regression-suite audit`
@@ -200,7 +200,7 @@ Fixture defaults.
 
 **Fixture:**
 - `project.yaml`: `modes.workflow: minimal` (no sprints), `qa.level: standard` (pinned so the suite is generated), `project.stage: Polish`
-- No sprint plan; `design/game-brief.md` exists. `production/epics/inventory/story-003.md` has `Status: Complete`, and `tests/` holds no test for the inventory system
+- No sprint plan; `design/game-brief.md` exists. `production/epics/inventory/story-003.md` has `Status: Complete`, and `Assets/Tests/` holds no test for the inventory system
 - `production/qa/bugs/BUG-0012.md` has `Status: Closed`, system `inventory`; no test references it
 - `tests/regression-suite.md` exists with 6 registered tests and an old Last Updated date
 

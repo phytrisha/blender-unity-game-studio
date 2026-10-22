@@ -56,7 +56,7 @@ INPUT=$(cat)
 # watch), or "prototypes" in the text written (a code file reaching into
 # prototypes/ names it). The path is tested only below the project root: the
 # payload's cwd and transcript_path, and the root part of an absolute path,
-# are the project's own folder, which can be named anything (.../Source/proj),
+# are the project's own folder, which can be named anything (.../Projects/MyGame),
 # and matching them sent every Write through the full parse. A path value that
 # may end at an escaped quote is not trusted: then the whole payload is tested,
 # as before.
@@ -89,9 +89,9 @@ shopt -u nocasematch
 _vw_go=0
 case "$INPUT" in *'"agent_type"'*) _vw_go=1 ;; esac
 case "$_VW_P" in
-  *EPIC.md*|*project.godot*|*helpers*|*tech-debt-register*|*engine-reference*) _vw_go=1 ;;
+  *EPIC.md*|*helpers*|*tech-debt-register*|*engine-reference*) _vw_go=1 ;;
   *project.yaml*|*project.local.yaml*|*review-mode.txt*|*prototypes*|*strings*) _vw_go=1 ;;
-  *tests*|*.github*|*production*|*Assets*|*Source*) _vw_go=1 ;;
+  *tests*|*.github*|*production*|*Assets*) _vw_go=1 ;;
 esac
 case "$_VW_REST" in *prototypes*) _vw_go=1 ;; esac
 [ "$_vw_go" = 1 ] || exit 0

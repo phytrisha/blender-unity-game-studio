@@ -88,7 +88,7 @@ Fixture defaults.
 **Fixture:**
 - `design/gdd/game-concept.md` and `design/gdd/systems-index.md` exist; `combat` is listed with `Category: Gameplay`
 - No `design/gdd/combat.md`
-- `project.yaml` has `engine.name: Godot`, `modes.review_mode: full`, `modes.workflow: full`, `modes.automation: collaborative`; `docs/engine-reference/godot/` has `VERSION.md` and `modules/physics.md` (combat maps to the Physics domain)
+- `project.yaml` has `engine.name: Unity`, `modes.review_mode: full`, `modes.workflow: full`, `modes.automation: collaborative`; `docs/engine-reference/unity/` has `VERSION.md` and `modules/physics.md` (combat maps to the Physics domain)
 - CD-GDD-ALIGN returns APPROVE
 
 **Input:** `/design-system combat`
@@ -119,9 +119,9 @@ Fixture defaults.
 ### Case 2: Retrofit Mode — Fill only the incomplete sections at standard tier
 
 **Fixture:**
-- `project.yaml` has `engine.name: Godot`, `modes.workflow: standard`, `modes.review_mode: lean`
+- `project.yaml` has `engine.name: Unity`, `modes.workflow: standard`, `modes.review_mode: lean`
 - `design/gdd/game-concept.md` and `design/gdd/systems-index.md` exist; `inventory` is listed with `Category: Economy` (engine domain Scripting)
-- `docs/engine-reference/godot/` has `VERSION.md` and `modules/`, but no `modules/scripting.md`
+- `docs/engine-reference/unity/` has `VERSION.md` and `modules/`, but no `modules/scripting.md`
 - `design/gdd/inventory.md` exists with Overview, Detailed Design and Formulas fully written; its `## Summary` holds only `[To be designed]`
 - `## Edge Cases` and `## Acceptance Criteria` contain only `[To be designed]`; `## Dependencies` has an empty body
 - The file has no Player Fantasy or Tuning Knobs section
@@ -133,7 +133,7 @@ Fixture defaults.
 2. It presents the "Retrofit: Inventory" block: written sections (will not be touched) and missing or incomplete sections (will be authored)
 3. Player Fantasy and Tuning Knobs are listed as available to add, not as gaps, because `standard` does not require them
 4. It asks: "Shall I fill the 3 missing sections? I will not modify any existing content."
-5. On yes, Phase 2 runs as normal; §2e names the missing module — "no engine reference for `Scripting` under `docs/engine-reference/godot/modules/`; feasibility not checked against the pinned engine" — and carries it into §5-pre
+5. On yes, Phase 2 runs as normal; §2e names the missing module — "no engine reference for `Scripting` under `docs/engine-reference/unity/modules/`; feasibility not checked against the pinned engine" — and carries it into §5-pre
 6. No skeleton is created; only Edge Cases, Dependencies and Acceptance Criteria run the section cycle, then §5-pre replaces the Summary placeholder
 7. Each write replaces only the placeholder or empty body; Overview, Detailed Design and Formulas are not modified
 
@@ -182,7 +182,7 @@ Fixture defaults.
 
 **Fixture:**
 - `design/gdd/game-concept.md` and `design/gdd/systems-index.md` exist; the system is `stamina` (`Category: Gameplay`); no `design/gdd/stamina.md`
-- `project.yaml` has `engine.name: Godot` and `modes.workflow: full`
+- `project.yaml` has `engine.name: Unity` and `modes.workflow: full`
 - Section D's stamina formula has no knobs that interact; the stamina bar is feedback the player reads to play
 - Scenario (a): `modes.review_mode: lean`
 - Scenario (b): `modes.review_mode: solo`
@@ -259,7 +259,7 @@ Fixture defaults.
 ### Case 7: Phase Files Are Read Before Each Phase, and Again After a Compaction
 
 **Fixture:**
-- `project.yaml` has `engine.name: Godot`, `modes.workflow: standard`, `modes.review_mode: solo`
+- `project.yaml` has `engine.name: Unity`, `modes.workflow: standard`, `modes.review_mode: solo`
 - `design/gdd/game-concept.md` and `design/gdd/systems-index.md` exist; `stamina` is listed with `Category: Gameplay`; no `design/gdd/stamina.md`
 - The skill folder holds `references/1-parse-arguments.md` through `references/5-post-design.md`
 - Mid-run, while Section D (Formulas) is being drafted, the conversation is compacted; the user then replies to the open question and the run continues
@@ -284,7 +284,7 @@ Fixture defaults.
 ### Case 8: Populated Registry and Numbered-Heading Dependency GDDs — Block-form greps find the facts
 
 **Fixture:**
-- `project.yaml` has `engine.name: Godot`, `modes.workflow: standard`, `modes.review_mode: solo`
+- `project.yaml` has `engine.name: Unity`, `modes.workflow: standard`, `modes.review_mode: solo`
 - `design/gdd/game-concept.md` and `design/gdd/systems-index.md` exist; `stamina` is listed with `Category: Gameplay` and `Depends on: combat`
 - `design/registry/entities.yaml` has a live `constants:` list with two entries:
   - `- name: stagger_threshold` with `value: 40` and `source: design/gdd/combat.md` (owned by combat)

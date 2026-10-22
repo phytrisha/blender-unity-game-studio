@@ -176,18 +176,16 @@ story of its own.
    write one sentence from the stories picked.
 2. **List what showing it needs.** A goal the player can see or play (a playable
    loop, a feature working end to end, a playtest) needs the scene or level it
-   runs in and the setting that starts it: `run/main_scene` in `project.godot`,
-   the scene list in Unity's `ProjectSettings/EditorBuildSettings.asset`, or
-   `GameDefaultMap` in Unreal's `Config/DefaultEngine.ini`. Add any file, scene
+   runs in and the setting that starts it: the scene list in Unity's
+   `ProjectSettings/EditorBuildSettings.asset`. Add any file, scene
    or system that a picked story's acceptance criteria, notes or dependencies
    name and no picked story creates. A goal with nothing to run or show (logic
    and tests only) needs none.
 3. **Check each one.** It is covered when it exists in the project or a picked
-   story builds it. Find scenes by the engine's scene files (`engine.name` in
-   `project.yaml`): `*.tscn` for Godot, `Assets/**/*.unity` for Unity,
-   `Content/**/*.umap` for Unreal. Find anything else by the path or name the
-   stories use. With no engine set, check by name only and say the scene search
-   did not run.
+   story builds it. Find scenes by Unity's scene files (`Assets/**/*.unity`)
+   when `engine.name` in `project.yaml` is Unity. Find anything else by the path
+   or name the stories use. With no engine set, or one other than Unity, check by
+   name only and say the scene search did not run.
 4. **Fill in the Goal Prerequisites section**: each need with `exists`,
    `built by [story ID]` or **missing**, or the single row "None: the goal has
    nothing to run or show". Copy each missing one into Risks. When you present

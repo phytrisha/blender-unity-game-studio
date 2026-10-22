@@ -73,5 +73,5 @@ or agent picking this up cold.]
 
     Write it so a cold reader can resume without reading anything else. "Current
     task: fixing the thing" is useless; "Current task: adding wall-jump to
-    player_movement.gd" is not.
+    PlayerMovement.cs" is not.
 -->

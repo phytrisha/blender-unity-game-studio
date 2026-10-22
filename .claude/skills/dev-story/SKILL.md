@@ -4,7 +4,7 @@ description: "Implements one story in code with tests, following its ADRs. Use w
 argument-hint: "[story-path]"
 user-invocable: true
 disable-model-invocation: true
-allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/dev-story/../../hooks/yaml-helper.sh" resolve_config *), Bash(bash .claude/scripts/story-facts.sh *), Bash(bash .claude/scripts/adr-status.sh *), Bash(bash .claude/scripts/md-section.sh *), Bash(bash .claude/scripts/session-state.sh *), Bash(bash .claude/scripts/review-receipts.sh hash *), Bash(godot *), Bash(mkdir -p production/qa/evidence/*)
+allowed-tools: Read, Glob, Grep, Write, Edit, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/dev-story/../../hooks/yaml-helper.sh" resolve_config *), Bash(bash .claude/scripts/story-facts.sh *), Bash(bash .claude/scripts/adr-status.sh *), Bash(bash .claude/scripts/md-section.sh *), Bash(bash .claude/scripts/session-state.sh *), Bash(bash .claude/scripts/review-receipts.sh hash *), Bash(mkdir -p production/qa/evidence/*)
 model: sonnet
 ---
 
@@ -142,8 +142,7 @@ I write [data file]?", and edit it. Go to Phase 6.
 | Core or Feature, networking | `network-programmer` |
 
 **The engine specialist, for every code story.** From the `specialists` line above:
-`code` (`specialists.code`, the language specialist: it tells a Godot C# project
-from a GDScript one, which `engine.name` cannot), plus `shader` when the story
+`code` (`specialists.code`, the code specialist), plus `shader` when the story
 touches shaders or materials and `ui` for a UI story; `primary` (the generic engine
 specialist) when `code` is `unset`. Name no specialist from memory: the line is the project's
 choice. Every value `unset` and no `primary`: say "No engine specialist configured"
@@ -171,7 +170,7 @@ paste whole documents into it.
     `qa.level: minimal`." Say it: an omitted line and a forgotten one look the same
     to the agent.
   - `standard`: "Write the test at [path] with the code. Each acceptance criterion
-    needs at least one test function." Naming per engine from
+    needs at least one test function." Naming from
     `.claude/rules/test-standards.md`. No random seeds, no time-dependent
     assertions, no external I/O.
   - `full`: the same, and "every criterion must be covered: `/story-done` blocks on
@@ -221,14 +220,11 @@ nothing to check: tests are waived.
 **Does it parse?** Run the check whose exit code answers it, and report the
 command, the exit code and any error lines:
 
-- **Godot:** `godot --headless --path . --import` once, then
-  `godot --headless --path . -s res://.claude/scripts/godot-parse-check.gd -- res://<each changed .gd>`.
-  Exit 1 means a script did not load; its `PARSE FAIL:` line names it. Never use
-  `--check-only`, and `--import` alone is no parse check. The executable is the one
-  `commands.test` names when its file name says godot (a wrapper such as `bash
-  run-tests.sh` is not the editor), else `engine.path`, else `godot`. Never search the disk for
-  one: when none of the three runs, the check is not verified.
-- **Unity, Unreal:** read `references/engine-checks.md`.
+- **Unity:** read `references/engine-checks.md`. The editor is the one
+  `commands.smoke` names, else `engine.path`. Never search the disk for one:
+  when neither runs, the check is not verified.
+- **Engine set to anything other than Unity:** `parse NOT VERIFIED — engine
+  '<value>' is not supported by this studio (Unity only)`.
 - **No engine executable:** `parse NOT VERIFIED — engine binary not available`.
   Never infer from reading the code that it parses.
 
@@ -251,9 +247,10 @@ minimal`. Report exactly one line, plain text starting `Run result:` (no bold:
 Only the feel half of a Visual/Feel criterion (timing, weight) is DEFERRED to
 `/team-qa`: a still cannot show it.
 
-This skill pre-approves `godot` on PATH. An engine run through `engine.path` or
-the executable `commands.test` names asks first: the user approves it once, or
-adds `Bash(<that executable> *)` to `.claude/settings.local.json`.
+This skill pre-approves no engine executable. The Unity editor run through
+`engine.path` or the executable `commands.smoke` names asks first: the user
+approves it once, or adds `Bash(<that executable> *)` to
+`.claude/settings.local.json`.
 
 ## Phase 7: Summary, files, checkpoint
 

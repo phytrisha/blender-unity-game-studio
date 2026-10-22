@@ -1097,9 +1097,7 @@ The list is a YAML list of these strings. Skills check whether the current decis
 
 | Engine | Default test framework | Alternatives |
 |--------|------------------------|--------------|
-| Godot | `gdunit4` | `godot-test`, `WAT` |
 | Unity | `unity-test-framework` | `nunit`, custom |
-| Unreal | `unreal-automation` | Google Test, custom |
 
 ---
 
@@ -1110,7 +1108,7 @@ The list is a YAML list of these strings. Skills check whether the current decis
 | **qa-plan** | Test plan tailored to framework's idioms (assertion style, fixture pattern, parameterized tests) |
 | **dev-story** | Test framework name passed to programmer subagent in implementation brief |
 | **regression-suite** | Test file naming and discovery patterns match framework conventions |
-| **test-setup** | Scaffolds the right test layout for the engine (gdUnit4 under `addons/gdUnit4/` + `tests/` for Godot; `Assets/Tests/` asmdefs for Unity; `Source/<Module>/Private/Tests/` for Unreal) |
+| **test-setup** | Scaffolds the Unity test layout: `Assets/Tests/` EditMode and PlayMode asmdefs |
 | **smoke-check** | Invokes framework-appropriate test runner |
 
 ---
@@ -1233,11 +1231,8 @@ closing, or produces a warning and lets work continue — per test type
 > non-null value at standard or minimal level emits a warning at session-start:
 > *"coverage_minimum is set but qa.level is not full — value will not be enforced."*
 
-> **Implementation is engine-specific.** Coverage measurement is different per engine:
-> - Godot: gdunit4 coverage report (markdown export)
-> - Unity: Unity Test Framework coverage (xml export)
-> - Unreal: gcov-style coverage from clang flags
-> CCGS does not unify these — gate-check reads the engine-appropriate report.
+> **Implementation is engine-specific.** On Unity coverage comes from the Unity
+> Test Framework coverage report (xml export); gate-check reads that report.
 
 ---
 
@@ -1300,7 +1295,7 @@ closing, or produces a warning and lets work continue — per test type
 
 > **Different axis from `workflow`.** `workflow` controls *what docs are required.*
 > `team.size` controls *which agents exist to make them.* A solo dev on
-> `workflow: full` still doesn't need all 49 agents — they need the same coverage
+> `workflow: full` still doesn't need all 44 agents — they need the same coverage
 > from a smaller active set.
 
 ---
@@ -1311,7 +1306,7 @@ closing, or produces a warning and lets work continue — per test type
 |-------|-----------|-------|
 | `individual` | Core 8: `producer`, `game-designer`, `gameplay-programmer`, engine-specialist (engine-driven), `technical-artist`, `sound-designer`, `qa-tester`, `writer`. **Default.** | Directors and lead-* run only on explicit invocation (e.g. via `/architecture-decision`). Specialists outside the core 8 routed through their nearest core agent. Each `team-*` skill names its own set per value, which can sit outside the core 8 (`team-release` runs `release-manager`); each skill's own `team.size` list is authoritative, and the Affected skills table below mirrors it. |
 | `small` | Core 15: directors (CD, TD, PR) + leads (LP, AD, QL, ND) + game-designer + systems-designer + engine-specialist + technical-artist + sound-designer + qa-tester + ux-designer + writer | `team-*` skills add their `small` set (below); most reach their full pipeline only at `studio`. |
-| `studio` | All 49 agents available. Engine sub-specialists (e.g. `unity-dots-specialist` separate from `unity-specialist`) routed when relevant. The adversarial review pass in `team-combat`, `team-ui` and `team-polish`. | Commercial titles, learning the full org chart, large teams with parallel work. |
+| `studio` | All 44 agents available. Engine sub-specialists (e.g. `unity-dots-specialist` separate from `unity-specialist`) routed when relevant. The adversarial review pass in `team-combat`, `team-ui` and `team-polish`. | Commercial titles, learning the full org chart, large teams with parallel work. |
 
 ---
 
@@ -1710,7 +1705,7 @@ required at `standard` and `minimal` levels.
 
 **Controls:** Which engine-specific specialist agents are routed to for code
 implementation, review, and architecture validation  
-**Values:** `Godot` | `Unity` | `Unreal`  
+**Values:** `Unity` (the only engine this studio supports)  
 **Default:** `[UNSET]` — must be configured via `/setup-engine`  
 **Set by:** `/setup-engine`  
 **Read by:** `dev-story`, `code-review`, `architecture-decision`, `create-architecture`, `team-combat`, `team-ui`, `team-audio`
@@ -1730,10 +1725,8 @@ implementation, review, and architecture validation
 
 | Engine | Language/code specialist | Shader specialist | UI specialist | Additional specialists |
 |--------|--------------------------|-------------------|---------------|----------------------|
-| **Godot** | `godot-gdscript-specialist` (GDScript) or `godot-csharp-specialist` (C#) — driven by `engine.language` | `godot-shader-specialist` | `godot-specialist` | `godot-gdextension-specialist` |
 | **Unity** | `unity-specialist` | `unity-shader-specialist` | `unity-ui-specialist` | `unity-addressables-specialist`, `unity-dots-specialist` |
-| **Unreal** | `unreal-specialist` | `unreal-specialist` | `ue-umg-specialist` | `ue-gas-specialist`, `ue-blueprint-specialist`, `ue-replication-specialist` |
-| **[UNSET]** | No specialist spawned — warning emitted | No specialist spawned | No specialist spawned | None |
+| **[UNSET]** or another engine | No specialist spawned — warning emitted | No specialist spawned | No specialist spawned | None |
 
 ---
 
@@ -1762,15 +1755,15 @@ implementation, review, and architecture validation
 **Values:** strings — shell-executable commands
 **Default:** `[UNSET]` — populated by `/setup-engine` with engine-typical defaults
 **Set by:** `/setup-engine`, `/settings`
-**Written by:** `/setup-engine`, `/settings`. **Read by:** `test` — `/smoke-check`, `/hotfix` (narrowed to the affected suite), `/bug-report` (verify mode, narrowed to the affected suite), `/day-one-patch` (targeted fix and, when set, the broader regression — NOT ASSESSED if unset), `/dev-story` (Godot parse-check executable resolution), `/test-setup` (the `<Project>.` filter root on Unreal), `project-coherence.sh`; `smoke` — `/dev-story` (Unity parse check), `/smoke-check` (build check when tests are WAIVED); `build` — `/smoke-check` (build check when tests are WAIVED and `smoke` is unset), `project-coherence.sh`; `run` — `/dev-story` (Phase 6 step 4, the run-and-observe step). `/launch-checklist` and `/regression-suite` name these commands but do not run them.
+**Written by:** `/setup-engine`, `/settings`. **Read by:** `test` — `/smoke-check`, `/hotfix` (narrowed to the affected suite), `/bug-report` (verify mode, narrowed to the affected suite), `/day-one-patch` (targeted fix and, when set, the broader regression — NOT ASSESSED if unset), `project-coherence.sh`; `smoke` — `/dev-story` (Unity parse check), `/smoke-check` (build check when tests are WAIVED); `build` — `/smoke-check` (build check when tests are WAIVED and `smoke` is unset), `project-coherence.sh`; `run` — `/dev-story` (Phase 6 step 4, the run-and-observe step). `/launch-checklist` and `/regression-suite` name these commands but do not run them.
   *(Derived by grep. A helper-based read would not show up, so treat this list as the verified floor, not a ceiling.)*
 
 **Priority chain:** `commands.*` in `project.yaml` → engine-typical default → no command available
 
 > **Why explicit:** Without this block, CCGS has to guess engine-typical conventions
 > for invoking the project. Better to be explicit per-project — covers cases where
-> projects customize their build (e.g., a Godot project using gdunit4 for tests but
-> a custom export script for builds).
+> projects customize their build (e.g., a Unity project using the Unity Test
+> Framework for tests but a custom build script for builds).
 
 ---
 
@@ -1781,29 +1774,30 @@ Each command can be a simple string (used on all OSes) or an OS-aware map:
 **Simple form** (one command, used on every OS):
 ```yaml
 commands:
-  build: "godot --headless --export-debug '<PRESET>'"   # ask; see the note below
-  test:  "godot --headless -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests --ignoreHeadlessMode"
-  run:   "godot --path . --windowed --resolution 1280x720"
-  smoke: "godot --headless --quit-after 5"
+  build: '"<Unity editor>" -batchmode -quit -projectPath . -buildTarget <TARGET> -build<PLATFORM>Player Builds/<Target>/<Game>'   # ask; see the note below
+  test:  '"<Unity editor>" -batchmode -runTests -projectPath . -testPlatform EditMode -testResults test-results/editmode.xml'
+  run:   'Builds/<Target>/<Game> -screen-width 1280 -screen-height 720 -screen-fullscreen 0'
+  smoke: '"<Unity editor>" -batchmode -quit -projectPath . -logFile -'
 ```
 
-Note that `build` is the one row the simple form suits least: an export preset
+Note that `build` is the one row the simple form suits least: a build target
 names a *platform*, so a single build string is portable only for a project that
-builds one platform. The other three rows are genuinely OS-independent.
+builds one platform. The editor path also differs per OS, so the other rows are
+OS-independent only when `<Unity editor>` is.
 
 **OS-aware form** (different commands per OS):
 ```yaml
 commands:
   build:
-    default: "godot --headless --export-debug 'Linux/X11'"
-    windows: "godot.exe --headless --export-debug 'Windows Desktop'"
-    macos:   "godot --headless --export-debug 'macOS'"
+    windows: '"<Unity editor>" -batchmode -quit -projectPath . -buildTarget <TARGET> -build<PLATFORM>Player Builds/<Target>/<Game>.exe'
+    macos:   '"<Unity editor>" -batchmode -quit -projectPath . -buildTarget <TARGET> -build<PLATFORM>Player Builds/<Target>/<Game>.app'
   test:
-    default: "godot --headless -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests --ignoreHeadlessMode"
+    default: '"<Unity editor>" -batchmode -runTests -projectPath . -testPlatform EditMode -testResults test-results/editmode.xml'
   run:
-    default: "godot --path . --windowed --resolution 1280x720"
+    windows: 'Builds/<Target>/<Game>.exe -screen-width 1280 -screen-height 720 -screen-fullscreen 0'
+    macos:   'Builds/<Target>/<Game>.app/Contents/MacOS/<Game> -screen-width 1280 -screen-height 720 -screen-fullscreen 0'
   smoke:
-    default: "godot --headless --quit-after 5"
+    default: '"<Unity editor>" -batchmode -quit -projectPath . -logFile -'
 ```
 
 **Resolution rule:** if the value is a string, use it as-is on any OS. If the
@@ -1817,7 +1811,7 @@ keys are inside the locked file, not a local override).
 
 | Field | Purpose |
 |-------|---------|
-| `build` | Full project build for CI or release. `/smoke-check` runs it only as the WAIVED-path build check when `commands.smoke` is unset; `project-coherence.sh` (which `/smoke-check` runs first) checks the export preset it names, and `/launch-checklist` only asks whether the build produces a valid artifact. |
+| `build` | Full project build for CI or release. `/smoke-check` runs it only as the WAIVED-path build check when `commands.smoke` is unset; `project-coherence.sh` (which `/smoke-check` runs first) notes whether any command is declared, and `/launch-checklist` only asks whether the build produces a valid artifact. |
 | `test` | Run the full test suite. Run by `/smoke-check` and, narrowed to the affected suite, by `/hotfix`, `/bug-report` (verify mode) and `/day-one-patch`; `project-coherence.sh` checks the runner it names. `/regression-suite` does **not** run it. |
 | `run` | Launch the **game** windowed at a fixed resolution — not the editor. Used by `/dev-story` Phase 6 step 4 to observe the feature and retain a screenshot; see `.claude/docs/run-and-observe.md` for the per-engine capture flags that are appended to it. |
 | `smoke` | Minimal "does it boot?" check. Run by `/dev-story` as the Unity parse check (Phase 6 step 2), and by `/smoke-check` as the build check when `qa.level: minimal` waives tests. |
@@ -1828,30 +1822,18 @@ keys are inside the locked file, not a local override).
 
 When `/setup-engine` runs, it populates `commands` based on engine choice — except
 the **build** row, which it must **ask** for. The build artifact is named by a
-project-defined string (a Godot export preset, a Unity build target), and no
-engine reference in this repo can source it. See `/setup-engine` §"The Godot
-`build` row must not hardcode `'Linux/X11'`".
+project-defined string (a Unity build target), and no engine reference in this
+repo can source it. See `/setup-engine` §"The Unity `build` row must not
+hardcode `-buildTarget StandaloneLinux64`".
 
 | Engine | build | test | run | smoke |
 |--------|-------|------|-----|-------|
-| Godot | `godot --headless --export-debug '<PRESET>'` | `godot --headless -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests --ignoreHeadlessMode` | `godot --path . --windowed --resolution 1280x720` | `godot --headless --quit-after 5` |
 | Unity | `"<Unity editor>" -batchmode -quit -projectPath . -buildTarget <TARGET> -build<PLATFORM>Player Builds/<Target>/<Game>.exe` | `"<Unity editor>" -batchmode -runTests -projectPath . -testPlatform EditMode -testResults test-results/editmode.xml` | `Builds/<Target>/<Game>.exe -screen-width 1280 -screen-height 720 -screen-fullscreen 0` | `"<Unity editor>" -batchmode -quit -projectPath . -logFile -` |
-| Unreal | `"<UE root>/Engine/Binaries/DotNET/AutomationTool/AutomationTool.exe" BuildCookRun -project="$(pwd -W 2>/dev/null || pwd)/<project>.uproject" -platform=Win64 -build -cook` (confirm per project) | `"<UE root>/Engine/Binaries/Win64/UnrealEditor-Cmd.exe" "$(pwd -W 2>/dev/null || pwd)/<project>.uproject" -ExecCmds="Automation RunTests <project>.; Quit" -unattended -nullrhi -stdout -FullStdOutLogOutput` | `"<UE root>/Engine/Binaries/Win64/UnrealEditor.exe" "$(pwd -W 2>/dev/null || pwd)/<project>.uproject" -game -windowed -ResX=1280 -ResY=720` | `"<UE root>/Engine/Binaries/Win64/UnrealEditor-Cmd.exe" "$(pwd -W 2>/dev/null || pwd)/<project>.uproject" -game -nullrhi -unattended -stdout -ExecCmds="Quit"` |
-
-The Unreal row is Windows'. `/setup-engine` writes the Linux block (`Engine/Build/BatchFiles/RunUAT.sh`,
-`Engine/Binaries/Linux/UnrealEditor`) on Linux, and on macOS only `build`, leaving `test`, `run` and
-`smoke` unset, with a comment in `project.yaml` asking you to set them via `/settings` — see
-`docs/engine-reference/unreal/current-best-practices.md`, "Command Line".
-
-> **`<PRESET>` and `<TARGET>` are placeholders, not values to copy.** A Godot
-> export preset is whatever string the operator typed into `export_presets.cfg`;
-> the shipped defaults are per-platform (`Windows Desktop`, `macOS`, `Web`,
-> `Linux/X11`). Copying a preset name you do not have gives you a build command
-> that fails with `Unknown export preset`; copying one you *do* have, but did not
-> mean, gives you a command that succeeds and builds the wrong platform. The
-> second is the dangerous one. If no presets exist yet — common, since
-> `/setup-engine` usually runs before the project has any — write
-> `[TO BE CONFIGURED]` rather than guessing a name.
+> **`<TARGET>` and `<PLATFORM>` are placeholders, not values to copy.** The
+> build target names the platform the operator ships. Copying a target you did
+> not mean gives you a command that succeeds and builds the wrong platform —
+> the dangerous failure. If the target platform is not decided yet, write
+> `[TO BE CONFIGURED]` rather than guessing one.
 
 Users override per-project as needed via `/settings commands.<field>=<value>` or by editing `project.yaml` directly.
 
@@ -1861,10 +1843,10 @@ Users override per-project as needed via `/settings commands.<field>=<value>` or
 
 | Skill | How `commands` is used |
 |-------|------------------------|
-| **smoke-check** | Runs `commands.test`, or the engine's default when it is unset; on Unreal it builds the editor target first. Critical path for QA hand-off. |
+| **smoke-check** | Runs `commands.test`, or the engine's default when it is unset. Critical path for QA hand-off. |
 | **launch-checklist** | Emits a checklist **item** asking whether the build produces a valid artifact. It does **not** run `commands.build`; the verification is a human step. |
 | **validate-push.sh** | Does **not** read `commands.*`. It warns on pushes to protected branches (`main`/`master`/`release/*`) and runs no build or smoke command — the block path in it is commented out, so it never fails a push. |
-| **dev-story** | Phase 6 step 2 is the parse check: `.claude/scripts/godot-parse-check.gd` on Godot, `commands.smoke` on Unity, the editor-target build on Unreal. Phase 6 step 4 runs `commands.run` — the windowed game launch — to observe the feature and retain a screenshot (`.claude/docs/run-and-observe.md`). |
+| **dev-story** | Phase 6 step 2 is the parse check: `commands.smoke` (the Unity editor's batch-mode compile). Phase 6 step 4 runs `commands.run` — the windowed game launch — to observe the feature and retain a screenshot (`.claude/docs/run-and-observe.md`). |
 | **regression-suite** | Maps coverage by **globbing test filenames**. It does **not** invoke `commands.test`, so coverage here means "a test file exists", never "a test passed". |
 
 ---
@@ -1889,15 +1871,11 @@ conventions into a brief, manifest or spec. **NOT by `/code-review` and NOT by
 > and `validate-commit.sh` does not warn on violations — neither contains any
 > naming logic. If you need enforcement, it has to be added.
 >
-> **Asset filenames.** `validate-assets.sh` warns when a file under Godot's
-> `assets/` has an uppercase letter, a space or a hyphen in its name (it expects
-> lowercase with underscores), and it takes no config input. `/asset-spec`
-> specifies asset names from `naming.*`. Unity's `Assets/` and Unreal's `Content/`
-> are not naming-checked: those engines name assets in PascalCase. On Godot-C#,
-> where `/setup-engine` sets `naming.files: PascalCase`, the hook warns on assets
-> named exactly as `/asset-spec` specified them. `naming.files` describes
-> **source** files by its own examples (`PlayerController.cs`), and no key governs
-> asset filenames, so treat the hook's naming warning as advisory there.
+> **Asset filenames.** `validate-assets.sh` does not check asset names: Unity
+> names assets in PascalCase with type prefixes. `/asset-spec` specifies asset
+> names from `naming.*`, and `/asset-audit` checks them against the art bible's
+> naming rule. `naming.files` describes **source** files by its own examples
+> (`PlayerController.cs`); no key governs asset filenames.
 
 > **Moved from `technical-preferences.md`**, which is being deleted. Naming
 > conventions are project-level facts shared by everyone on the project, so they
@@ -1907,19 +1885,18 @@ conventions into a brief, manifest or spec. **NOT by `/code-review` and NOT by
 
 ### Fields
 
-| Field | Values | Godot default | Unity default | Unreal default |
-|-------|--------|---------------|---------------|----------------|
-| `classes` | `PascalCase` \| `snake_case` \| `camelCase` | PascalCase | PascalCase | PascalCase |
-| `variables` | `snake_case` \| `camelCase` | snake_case | camelCase | camelCase |
-| `constants` | `SCREAMING_SNAKE` \| `PascalCase` | SCREAMING_SNAKE | SCREAMING_SNAKE | SCREAMING_SNAKE |
-| `signals` (Godot) / `events` (Unity, Unreal) | `past_tense` \| `on_event_name` | past_tense | on_event_name | OnEventName |
-| `files` | `snake_case` \| `PascalCase` \| `kebab-case` | snake_case | PascalCase | PascalCase |
-| `scenes` / `prefabs` | `snake_case` \| `PascalCase` | snake_case | PascalCase | PascalCase |
+| Field | Values | Unity default |
+|-------|--------|---------------|
+| `classes` | `PascalCase` \| `snake_case` \| `camelCase` | PascalCase |
+| `variables` | `snake_case` \| `camelCase` | camelCase |
+| `constants` | `SCREAMING_SNAKE` \| `PascalCase` | SCREAMING_SNAKE |
+| `signals` / `events` | `past_tense` \| `on_event_name` | on_event_name |
+| `files` | `snake_case` \| `PascalCase` \| `kebab-case` | PascalCase |
+| `scenes` / `prefabs` | `snake_case` \| `PascalCase` | PascalCase |
 
-> **`signals` vs `events`:** Godot uses signals natively; Unity uses C# events
-> or UnityEvents; Unreal uses delegates and dynamic multicast. The field stays
-> named `signals` in project.yaml for consistency across engines — interpret as
-> "event-like callbacks" regardless of engine.
+> **`signals` vs `events`:** Unity uses C# events or UnityEvents. The field
+> stays named `signals` in project.yaml for compatibility — interpret it as
+> "event-like callbacks".
 
 ---
 
@@ -2219,7 +2196,7 @@ for you only)
 > Code Game Studios 1.3.0 is out (this project has 1.2.0). What changed and how
 > to upgrade: <release page> — to stop this notice: /settings --local
 > updates.check=false"*. Nothing is downloaded or changed; upgrading stays your
-> call (`UPGRADING.md`).
+> call (README.md "Keeping up with CCGS").
 
 > **Priority chain:** `updates.check` in `project.local.yaml` → `project.yaml` →
 > default **`true`**. A value other than `true` or `false` is skipped and named
@@ -2294,7 +2271,7 @@ framework:
 
 | Field | Purpose |
 |-------|---------|
-| `version` | The CCGS version that created the project (or was last updated to — see `UPGRADING.md`). |
+| `version` | The CCGS version that created the project (or was last updated to — see README.md "Keeping up with CCGS"). |
 | `last_upgraded` | ISO date of the most recent template update. |
 
 ---
@@ -2303,7 +2280,7 @@ framework:
 
 None. No skill or hook reads `framework.version` or `last_upgraded` — `/adopt`
 does not consult them and no hook checks their age. They record which template
-version the project came from; `UPGRADING.md` is the upgrade path.
+version the project came from; README.md "Keeping up with CCGS" is the upgrade path.
 
 ---
 
@@ -2389,7 +2366,7 @@ User reads the report before running `--finalize`.
 ## Complete example `project.yaml`
 
 A full project.yaml with every setting, showing sensible defaults for a solo
-Godot project. Use this as the reference shape when authoring or migrating.
+Unity project. Use this as the reference shape when authoring or migrating.
 
 ```yaml
 schema_version: 1
@@ -2429,7 +2406,7 @@ docs:
   density: balanced          # terse | balanced | thorough
 
 testing:
-  framework: gdunit4         # engine-specific — auto-populated by /setup-engine
+  framework: unity-test-framework  # auto-populated by /setup-engine
   strict:
     logic: true              # unit test failures BLOCK story closure
     integration: true        # integration test failures BLOCK
@@ -2456,25 +2433,25 @@ platform:
   cert_tier: none            # none | itch | steam | console
 
 engine:
-  name: "Godot"              # Godot | Unity | Unreal — set by /setup-engine
-  version: "4.7"
-  language: "GDScript"       # GDScript | C# | C++ | Blueprint
-  rendering: "Forward+"
-  physics: "Jolt"
+  name: "Unity"              # Unity — set by /setup-engine
+  version: "6000.3.26f1"
+  language: "C#"
+  rendering: "URP"
+  physics: "PhysX"
 
 specialists:                 # auto-populated by /setup-engine
-  code: "godot-gdscript-specialist"
-  shader: "godot-shader-specialist"
-  ui: "godot-specialist"
-  additional: ["godot-gdextension-specialist"]
+  code: "unity-specialist"
+  shader: "unity-shader-specialist"
+  ui: "unity-ui-specialist"
+  additional: ["unity-addressables-specialist", "unity-dots-specialist"]
 
 naming:
   classes: PascalCase        # PascalCase | snake_case | camelCase
-  variables: snake_case
+  variables: camelCase
   constants: SCREAMING_SNAKE
-  signals: past_tense        # past_tense | on_event_name (engine-interpreted)
-  files: snake_case
-  scenes: snake_case
+  signals: on_event_name     # past_tense | on_event_name (C# events / UnityEvents)
+  files: PascalCase
+  scenes: PascalCase
 
 accessibility:
   target: none               # none | standard | aaa
@@ -2491,10 +2468,10 @@ performance:
   enforce: warn              # warn | block | off
 
 commands:                    # simple string OR OS-aware map per command
-  build: "godot --headless --export-debug '<PRESET>'"   # your export_presets.cfg name
-  test: "godot --headless -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests --ignoreHeadlessMode"
-  run: "godot --path . --windowed --resolution 1280x720"
-  smoke: "godot --headless --quit-after 5"
+  build: '"<Unity editor>" -batchmode -quit -projectPath . -buildTarget <TARGET> -build<PLATFORM>Player Builds/<Target>/<Game>'   # ask for the target
+  test: '"<Unity editor>" -batchmode -runTests -projectPath . -testPlatform EditMode -testResults test-results/editmode.xml'
+  run: 'Builds/<Target>/<Game> -screen-width 1280 -screen-height 720 -screen-fullscreen 0'
+  smoke: '"<Unity editor>" -batchmode -quit -projectPath . -logFile -'
 
 features:
   session_state: on          # off | on

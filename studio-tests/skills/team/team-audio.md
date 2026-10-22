@@ -59,22 +59,22 @@ Fixture defaults.
 
 **Fixture:**
 - Resolved config block: `team.size: studio`, `automation: collaborative`
-- `engine.name` in `project.yaml` is Godot
+- `engine.name` in `project.yaml` is Unity
 - GDD for the target feature exists at `design/gdd/combat.md`
 - Sound bible exists at `design/audio/sound-bible.md`
-- Existing audio assets are listed in `assets/audio/`
+- Existing audio assets are listed in `Assets/Art/Audio/`
 - No accessibility gaps exist in the planned audio event list
 
 **Input:** `/team-audio combat`
 
 **Expected behavior:**
 1. Before any spawn, one line announces the active set for `team.size: studio`
-2. Context gathering: orchestrator reads `design/gdd/combat.md`, `design/audio/sound-bible.md`, and `assets/audio/` asset list before spawning any agent
+2. Context gathering: orchestrator reads `design/gdd/combat.md`, `design/audio/sound-bible.md`, and `Assets/Art/Audio/` asset list before spawning any agent
 3. Step 1: audio-director is spawned; defines sonic identity, emotional tone, adaptive music direction, mix targets, and adaptive audio rules for combat
 4. `AskUserQuestion` presents audio direction; user approves before Step 2 begins
 5. Step 2: sound-designer and accessibility-specialist are spawned in parallel; sound-designer produces SFX specifications, audio event list with trigger conditions, and mixing groups; accessibility-specialist identifies critical gameplay audio events and specifies visual fallback and subtitle requirements
 6. `AskUserQuestion` presents SFX spec and accessibility requirements; user approves before Step 3 begins
-7. Step 3: technical-artist and `godot-specialist` (derived from `engine.name`) are spawned in parallel; technical-artist designs bus structure, middleware integration, memory budgets, and streaming strategy; engine specialist validates that the integration approach is idiomatic for the pinned engine
+7. Step 3: technical-artist and `unity-specialist` (derived from `engine.name`) are spawned in parallel; technical-artist designs bus structure, middleware integration, memory budgets, and streaming strategy; engine specialist validates that the integration approach is idiomatic for the pinned engine
 8. `AskUserQuestion` presents technical plan; user approves before Step 4 begins
 9. Step 4: gameplay-programmer is spawned; first returns the code and test files it will create or change, the orchestrator asks once for that set, and only after the yes it wires up audio events to gameplay triggers, implements adaptive music, sets up occlusion zones and writes unit tests for audio event triggers
 10. For every step, the orchestrator checks that the path named in the agent's return contract exists before treating the step as done
@@ -89,7 +89,7 @@ Fixture defaults.
 - [ ] audio-director is spawned before sound-designer or accessibility-specialist
 - [ ] `AskUserQuestion` appears after Step 1 output and before Step 2 launch
 - [ ] sound-designer and accessibility-specialist Agent calls are issued simultaneously in Step 2
-- [ ] technical-artist and `godot-specialist` Agent calls are issued simultaneously in Step 3
+- [ ] technical-artist and `unity-specialist` Agent calls are issued simultaneously in Step 3
 - [ ] gameplay-programmer is not launched until Step 3 `AskUserQuestion` is approved
 - [ ] gameplay-programmer writes no code or test file before the one ask for its implementation set is answered yes
 - [ ] Audio design document is written to `design/audio/audio-combat.md` (not another path), by the orchestrator, only after its `AskUserQuestion` approval
@@ -212,7 +212,7 @@ Fixture defaults.
 **Fixture:**
 - `project.yaml`: `modes.review_mode: lean` (pinned: the runs below override or keep
   it), `team.size: studio` (pinned: so every step and agent in the pipeline is active)
-- `engine.name` is Godot; `design/gdd/combat.md` and `design/audio/sound-bible.md`
+- `engine.name` is Unity; `design/gdd/combat.md` and `design/audio/sound-bible.md`
   exist; no accessibility gaps in the event list
 - Run A: `/team-audio combat --review full`. Run B: `/team-audio combat` (resolves
   `lean`). Run C: `/team-audio combat --review solo`
@@ -220,7 +220,7 @@ Fixture defaults.
 **Expected behavior:**
 1. All three runs open with the same active-set line for `team.size: studio`
 2. All three run the same four steps with the same agents: audio-director, then
-   sound-designer + accessibility-specialist, then technical-artist + `godot-specialist`,
+   sound-designer + accessibility-specialist, then technical-artist + `unity-specialist`,
    then gameplay-programmer. These are team members working the steps, not director gates
 3. No run spawns a CD-, TD-, PR- or AD-PHASE-GATE at any step: "no phase below spawns
    CD-, TD-, PR- or AD-PHASE-GATE, at any `review_mode`"

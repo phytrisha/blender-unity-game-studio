@@ -60,7 +60,7 @@ Fixture defaults.
   - "Fix crash on level transition" (player-facing)
   - "Add enemy patrol AI" (player-facing)
   - "Refactor input handler to use event bus" (internal only)
-  - "Update dependency: Godot 4.6" (internal only)
+  - "Update dependency: Unity 6000.3.26f1" (internal only)
 - Git history since the previous tag holds the Game commits behind those items
 - No tone guide and no patch-notes template exist
 

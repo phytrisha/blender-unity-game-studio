@@ -1,9 +1,9 @@
 ---
 name: setup-engine
-description: "Configure engine and version. Pins it in CLAUDE.md; WebSearch fills reference docs when the version is beyond LLM training data."
-argument-hint: "[engine] | [engine version] | refresh | upgrade [old-version] [new-version] | no args for guided selection"
+description: "Configure Unity (the studio's only engine) and its version. Pins it in CLAUDE.md; WebSearch fills reference docs when the version is beyond LLM training data."
+argument-hint: "[unity] | [unity version] | refresh | upgrade [old-version] [new-version] | no args for guided setup"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Write, Edit, WebSearch, WebFetch, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/setup-engine/../../hooks/yaml-helper.sh" resolve_config *), Bash(godot --version), Bash(godot --headless --path . --import), Bash(command -v godot), Bash(uname -s), Bash(bash .claude/scripts/project-coherence.sh*)
+allowed-tools: Read, Glob, Grep, Write, Edit, WebSearch, WebFetch, Agent, AskUserQuestion, Bash(bash "*/.claude/skills/setup-engine/../../hooks/yaml-helper.sh" resolve_config *), Bash(ls /Applications/Unity/Hub/Editor*), Bash(ls *Unity/Hub/Editor*), Bash(uname -s), Bash(bash .claude/scripts/project-coherence.sh*)
 model: sonnet
 ---
 
@@ -26,13 +26,16 @@ If the block did not render (shell preprocessing disabled), assume `minimal` (th
 
 ## 1. Parse Arguments
 
-Four modes:
+This studio supports one engine, **Unity** (C#, URP). Modes:
 
-- **Full spec**: `/setup-engine godot 4.7` — engine and version provided
-- **Engine only**: `/setup-engine unity` — engine provided, version will be looked up
-- **No args**: `/setup-engine` — fully guided mode (engine recommendation + version)
+- **Full spec**: `/setup-engine unity 6000.3` — version provided
+- **Engine only**: `/setup-engine unity` — version will be looked up
+- **No args**: `/setup-engine` — guided mode (confirms Unity, collects platform and project shape, then the version)
 - **Refresh**: `/setup-engine refresh` — update reference docs (see Section 10)
 - **Upgrade**: `/setup-engine upgrade [old-version] [new-version]` — migrate to a new engine version (see Section 11)
+
+If the argument names any other engine, say this studio supports Unity only and
+stop with `NOT CONFIGURED — this studio supports Unity only`; write nothing.
 
 ---
 
@@ -76,12 +79,12 @@ Four modes:
 
 Ask: "May I add a Version Awareness section to the engine specialist agent files?" before making any edits.
 
-For the chosen engine's specialist agents, verify they have a
-"Version Awareness" section. If not, add one following the pattern in
-the existing Godot specialist agents.
+For the Unity specialist agents (`unity-specialist` and the `unity-*`
+sub-specialists), verify they have a "Version Awareness" section. If not, add
+one following the pattern in `unity-specialist`.
 
 The section should instruct the agent to:
-1. Read `docs/engine-reference/<engine>/VERSION.md`
+1. Read `docs/engine-reference/unity/VERSION.md`
 2. Check deprecated APIs before suggesting code
 3. Check breaking changes for relevant version transitions
 4. Use WebSearch to verify uncertain APIs
@@ -92,7 +95,7 @@ The section should instruct the agent to:
 
 If invoked as `/setup-engine refresh`:
 
-1. Read the existing `docs/engine-reference/<engine>/VERSION.md` to get
+1. Read the existing `docs/engine-reference/unity/VERSION.md` to get
    the current engine and version
 2. Use WebSearch to check for:
    - New engine releases since last verification
@@ -119,23 +122,5 @@ If invoked as `/setup-engine refresh`:
   config to BOTH `project.yaml` (primary) and `technical-preferences.md` (legacy
   mirror). If the two ever diverge, `project.yaml` is authoritative.
 - NEVER overwrite existing reference docs without asking — append or update
-- If reference docs already exist for a different engine, ask before replacing
 - Always show the user what you're about to change before making CLAUDE.md edits
 - If WebSearch returns ambiguous results, show the user and let them decide
-- When the user chose **GDScript**: copy the GDScript CLAUDE.md template from **A1** in `references/godot-language-config.md` exactly. NEVER add "C++ via GDExtension" to the Language field. GDScript projects may use GDExtension, but it is not a primary project language. The `godot-gdextension-specialist` in the routing table is available for when native extensions are needed — it does not make C++ a project language.
-
----
-
-## Appendix A — Godot Language Configuration
-
-Moved out of this file so it costs nothing on non-Godot runs.
-
-**When the chosen engine is Godot, read**
-`references/godot-language-config.md`
-and use the subsection for the chosen language:
-
-- **A1** — CLAUDE.md Technology Stack templates (GDScript / C# / Both)
-- **A2** — naming conventions
-- **A3** — engine specialist routing and file-extension tables
-
-**Load discipline.** On any engine other than Godot, **never load it** — nothing in Sections 4, 5 or 5.5 needs it, and reading it anyway spends the tokens the split exists to save. On Godot, read it once when you first reach Section 4 and keep using it for Sections 5 and 5.5; do not re-read it at each reference.

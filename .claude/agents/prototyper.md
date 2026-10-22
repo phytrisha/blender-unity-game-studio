@@ -194,8 +194,8 @@ Prototype code must NEVER leak into the production codebase:
   [comment] Date: [When it was created]
   ```
   (Or `[comment] VERTICAL SLICE - NOT FOR PRODUCTION` for vertical slices.)
-  Write `[comment]` in each file's own comment syntax — `#` in GDScript (`.gd`)
-  and Python, `//` in C#, C++ and JavaScript, `--` in Lua, `<!-- … -->` in HTML
+  Write `[comment]` in each file's own comment syntax — `//` in C#, C++ and
+  JavaScript, `#` in Python, `--` in Lua, `<!-- … -->` in HTML
   and Markdown. A header in another language's syntax is a parse error, not a
   label. Files that cannot hold a comment (JSON, engine-generated scene and
   project files) are exempt.

@@ -27,7 +27,7 @@ engine has a native way.
 2. **Launch straight into the scene or map the story touched.** A feature that
    is only reachable through the main menu and three clicks is a feature the
    run will not reach. Stories should be written so their surface is reachable
-   from a launch argument (a scene path, a map URL, a `--scene` flag).
+   from a launch argument (a `--scene` flag).
 3. **Wait, capture, quit.** Let the engine render real frames — 60 is a safe
    floor — capture one, and exit. Each engine's mechanism is below.
 4. **Look.** `Read` the PNG. Compare what is on screen to the acceptance
@@ -36,7 +36,7 @@ engine has a native way.
 5. **Retain.** Capture straight into the story's evidence folder, so nothing
    needs copying: `mkdir -p production/qa/evidence/[story-slug]`, then pass
    `production/qa/evidence/[story-slug]/[NN]-[what-it-shows].png` as the capture
-   path (Godot adds its frame number to the name). `[story-slug]` is the story
+   path. `[story-slug]` is the story
    file's name without `.md`: `story-003-light-pickup` for
    `production/epics/core/story-003-light-pickup.md`. Reference the image from
    the evidence doc. A screenshot that was taken and discarded is an
@@ -46,36 +46,11 @@ engine has a native way.
 6. **Report** one `Run result:` line in the implementation summary — vocabulary
    below.
 
-## Per engine
+## Unity
 
 | `engine.name` | Launch | Capture | Output lands in | Never use | Scaffold needed |
 |---|---|---|---|---|---|
-| Godot 4 | `godot --path . --windowed --resolution 1280x720 <scene>.tscn` | `--write-movie <path>.png --quit-after <N>` | beside the given path, `<name>00000000.png` … | `--headless` | **none** |
 | Unity 6 | built player `.exe -screen-width 1280 -screen-height 720 -screen-fullscreen 0 --scene <Name>` | `ScreenCapture.CaptureScreenshot(<abs path>)` from a bootstrap script | the absolute path you pass | `-batchmode`, `-nographics` | one MonoBehaviour |
-| Unreal 5 | `MSYS_NO_PATHCONV=1 "<UE root>/Engine/Binaries/Win64/UnrealEditor.exe" "$(pwd -W 2>/dev/null || pwd)/<Game>.uproject" <MapURL> -game -windowed -ResX=1280 -ResY=720` | `HighResShot 1280x720 filename=<abs path>` console command | the path you pass (else `Saved/Screenshots/WindowsEditor/`) | `-nullrhi`, `-unattended` alone | one actor or `-ExecCmds` |
-
-### Godot 4 — zero scaffold
-
-```
-godot --path . --windowed --resolution 1280x720 --write-movie shots/shop.png --quit-after 60 res://scenes/shop.tscn
-```
-
-`--write-movie` is Movie Maker mode: with a `.png` target it writes a frame
-sequence and `--quit-after` sets the frame count. Filenames carry **8**
-zero-padded digits — `shop00000000.png` through `shop00000059.png` — so take the
-last; a `shop.wav` lands beside them. `--fixed-fps` is applied automatically. The
-scene path is positional; any `.tscn` can be launched directly, which is how step
-2 is satisfied. The frames are recorded at the project's viewport size
-(`display/window/size/viewport_width` and `_height`, 1152x648 when unset), not at
-`--resolution`, which only sizes the window; the log's `recording movie in
-<W>×<H>` line says which. The capture-on-trigger alternative below saves at the
-window size.
-
-Capture-on-trigger alternative, for a state a scene launch cannot reach: an
-autoload that on the wanted condition does
-`await RenderingServer.frame_post_draw`, then
-`get_viewport().get_texture().get_image().save_png(path)`, then
-`get_tree().quit()`.
 
 ### Unity 6 — one MonoBehaviour
 
@@ -136,47 +111,7 @@ player. `--scene` must be in the build settings. Building the player first
 costs 1–3 minutes on a small project; that is the price of looking at the thing
 you ship rather than the editor.
 
-### Unreal 5 — one actor, or `-ExecCmds`
-
-```
-MSYS_NO_PATHCONV=1 timeout 60 "<UE root>/Engine/Binaries/Win64/UnrealEditor.exe" "$(pwd -W 2>/dev/null || pwd)/Game.uproject" /Game/Maps/Shop -game -windowed -ResX=1280 -ResY=720
-```
-
-That line is Windows'. On Linux the same arguments go to
-`"<UE root>/Engine/Binaries/Linux/UnrealEditor"` (no `MSYS_NO_PATHCONV` needed);
-on macOS Epic documents only the `UnrealEditor.app` bundle, so run the map from
-the editor or a command you have confirmed (see
-`docs/engine-reference/unreal/current-best-practices.md`, "Command Line").
-
-`-game` runs standalone without the editor UI. The map is a **positional URL
-immediately after the `.uproject`** — not a console command. **The
-`MSYS_NO_PATHCONV=1` prefix is required on Windows:** Claude Code runs commands
-in Git Bash, which rewrites any argument beginning with `/` as a Windows path, so
-`/Game/Maps/Shop` reaches the engine as `C:/Program Files/Git/Game/Maps/Shop`
-and the game stops on a "map not found" dialog nobody can see. Alternatively
-pass the map through `-ExecCmds="open /Game/Maps/Shop"`, which is not converted.
-**The project path must be absolute** — with `MSYS_NO_PATHCONV` set, only
-`$(pwd -W 2>/dev/null || pwd)` gives one: a relative `Game.uproject` is not
-found, and the launch waits on an error dialog forever (verified on 5.7). There
-is no `-unattended` on this line, so every failure is a dialog nobody clicks:
-always run it under `timeout`. Capture is the
-`HighResShot` console command, fired either from a dev actor (`Execute Console
-Command` on BeginPlay after a short delay, then `quit`) or from the launch line:
-
-```
--ExecCmds="HighResShot 1280x720 filename=C:/abs/path/shop.png"
-```
-
-The size (or a multiplier such as `2`) comes **before** `filename=`:
-`HighResShot filename=…` alone is rejected as bad input and saves nothing.
-Without `filename=` the file lands in `Saved/Screenshots/WindowsEditor/`.
-**Do not put `Quit` in the same `-ExecCmds` list** — it runs on the same
-frame, before the file is written, and leaves nothing on disk. `-ExecCmds` has
-no delay, so let `timeout` end the launch (exit 124 is expected) and check the
-file exists; a dev actor can instead wait a second, then `quit`. The Blueprint node `Take High Res Screenshot` is editor-only and
-does not work in a `-game` launch.
-
-### Any engine — OS capture fallback
+### OS capture fallback
 
 On Windows, PowerShell with `System.Drawing` can `CopyFromScreen` into a bitmap
 and save it. It needs a visible desktop and the game window on top, and it
@@ -214,29 +149,26 @@ that the right screen appeared at all. This is where shipped visual defects
 actually live.
 
 **Cannot:** timing, responsiveness, weight, animation curves, audio sync — the
-"feel" half of Visual/Feel. Godot's `--write-movie` gives a frame sequence; the
-other engines need OS video capture. Feel stays a human check in `/team-qa`.
+"feel" half of Visual/Feel; Unity needs OS video capture for that. Feel stays a
+human check in `/team-qa`.
 Say which half the screenshot covered.
 
 ## Reaching the state
 
 A screenshot of the title screen verifies nothing about depth 2. Either launch
-the scene/map directly (Godot scene arg, Unreal map URL, Unity `--scene`) or
+the scene directly (`--scene`) or
 give the bootstrap a debug argument that sets state (`--gold=500 --depth=2`).
 Write stories so their surface is reachable one of those ways; a story that is
 not is a story that will be marked `NOT VERIFIED` every time.
 
 ## Finding the engine
 
-None of the three engines installs onto `PATH` on Windows. `engine.path` in
+Unity does not install onto `PATH` on Windows. `engine.path` in
 `project.yaml` is where the editor lives; resolve it before concluding "no
 engine on this machine". Absence of a path is not absence of an engine.
 
 ---
 
-*Commands above were run on Windows with Godot 4.6.1 (gdUnit4 6.1.3) and the
-Godot ones again on 4.7.2 (gdUnit4 6.2.2), Unity
-6000.3.23f1 and Unreal Engine 5.7; the Unreal Linux and macOS notes come from
-Epic's documentation. `docs/engine-reference/<engine>/` is
-the project's pinned authority; check it before trusting a version-qualified
-claim here.*
+*Commands above were run on Windows with Unity 6000.3.23f1.
+`docs/engine-reference/unity/` is the project's pinned authority; check it
+before trusting a version-qualified claim here.*

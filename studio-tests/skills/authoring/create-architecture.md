@@ -81,8 +81,8 @@ Fixture defaults.
 ### Case 1: Happy Path — New architecture document, full mode, reviews approve
 
 **Fixture:**
-- `project.yaml` has `engine.name: Godot`, `modes.review_mode: full`, `modes.workflow: full`
-- `docs/engine-reference/godot/` has `VERSION.md`, `breaking-changes.md`, `deprecated-apis.md`, `current-best-practices.md` and `modules/`
+- `project.yaml` has `engine.name: Unity`, `modes.review_mode: full`, `modes.workflow: full`
+- `docs/engine-reference/unity/` has `VERSION.md`, `breaking-changes.md`, `deprecated-apis.md`, `current-best-practices.md` and `modules/`
 - `design/gdd/game-concept.md` and `design/gdd/systems-index.md` exist with real content
 - `design/gdd/combat.md` and `design/gdd/inventory.md` follow the GDD template
 - `docs/architecture/adr-0001-event-bus.md` exists (`Status: Accepted`)

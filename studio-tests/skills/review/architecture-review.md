@@ -57,7 +57,7 @@ Fixture defaults.
 ### Case 1: Happy Path — every requirement covered by an Accepted ADR
 
 **Fixture:**
-- `project.yaml` sets `modes.workflow: full`, `engine.name: Godot`, `engine.version: 4.6`
+- `project.yaml` sets `modes.workflow: full`, `engine.name: Unity`, `engine.version: 6000.3.26f1`
 - `design/gdd/systems-index.md` plus two system GDDs (`combat.md`, `inventory.md`),
   each with a `## Summary` and technical requirements in its Detailed Rules
 - `docs/architecture/adr-0001-*.md` … `adr-0003-*.md`, each with `## Status: Accepted`,
@@ -67,7 +67,7 @@ Fixture defaults.
   ADR under `NO_DEPS_SECTION`; together they cover every requirement; no two contradict
 - `docs/architecture/architecture.md` exists and names every system in the index
 - No prior `docs/architecture/architecture-review-*.md` report
-- Pre-gate items all exist: `tests/unit/`, `tests/integration/` (the Godot test root),
+- Pre-gate items all exist: `Assets/Tests/EditMode/`, `Assets/Tests/PlayMode/` (the Unity test root),
   `.github/workflows/tests.yml`, `design/accessibility-requirements.md`,
   `design/ux/interaction-patterns.md`
 
@@ -77,10 +77,10 @@ Fixture defaults.
 1. Freshness check prints `RECEIPT: NONE` → full review
 2. Skill counts the denominators (N_gdd, N_adr), loads the needed sections with
    targeted Greps rather than whole files, and reports
-   "Loaded [N] GDDs, [M] ADRs, engine: Godot 4.6"
+   "Loaded [N] GDDs, [M] ADRs, engine: Unity 6000.3.26f1"
 3. Skill extracts TR-IDs (reusing any existing `tr-registry.yaml` IDs) and builds the matrix
 4. Skill runs `bash .claude/scripts/adr-dep-graph.sh` and prints the recommended implementation order from its `ORDER:` row
-5. Skill runs the engine audit and consults `godot-specialist`
+5. Skill runs the engine audit and consults `unity-specialist`
 6. Report ends with `### Verdict: PASS`
 7. Phase 8 asks what to write; Phase 9 offers `/gate-check pre-production`
 
@@ -170,15 +170,15 @@ Fixture defaults.
 
 ### Case 5: Engine specialist consultation — configured vs unconfigured engine
 
-**Case 5a — engine configured:** Case 1 fixture (`engine.name: Godot`)
+**Case 5a — engine configured:** Case 1 fixture (`engine.name: Unity`)
 
 **Expected behavior:**
-1. After the Phase 5 engine audit, skill spawns `godot-specialist` via `Agent`,
+1. After the Phase 5 engine audit, skill spawns `unity-specialist` via `Agent`,
    passing the engine-specific ADRs, the engine reference docs and the audit findings
 2. The specialist's findings appear under `### Engine Specialist Findings` and count toward the verdict
 
 **Assertions (5a):**
-- [ ] The specialist is resolved from `engine.name` (Godot → `godot-specialist`)
+- [ ] The specialist is resolved from `engine.name` (Unity → `unity-specialist`)
 - [ ] It is spawned after the engine audit, with the audit findings in its prompt
 - [ ] Output includes an `### Engine Specialist Findings` section
 - [ ] No director gate (TD-ARCHITECTURE, LP-FEASIBILITY or any other gate ID) is spawned or mentioned

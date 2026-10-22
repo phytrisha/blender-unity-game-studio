@@ -19,11 +19,11 @@
 
 ## Test Cases
 
-### Case 1: In-domain request — CI setup for a Godot project
-**Input**: "Set up a CI pipeline for our Godot 4 project. It should run tests on every push to main and every pull request, and fail the build if tests fail."
+### Case 1: In-domain request — CI setup for a Unity project
+**Input**: "Set up a CI pipeline for our Unity 6 project. It should run tests on every push to main and every pull request, and fail the build if tests fail."
 **Expected behavior**:
 - Produces a GitHub Actions workflow YAML (`.github/workflows/ci.yml` or equivalent)
-- Uses the Godot headless test runner command from `coding-standards.md`: `godot --headless -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests --ignoreHeadlessMode`
+- Uses the Unity CI test runner `coding-standards.md` names: `game-ci/unity-test-runner@v4`, for Edit Mode and Play Mode, with the `UNITY_LICENSE` secret noted
 - Configures trigger on `push` to main and `pull_request`
 - Sets the job to fail (non-zero exit) when tests fail — does NOT add `continue-on-error` or any other setting that lets the pipeline pass on a test failure
 - Shows the workflow and asks "May I write this to `.github/workflows/<file>`?" before writing it (Collaboration Protocol, step 5)
@@ -40,7 +40,7 @@
 **Input**: "Our CI pipeline is failing on the merge step. The error is: 'Asset import failed: texture compression format unsupported in headless mode.'"
 **Expected behavior**:
 - Diagnoses the failure as an environment problem in the headless CI runner (the import step needs a capability the headless runner lacks), not a flaky step to retry
-- Before stating how Godot 4.7 imports or compresses textures headlessly, cross-references `docs/engine-reference/godot/` — `VERSION.md` pins 4.7, past the model's training data — and says so when the reference does not cover it, rather than asserting version-specific behavior from memory
+- Before stating how Unity 6.3 imports or compresses textures in batch mode, cross-references `docs/engine-reference/unity/` — `VERSION.md` pins 6.3 LTS, past the model's training data — and says so when the reference does not cover it, rather than asserting version-specific behavior from memory
 - Proposes at least one actionable fix that keeps the import and test steps in the pipeline, and names its tradeoff
 - Does NOT remove the import step, skip the tests, or mark the job `continue-on-error` to get a green build — "Skip CI steps for speed" is forbidden, and `coding-standards.md` says "Never disable or skip failing tests to make CI pass — fix the underlying issue"
 - Does NOT declare the pipeline unfixable
@@ -77,7 +77,7 @@
 
 ## Coverage Notes
 - Case 1 references `coding-standards.md` CI rules — verify this file is present and current before running this test
-- Case 3 tests that the agent consults `docs/engine-reference/godot/` for version-specific behavior; it does not require the reference to cover headless import
+- Case 3 tests that the agent consults `docs/engine-reference/unity/` for version-specific behavior; it does not require the reference to cover batch-mode import
 - Case 4 (branching strategy) is a convention-enforcement test — agent must know the project convention, not just give neutral advice
 - Case 5 supplies the target platforms in context; in a real project they come from `project.yaml`
 - No automated runner; review manually or via `/skill-test`

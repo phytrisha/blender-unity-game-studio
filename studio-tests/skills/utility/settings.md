@@ -66,7 +66,7 @@ Fixture defaults.
   docs:
     density: terse
   engine:
-    name: Godot
+    name: Unity
   ```
 - `project.local.yaml`:
   ```yaml
@@ -177,13 +177,13 @@ Fixture defaults.
 ### Case 5: `--local` on a locked key — refused with the team-wide route
 
 **Fixture:**
-- `project.yaml` sets `engine.name: Godot`; no `project.local.yaml`
+- `project.yaml` sets `engine.name: Unity` and `engine.version: 6000.3.26f1`; no `project.local.yaml`
 
-**Input:** `/settings --local engine.name=Unity`
+**Input:** `/settings --local engine.version=6000.6.0f1`
 
 **Expected behavior:**
-1. `is_locally_overridable engine.name` returns 1
-2. One line: ``engine.name cannot be locally overridden — it's a project-wide setting. Use `/settings engine.name=Unity` (no `--local`) to change it for the whole team.``
+1. `is_locally_overridable engine.version` returns 1
+2. One line: ``engine.version cannot be locally overridden — it's a project-wide setting. Use `/settings engine.version=6000.6.0f1` (no `--local`) to change it for the whole team.``
 3. The skill exits without writing
 
 **Assertions:**

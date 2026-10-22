@@ -74,7 +74,7 @@ Fixture defaults.
 ### Case 1: Happy Path — Epic with 3 stories, all ADRs Accepted
 
 **Fixture:**
-- `project.yaml`: `engine.name: Godot`, `modes.workflow: full`,
+- `project.yaml`: `engine.name: Unity`, `modes.workflow: full`,
   `modes.review_mode: lean`, `modes.story_granularity: fine` (one story per
   acceptance criterion)
 - `production/epics/combat/EPIC.md` exists with 3 GDD requirements and its
@@ -106,7 +106,7 @@ Fixture defaults.
 - [ ] Exactly 3 stories are drafted — one per acceptance criterion at `fine`
 - [ ] Each story file has the header fields Epic, Status, Layer, Type, Manifest Version, and a Context block with GDD, `Requirement: TR-[system]-NNN`, ADR Governing Implementation, ADR Version, Engine/Risk
 - [ ] Each story has Acceptance Criteria, QA Test Cases, Test Evidence and Dependencies sections
-- [ ] The formula story is typed Logic with evidence path `tests/unit/[system]/…` (the Godot test root)
+- [ ] The formula story is typed Logic with evidence path `Assets/Tests/EditMode/[System]Tests.cs` (the Unity test root)
 - [ ] "QL-STORY-READY skipped — Lean mode." appears and each QA Test Cases section reads "N/A — no qa-lead specs at this tier…" (no improvised test cases)
 - [ ] "May I write" is asked once, after the full list is shown, and names the 3 stories, `EPIC.md` and `production/epics/index.md`
 - [ ] Files are named `production/epics/combat/story-NNN-[slug].md`
@@ -243,12 +243,12 @@ Fixture defaults.
 ### Case 6: Minimal tier — epic synthesized from the brief, then a return visit
 
 **Fixture:**
-- `project.yaml`: `engine.name: Godot`, `engine.version: "4.6"`, and no `modes`
+- `project.yaml`: `engine.name: Unity`, `engine.version: "6000.3.26f1"`, and no `modes`
   keys — `modes.rigor` defaults to `minimal`, so `workflow`, `qa.level` and the
   review mode resolve to `minimal` / `minimal` / `solo`
 - `design/game-brief.md` with working title "Lantern Keeper", a Player goal & fail
   state, 2 MVP features and a Build order
-- `docs/engine-reference/godot/VERSION.md` is absent
+- `docs/engine-reference/unity/VERSION.md` is absent
 - No `production/epics/` directory
 
 **Input:** `/create-stories`

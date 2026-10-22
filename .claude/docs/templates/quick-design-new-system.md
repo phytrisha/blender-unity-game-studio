@@ -22,7 +22,7 @@ implement without asking questions.]
 |------|---------|-------|----------|-----------|
 | [name] | [value] | [min–max] | [feel/curve/gate] | [why this default] |
 
-All values must live in `assets/data/[appropriate-file].json`, not hardcoded.
+All values must live in `Assets/Settings/Data/[appropriate-file].json`, not hardcoded.
 
 ## Acceptance Criteria
 

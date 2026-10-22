@@ -46,8 +46,8 @@ All stories must have appropriate test evidence before they can be marked Done:
 
 | Story Type | Required Evidence | Location | Default Gate Level |
 |---|---|---|---|
-| **Logic** (formulas, AI, state machines) | Automated unit test — must pass | `tests/unit/[system]/` | BLOCKING |
-| **Integration** (multi-system) | Integration test OR documented playtest | `tests/integration/[system]/` | BLOCKING |
+| **Logic** (formulas, AI, state machines) | Automated unit test — must pass | `Assets/Tests/EditMode/[System]/` | BLOCKING |
+| **Integration** (multi-system) | Integration test OR documented playtest | `Assets/Tests/PlayMode/[System]/` | BLOCKING |
 | **Visual/Feel** (animation, VFX, feel) | Retained screenshot + lead sign-off | `production/qa/evidence/` | BLOCKING |
 | **UI** (menus, HUD, screens) | Retained screenshot of each screen touched | `production/qa/evidence/` | BLOCKING |
 | **Config/Data** (balance tuning) | Smoke check pass | `production/qa/smoke-[date].md` | ADVISORY |
@@ -92,7 +92,5 @@ falling back to the defaults above when it is absent.
 - Automated test suite runs on every push to main and every PR
 - No merge if tests fail — tests are a blocking gate in CI
 - Never disable or skip failing tests to make CI pass — fix the underlying issue
-- Engine-specific CI commands:
-  - **Godot**: `godot --headless -s -d --remote-debug tcp://127.0.0.1:0 res://addons/gdUnit4/bin/GdUnitCmdTool.gd -a res://tests --ignoreHeadlessMode`
+- Engine CI command:
   - **Unity**: `game-ci/unity-test-runner@v4` (GitHub Actions)
-  - **Unreal**: headless runner with `-nullrhi` flag

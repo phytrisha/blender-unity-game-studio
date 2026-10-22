@@ -15,13 +15,13 @@
 ### First: does a reference set already exist for this engine?
 
 **Check before doing anything else.** The template ships
-`docs/engine-reference/godot/`, `unity/` and `unreal/` **already populated**, so
+`docs/engine-reference/unity/` **already populated**, so
 "the directory exists and pins a version" is the state of *every* fresh project,
 not an edge case. Both branches below say "create", and following either one
 literally on a pre-populated directory either overwrites curated content or
 leaves `project.yaml` and the CLAUDE.md-imported reference disagreeing.
 
-Read `docs/engine-reference/<engine>/VERSION.md` and compare its
+Read `docs/engine-reference/unity/VERSION.md` and compare its
 **Engine Version** to the version chosen in Section 3:
 
 - **No directory, or no `VERSION.md`** → create, using the risk branch below.
@@ -30,10 +30,10 @@ Read `docs/engine-reference/<engine>/VERSION.md` and compare its
   not check. The one row still written is `Installed at pin time`, from
   Section 3 — its probe result is recorded whatever the outcome, after asking
   "May I record `Installed at pin time: [result]` in
-  `docs/engine-reference/<engine>/VERSION.md`?" (it is a tracked file).
+  `docs/engine-reference/unity/VERSION.md`?" (it is a tracked file).
 - **Directory pins an OLDER version than the one chosen** → **update, do not
   replace.** This is the common case. Show the changes below, then ask "May I
-  update the `docs/engine-reference/<engine>/` files for [version]?" before editing.
+  update the `docs/engine-reference/unity/` files for [version]?" before editing.
   1. Edit `VERSION.md` in place: new **Engine Version**, new **Project Pinned**
      and **Last Docs Verified**, the `Installed at pin time` row from Section 3,
      and a new row in the post-cutoff timeline for each version added.
@@ -65,7 +65,7 @@ produces work that looks verified and is not.
 
 ### If WITHIN training data (LOW RISK):
 
-Ask: "May I create `docs/engine-reference/<engine>/VERSION.md`?" Wait for
+Ask: "May I create `docs/engine-reference/unity/VERSION.md`?" Wait for
 confirmation, then create this minimal file:
 
 ```markdown
@@ -105,13 +105,13 @@ Create the full reference doc set by searching the web:
    - Deprecated APIs with replacements
    - New features and best practices
 
-Ask: "May I create the engine reference docs under `docs/engine-reference/<engine>/`?"
+Ask: "May I create the engine reference docs under `docs/engine-reference/unity/`?"
 
 Wait for confirmation before writing any files.
 
 3. **Create the full reference directory**:
    ```
-   docs/engine-reference/<engine>/
+   docs/engine-reference/unity/
    ├── VERSION.md              # Version pin + knowledge gap analysis
    ├── breaking-changes.md     # Version-by-version breaking changes
    ├── deprecated-apis.md      # "Don't use X → Use Y" tables

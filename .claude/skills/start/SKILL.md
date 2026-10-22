@@ -202,9 +202,8 @@ design problems show up in code.
 
 If `origin_url` pointed at the template repo, add: "Your clone's `origin` still points at the
 CCGS template repo, so a push or pull request would go there. When you're ready, run
-`git remote rename origin template`, then `git remote add origin <your repo URL>`. `UPGRADING.md`
-pulls updates from `template`; skip its own `git remote add template` step, since that remote now
-exists." Suggest it; do not run it.
+`git remote rename origin template`, then `git remote add origin <your repo URL>`. Studio updates
+are then merged from `template` (README.md "Keeping up with CCGS")." Suggest it; do not run it.
 
 Ask: "Would you like to start with [first step]?" Options: `Yes, start with [first step]` /
 `Something else first`. Either answer leads to Phase 7, never to running the step.

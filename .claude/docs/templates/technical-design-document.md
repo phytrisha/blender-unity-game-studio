@@ -12,9 +12,9 @@
 
 | Field | Value |
 |-------|-------|
-| **Engine** | [e.g. Godot 4.7 / Unity 6 / Unreal Engine 5.8] |
-| **APIs Depended On** | [Specific classes/methods/nodes used, version-pinned — e.g. `CharacterBody3D.move_and_slide() (Godot 4.x)`] |
-| **References Consulted** | [engine-reference docs read before writing this — e.g. `docs/engine-reference/godot/modules/physics.md`] |
+| **Engine** | [e.g. Unity 6.3 LTS] |
+| **APIs Depended On** | [Specific classes/methods/nodes used, version-pinned — e.g. `CharacterController.Move() (Unity 6)`] |
+| **References Consulted** | [engine-reference docs read before writing this — e.g. `docs/engine-reference/unity/modules/physics.md`] |
 | **Post-Cutoff Features Used** | [Features from engine versions beyond LLM training cutoff, or "None"] |
 | **Unverified Assumptions** | [API behaviours assumed but not yet tested against the target version, or "None"] |
 | **Engine Upgrade Risk** | [LOW / MEDIUM / HIGH — how fragile is this design if the engine version changes?] |

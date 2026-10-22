@@ -4,7 +4,7 @@
 
 `/balance-check [system-name|path-to-data-file]` identifies the balance domain
 (combat, economy, progression, loot, or a data file given directly), reads the
-domain's data files from `assets/data/` and `design/balance/`, then reads the
+domain's data files from `Assets/Settings/Data/` and `design/balance/`, then reads the
 intended values — from `design/registry/entities.yaml` first (its `constants:` and
 `formulas:` blocks), and from the system's GDD in `design/gdd/` for anything the
 registry does not supply. It compares every data value with its target — a
@@ -55,7 +55,7 @@ Fixture defaults.
 ### Case 1: Happy Path — All balance values within their intended ranges
 
 **Fixture:**
-- `assets/data/combat-balance.json` exists with 6 stat values
+- `Assets/Settings/Data/combat-balance.json` exists with 6 stat values
 - `design/registry/entities.yaml` has no entries (the shipped empty stub)
 - `design/gdd/combat-system.md` gives an expected range for all 6 stats
 - All 6 values fall inside their ranges; no degenerate strategy exists
@@ -64,10 +64,10 @@ Fixture defaults.
 
 **Expected behavior:**
 1. Skill identifies the Combat domain from the argument
-2. Skill reads `assets/data/combat-balance.json` (and any combat files in `design/balance/`)
+2. Skill reads `Assets/Settings/Data/combat-balance.json` (and any combat files in `design/balance/`)
 3. Registry has no entries, so the skill uses the GDD alone for the intended ranges
 4. Each of the 6 values is compared with its GDD range and none falls outside; the combat checks find no dominant option
-5. Report lists `assets/data/combat-balance.json` and `design/gdd/combat-system.md` under Data Sources Analyzed; the Outliers Detected table has no rows
+5. Report lists `Assets/Settings/Data/combat-balance.json` and `design/gdd/combat-system.md` under Data Sources Analyzed; the Outliers Detected table has no rows
 6. Health Summary is HEALTHY
 7. Phase 6 `AskUserQuestion` offers [A] / [B] / [C]; nothing is written before the user chooses
 
@@ -83,7 +83,7 @@ Fixture defaults.
 ### Case 2: Outlier — Player damage far above its intended range
 
 **Fixture:**
-- `assets/data/combat-balance.json` has `player_damage_base: 140`
+- `Assets/Settings/Data/combat-balance.json` has `player_damage_base: 140`
 - `design/gdd/combat-system.md` gives `player_damage_base` an expected range of 90–110
 - All other stats are within range
 
@@ -108,7 +108,7 @@ Fixture defaults.
 ### Case 3: No Design Targets — Data exists but no GDD or registry defines the ranges
 
 **Fixture:**
-- `assets/data/economy-balance.yaml` exists with 10 plain stat values (prices and rates, no faucet/sink loop the data alone could show)
+- `Assets/Settings/Data/economy-balance.yaml` exists with 10 plain stat values (prices and rates, no faucet/sink loop the data alone could show)
 - `design/registry/entities.yaml` has no entries
 - No GDD in `design/gdd/` covers the economy
 
@@ -134,7 +134,7 @@ Fixture defaults.
 **Fixture:**
 - `design/registry/entities.yaml` `constants:` lists `player_damage_base` with `value: 100`, `unit: damage`, `source: design/gdd/combat-system.md` (a registry constant carries a value, not a range)
 - `design/gdd/combat-system.md` still says `player_damage_base` range 100–130 (stale)
-- `assets/data/combat-balance.json` has `player_damage_base: 125`
+- `Assets/Settings/Data/combat-balance.json` has `player_damage_base: 125`
 
 **Input:** `/balance-check combat`
 
@@ -182,7 +182,7 @@ Fixture defaults.
 ### Case 6: Orphan Stat — A data value no GDD or registry defines
 
 **Fixture:**
-- `assets/data/combat-balance.json` holds 6 stats plus `legacy_armor_mult: 1.5`
+- `Assets/Settings/Data/combat-balance.json` holds 6 stats plus `legacy_armor_mult: 1.5`
 - `design/registry/entities.yaml` has no entries
 - `design/gdd/combat-system.md` gives a range for the 6 stats and nothing for `legacy_armor_mult`
 - The 6 stats are inside their ranges; no degenerate strategy exists

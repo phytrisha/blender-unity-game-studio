@@ -40,7 +40,7 @@ List top 3 from Phase 6 in priority order. If fewer than 3 remain, list only wha
 > - [ ] Accept ADRs: [list Proposed ADR IDs that must be Accepted]
 > - [ ] Write ADRs: [list ADR IDs that must still be written]
 > - [ ] Run `/architecture-review` — writes the review report and the traceability index (`docs/architecture/requirements-traceability.md`) the gate reads
-> - [ ] Run `/test-setup` — scaffolds `tests/unit/`, `tests/integration/`, CI workflow, and an example test file
+> - [ ] Run `/test-setup` — scaffolds `Assets/Tests/EditMode/`, `Assets/Tests/PlayMode/`, CI workflow, and an example test file
 > - [ ] Run `/ux-design` — creates `design/ux/interaction-patterns.md` and `design/accessibility-requirements.md`
 >
 > Run `/gate-check pre-production` when all boxes are checked.

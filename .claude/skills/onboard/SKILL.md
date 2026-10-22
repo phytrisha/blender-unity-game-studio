@@ -58,7 +58,7 @@ Read the relevant agent definition from `.claude/agents/` if a specific role is 
 
 ## Phase 2: Scan Relevant Area
 
-- For programmers: scan the code root (resolve per `.claude/docs/code-root-resolution.md`) for architecture, patterns, key files. An unresolved root means the scan did not run: the sections it feeds read `NOT ASSESSED — code root unresolved`, never a guess at `src/`
+- For programmers: scan the code root (resolve per `.claude/docs/code-root-resolution.md`) for architecture, patterns, key files. An unresolved root means the scan did not run: the sections it feeds read `NOT ASSESSED — code root unresolved`, never a guess
 - For designers: scan `design/` for existing design documents
 - For narrative: scan `design/narrative/` for world-building and story docs
 - For QA: scan `tests/` for existing test coverage (`/test-setup` creates it)

@@ -52,7 +52,7 @@ Search for localization anti-patterns:
 
 - Date/time formatting not using locale-aware functions
 - Number formatting without locale awareness (`1,000` vs `1.000`)
-- Text embedded in images or textures (flag asset files in `assets/`)
+- Text embedded in images or textures (flag asset files in `Assets/`)
 - Strings that assume left-to-right text direction (positional layout, string assembly order)
 - Gender/plurality assumptions baked into string logic (must use plural forms or gender tokens)
 - Hardcoded punctuation (e.g. `"You won!"` — exclamation styles vary by locale)
@@ -64,7 +64,7 @@ Report all findings with file paths and line numbers. This mode is read-only —
 ## Phase 2B: Extract Mode
 
 - Scan all source files for localized string references
-- Compare against the existing string table in `assets/data/strings/`
+- Compare against the existing string table in `Assets/Settings/Data/Strings/`
 - Generate new entries for strings not yet keyed
 - Suggest key names following the convention: `[category].[subcategory].[description]`
   - Example: `ui.hud.health_label`, `dialogue.npc.merchant.greeting`, `menu.main.play_button`
@@ -76,7 +76,7 @@ Report all findings with file paths and line numbers. This mode is read-only —
 
 Output a diff of new strings to add to the string table.
 
-Present the diff to the user. Ask: "May I write these new entries to `assets/data/strings/strings-en.json`?"
+Present the diff to the user. Ask: "May I write these new entries to `Assets/Settings/Data/Strings/strings-en.json`?"
 
 If yes, write only the diff (new entries), not a full replacement. Verdict: **COMPLETE** — strings extracted and written.
 
@@ -84,7 +84,7 @@ If yes, write only the diff (new entries), not a full replacement. Verdict: **CO
 
 ## Phase 2C: Validate Mode
 
-Read all string table files in `assets/data/strings/`. For each locale, check:
+Read all string table files in `Assets/Settings/Data/Strings/`. For each locale, check:
 
 - **Completeness** — key exists in source (en) but no translation for this locale
 - **Placeholder mismatches** — source has `{name}` but translation omits it or adds extras
@@ -116,7 +116,7 @@ String freeze: [Active / Not yet called / Lifted]
 
 > **Every cell above is a count you must take from the string table — including
 > the source row.** Do not pre-fill the source locale as `100%`: that asserts a
-> result before counting, and on a project with no `assets/data/strings/` it
+> result before counting, and on a project with no `Assets/Settings/Data/Strings/` it
 > produces a coverage report for a table that does not exist. If the string table
 > is absent, the whole status output is
 > **`NOT ASSESSED — no string table found`**, not a matrix of zeros with a
@@ -143,7 +143,7 @@ Read:
 - `design/gdd/` — extract game genre, tone, setting, character names. Read the
   GDDs by section: find the headings you need with the Grep tool (pattern `^#`,
   content mode) and Read those ranges with offset and limit.
-- `assets/data/strings/strings-en.json` — the source string table
+- `Assets/Settings/Data/Strings/strings-en.json` — the source string table
 - Any existing lore or narrative documents in `design/narrative/`
 
 Generate `production/localization/translator-brief-[locale]-[date].md`:
@@ -197,7 +197,7 @@ Ask: "May I write this translator brief to `production/localization/translator-b
 
 ## Phase 2F: Cultural Review Mode
 
-Spawn `localization-lead` via `Agent`. Ask them to audit the following for cultural sensitivity across the target locales (read from `assets/data/strings/` and `assets/`):
+Spawn `localization-lead` via `Agent`. Ask them to audit the following for cultural sensitivity across the target locales (read from `Assets/Settings/Data/Strings/` and `Assets/`):
 
 ### Content Areas to Review
 
@@ -249,9 +249,9 @@ Manage the voice-over localization process. Determine the sub-task from the argu
 
 ### VO Pipeline: Scan
 
-Read `assets/data/strings/` and `design/narrative/`. Identify:
+Read `Assets/Settings/Data/Strings/` and `design/narrative/`. Identify:
 - All dialogue lines (keys matching `dialogue.*`) with source text
-- Lines already recorded (audio file exists in `assets/audio/vo/`)
+- Lines already recorded (audio file exists in `Assets/Art/Audio/VO/`)
 - Lines not yet recorded
 
 Output a recording manifest:
@@ -278,14 +278,14 @@ Ask: "May I write the VO recording scripts to `production/localization/vo-script
 
 ### VO Pipeline: Validate
 
-Glob `assets/audio/vo/[locale]/` for all `.wav`/`.ogg` files. Cross-reference against the VO manifest. Report:
+Glob `Assets/Art/Audio/VO/[locale]/` for all `.wav`/`.ogg` files. Cross-reference against the VO manifest. Report:
 - Missing files (line in script, no audio file)
 - Extra files (audio file exists, no matching string key)
 - Naming convention violations
 
 ### VO Pipeline: Integrate
 
-Grep the code root for VO audio references. Verify each referenced path exists in `assets/audio/vo/[locale]/`. Report broken references.
+Grep the code root for VO audio references. Verify each referenced path exists in `Assets/Art/Audio/VO/[locale]/`. Report broken references.
 
 ---
 
@@ -297,7 +297,7 @@ just translating text. This mode validates the implementation.
 Determine the engine: read `engine.name` from `project.yaml`; if that key is absent or empty (including when `project.yaml` has no `engine:` block), fall back to `.claude/docs/technical-preferences.md`. Then check:
 
 **Layout mirroring**
-- Is RTL layout enabled in the engine? (Godot: `Control.layout_direction`, Unity: `RTL Support` package, Unreal: text direction flags)
+- Is RTL layout enabled in the engine? (Unity: `RTL Support` package)
 - Are all UI containers set to auto-mirror, or are positions hardcoded?
 - Do progress bars, health bars, and directional indicators mirror correctly?
 

@@ -13,7 +13,7 @@ alters a system's core rules is redirected to `/design-system` instead (verdict
 
 It then scans context (the relevant GDD in `design/gdd/`, the systems index if
 present, prior specs in `design/quick-specs/` — each named, whether it agrees or
-conflicts — and `assets/data/` for Tuning),
+conflicts — and `Assets/Settings/Data/` for Tuning),
 drafts the spec in the format for its category, presents it in full with
 Approve / Revise / redirect options, and on approval asks "May I write this
 Quick Design Spec to `design/quick-specs/[kebab-case-title]-[YYYY-MM-DD].md`?".
@@ -114,20 +114,20 @@ Fixture defaults.
 
 **Fixture:**
 - `design/gdd/player-controller.md` has a Tuning Knobs entry `jump_height` with documented range 3–5
-- `assets/data/player.json` holds `jump_height: 5`
+- `Assets/Settings/Data/player.json` holds `jump_height: 5`
 - An earlier quick spec, `design/quick-specs/jump-height-tuning-[earlier-date].md`, previously set `jump_height` to 5
 
 **Input:** `/quick-design increase jump height from 5 to 6 units`
 
 **Expected behavior:**
 1. The skill classifies the change as Tuning and confirms it
-2. The context scan also checks `assets/data/` for the data file holding the value, and names the prior quick spec that touched this parameter, marked as conflicting — it set the value this change replaces
+2. The context scan also checks `Assets/Settings/Data/` for the data file holding the value, and names the prior quick spec that touched this parameter, marked as conflicting — it set the value this change replaces
 3. The draft uses the Tuning format: a single Change table (Parameter, Old Value, New Value, Rationale), a Tuning Knob Mapping, and Acceptance Criteria
 4. The Tuning Knob Mapping states the new value is outside the documented range and explains why the range should be extended
-5. The acceptance criteria reference reading the value from `assets/data/[file]`
+5. The acceptance criteria reference reading the value from `Assets/Settings/Data/[file]`
 
 **Assertions:**
-- [ ] `assets/data/` is checked for the data file because the change is Tuning
+- [ ] `Assets/Settings/Data/` is checked for the data file because the change is Tuning
 - [ ] The prior quick spec touching `jump_height` is reported, not silently contradicted
 - [ ] The draft uses the single-table Tuning format, not the Tweak/Addition sections
 - [ ] The Tuning Knob Mapping says the value is outside the documented range and explains the extension

@@ -88,7 +88,7 @@ certification track.
 > so `0` means either "searched and found none" or "there was nothing to search",
 > and on a release gate those are opposite findings. Report
 > `scanned [N] source files: [M] TODO, [M] FIXME, [M] HACK` — or, when the code
-> root (`src/`, `Assets/` or `Source/`; resolve per
+> root (`Assets/`; resolve per
 > `.claude/docs/code-root-resolution.md`) is unresolved,
 > **`NOT ASSESSED — code root unresolved`**, and when it is absent or holds no
 > source files, **`NOT ASSESSED — no source files found to scan`**. A bare `0` is

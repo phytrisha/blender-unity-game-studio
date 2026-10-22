@@ -12,21 +12,18 @@ Before running anything, understand the environment:
    It compares what `project.yaml` declares against the real project file, the
    installed engine binary, and the files `commands.*` name. This runs first
    because two of its checks are about *this skill's own inputs*: a
-   `commands.test` naming a runner that does not exist, or a `commands.build`
-   naming an export preset with no `export_presets.cfg`, will fail here and read
-   as a broken build rather than as broken config.
+   `commands.test` or `commands.build` naming an editor or file that does not
+   exist will fail here and read as a broken build rather than as broken config.
 
    Report any `[DIFFERS]` lines in the report's Environment section. They do not
    by themselves decide the verdict -- but a smoke check run against a project
    whose declared engine is not the installed one is worth saying out loud.
 
 1. **Test framework check**: verify that **game** test files exist — not merely
-   that `tests/` does. Check the engine's **test root** (from step 3; the table
-   is in `.claude/docs/directory-structure.md` — Godot `tests/unit/` and
-   `tests/integration/`, Unity `Assets/Tests/`, Unreal
-   `Source/*/Private/Tests/`) and `tests/smoke/` for actual test files. A
-   **test file** is one the engine's test runner executes — a `*_test.gd` suite,
-   a C# test class, an Unreal automation test source. Markdown checklists do not
+   that `tests/` does. Check Unity's **test root** (`Assets/Tests/`, per
+   `.claude/docs/directory-structure.md`) and `tests/smoke/` for actual test
+   files. A **test file** is one Unity's test runner executes — a C# test class
+   under `Assets/Tests/`. Markdown checklists do not
    count: `/test-setup` always writes `tests/smoke/critical-paths.md`, and
    counting it would hide exactly the zero-test state this step exists to catch.
    If none are found **at `qa.level: minimal`**, tests are waived at this level:
@@ -50,8 +47,8 @@ Before running anything, understand the environment:
    > improvement either — the honest result is the one that names what could not
    > be established.
 
-   > **Do not gate on `tests/` existing.** `/test-setup` creates `tests/unit/`
-   > and `tests/integration/` with placeholder files, so the directory tree is
+   > **Do not gate on the test folders existing.** `/test-setup` creates
+   > `Assets/Tests/EditMode/` and `Assets/Tests/PlayMode/` with placeholder files, so the directory tree is
    > present on any project that ran setup — whether or not a single game test
    > was ever written. Count actual test files instead; gated on the directory,
    > a project with no build and zero game tests passes this step.
@@ -62,21 +59,17 @@ Before running anything, understand the environment:
 3. **Engine detection**: read `engine.name` from `project.yaml`; if that key
    is absent or empty (including when `project.yaml` has no `engine:` block),
    fall back to the `Engine:` value in `.claude/docs/technical-preferences.md`
-   (a `[TO BE CONFIGURED]` value means not configured). Store this for test
-   command selection in Phase 2.
+   (a `[TO BE CONFIGURED]` value means not configured). Store this for Phase 2
+   (anything other than Unity is reported there as unsupported).
 
-   Then find the **editor executable** — none of the three engines installs
-   onto `PATH` by default on Windows or macOS, so a bare `godot` that does not
-   resolve says nothing about whether the engine is installed. Take the first
-   that resolves (the file exists, or `command -v` finds it): the executable
-   `commands.test` names (its quoted path or first word; on Godot, only when its
-   file name says godot, since a wrapper such as `bash run-tests.sh` is not the
-   editor), else the editor
-   `engine.path` records, else the engine's name on `PATH` (`godot`). Use it
-   wherever Phase 2 writes `godot` or `"<Unity editor>"`, quoting a path with a
-   space; on Unreal, `<UE root>` is `engine.path`. If none resolves, the test
-   runner is not available (Phase 2) — on Godot,
-   `NOT ASSESSED — Godot executable not found (commands.test, engine.path, PATH)`.
+   Then find the **editor executable** — the Unity editor is not on `PATH` by
+   default on Windows or macOS (and a bare `Unity` on `PATH` may be Unity's
+   separate CLI). Take the first that resolves (the file exists): the editor
+   `commands.test` names (its quoted path), else the editor `engine.path`
+   records, else the Hub folder for `engine.version`. Use it wherever Phase 2
+   writes `"<Unity editor>"`, quoting a path with a space. If none resolves, the
+   test runner is not available (Phase 2) —
+   `NOT ASSESSED — Unity editor not found (commands.test, engine.path, Hub folder)`.
 
 4. **Smoke test list**: check whether `production/qa/smoke-tests.md` or
    `tests/smoke/` exists. If a smoke test list is found, load it for use in

@@ -66,11 +66,11 @@ Fixture defaults.
 ### Case 1: Configured Stage Matches the Artifacts
 
 **Fixture:**
-- `project.yaml` has `project.stage: Production` and `engine.name: Godot`
-- `src/` has 24 source files; `design/gdd/` has 4 GDDs and `systems-index.md`,
+- `project.yaml` has `project.stage: Production` and `engine.name: Unity`
+- `Assets/` has 24 source files; `design/gdd/` has 4 GDDs and `systems-index.md`,
   one GDD per indexed system
 - `docs/architecture/` has `architecture.md` and 5 ADRs; `design/art/art-bible.md`
-  and the UX specs exist; `tests/unit/` holds tests for each system — no doc type
+  and the UX specs exist; `Assets/Tests/EditMode/` holds tests for each system — no doc type
   the `full` tier flags is missing, so there is no gap to weigh
 - `production/sprints/sprint-002.md` exists
 - Resolved workflow tier: `full`
@@ -98,7 +98,7 @@ Fixture defaults.
 
 **Fixture:**
 - No `project.stage` in `project.yaml` and no `production/stage.txt`
-- `engine.name: Godot`; `src/` has 14 source files
+- `engine.name: Unity`; `Assets/` has 14 source files
 - `design/gdd/` has 3 GDDs; `docs/architecture/` has no ADRs
 - Resolved workflow tier: `full`
 
@@ -125,7 +125,7 @@ Fixture defaults.
 
 **Fixture:**
 - `project.yaml` has `project.stage: Release`
-- `engine.name: Godot`; `src/` has 2 source files; no ADRs, no architecture
+- `engine.name: Unity`; `Assets/` has 2 source files; no ADRs, no architecture
   doc, no epics
 - Resolved workflow tier: `full`
 
@@ -154,7 +154,7 @@ Fixture defaults.
 - Resolved workflow tier: `minimal`
 - `project.yaml` has `project.stage: Concept`, as `/start` wrote it — nothing on
   the minimal path runs `/gate-check`, so it has never advanced
-- `design/game-brief.md` exists; `engine.name: Godot`; `src/` has 5 source files
+- `design/game-brief.md` exists; `engine.name: Unity`; `Assets/` has 5 source files
 - No GDDs, no art bible, no ADRs, no epics, no sprint plans
 
 **Input:** `/project-stage-detect`
@@ -211,7 +211,7 @@ Fixture defaults.
 - No `project.stage`, no `production/stage.txt`
 - `project.yaml` has no `engine.name`; `.claude/docs/technical-preferences.md`
   reads `[TO BE CONFIGURED]`
-- Both `src/` and `Assets/` exist, each holding source files (ambiguous tree)
+- No `Assets/` folder exists; the C# scripts sit in a top-level `scripts/` folder that is not a code root
 - `design/gdd/game-concept.md` and `design/gdd/systems-index.md` exist, with a
   GDD for every indexed system; `docs/architecture/` holds the Foundation-layer
   ADRs — nothing the `standard` tier flags is missing
@@ -220,7 +220,7 @@ Fixture defaults.
 **Input:** `/project-stage-detect`
 
 **Expected behavior:**
-1. The code root cannot be resolved (no engine, two candidate roots), so the
+1. The code root cannot be resolved (no engine, no `Assets/`), so the
    source-file count does not run
 2. The Source Code section reads `NOT ASSESSED — code root unresolved` — not
    "0 source files", and the project is not called greenfield
@@ -230,12 +230,12 @@ Fixture defaults.
    silently on the lower stage
 4. No stage is configured and there are no gaps, so nothing ranks above it:
    Stage Confidence is **NOT ASSESSED**, naming the unresolved code root. The
-   two candidate roots are the reason the check could not run, not an
-   ambiguous signal (CONCERNS)
+   missing root is the reason the check could not run, not an ambiguous
+   signal (CONCERNS)
 
 **Assertions:**
 - [ ] No source-file count of zero is reported; the Source Code line is `NOT ASSESSED — code root unresolved`
-- [ ] The code root is not assumed to be `src/`
+- [ ] The code root is not assumed — neither `Assets/` nor the folder the scripts happen to sit in
 - [ ] Stage Confidence is NOT ASSESSED and names the check that did not run — not PASS
 - [ ] The report is still offered behind the "May I write" ask
 
@@ -245,23 +245,23 @@ Fixture defaults.
 
 **Fixture:**
 - Resolved workflow tier: `minimal`
-- No `project.stage` and no `production/stage.txt`; `engine.name: Godot` (code root `src/`)
+- No `project.stage` and no `production/stage.txt`; `engine.name: Unity` (code root `Assets/`)
 - No `design/game-brief.md`, no `design/gdd/` files, no sprint plans
-- Scenario (a): `src/` has 14 source files
-- Scenario (b): `src/` has 3 source files
+- Scenario (a): `Assets/` has 14 source files
+- Scenario (b): `Assets/` has 3 source files
 
 **Input:** `/project-stage-detect`
 
 **Expected behavior:**
 1. Skill uses the resolved tier `minimal`; the absent GDDs, ADRs, epics and sprint plans are still not gaps
 2. The absent `design/game-brief.md` is reported, and the Follow-Up Actions address it
-3. (a) The code root already holds the game (10 or more source files), so the follow-up is `/reverse-document design src/` — the brief is written from what is built — and not `/brainstorm`
+3. (a) The code root already holds the game (10 or more source files), so the follow-up is `/reverse-document design Assets/` — the brief is written from what is built — and not `/brainstorm`
 4. (b) With little code the follow-up is `/brainstorm`, not `/reverse-document`
 5. In both, `/sprint-plan` is not suggested; the report is offered behind the "May I write" ask
 
 **Assertions:**
 - [ ] The missing game brief is reported at `minimal`
-- [ ] (a) `/reverse-document design <code root>` is suggested, naming the resolved code root (`src/`), and `/brainstorm` is not
+- [ ] (a) `/reverse-document design <code root>` is suggested, naming the resolved code root (`Assets/`), and `/brainstorm` is not
 - [ ] (b) `/brainstorm` is suggested and `/reverse-document` is not
 - [ ] The suggestion in both scenarios is conditioned on the source-file count (10 or more), as counted in the resolved code root
 - [ ] No GDD, ADR, epic or sprint-plan gap is reported, and `/sprint-plan` is not suggested

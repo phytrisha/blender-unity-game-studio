@@ -187,7 +187,7 @@ trigger it? How does the game communicate that they have succeeded?]
 > For each lever, the GDD that owns it should be cross-referenced.
 >
 > "Current setting" is the design intent at the time of writing — implementation
-> values live in `assets/data/`. The tuning range is the safe operating range:
+> values live in `Assets/Settings/Data/`. The tuning range is the safe operating range:
 > values outside this range reliably break the intended experience.
 
 | Lever | Phase(s) | Effect | Current Setting | Tuning Range | Notes |

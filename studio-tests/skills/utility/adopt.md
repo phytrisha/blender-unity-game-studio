@@ -182,7 +182,7 @@ Fixture defaults.
 **Fixture:**
 - Repository has no files in `design/gdd/`, `docs/architecture/`, `production/epics/`
 - No `project.stage` in `project.yaml` and no `production/stage.txt`
-- No source code: none of `src/`, `Assets/` or `Source/` exists
+- No source code: no `Assets/` folder exists
 - No game-concept.md, no game-brief.md, no systems-index.md
 
 **Input:** `/adopt`
@@ -240,7 +240,7 @@ Fixture defaults.
 **Fixture:**
 - No `project.yaml` at the repo root
 - `production/stage.txt` reads `Production`; `.claude/docs/technical-preferences.md`
-  has `- **Engine**: Godot 4.6` and a filled naming section
+  has `- **Engine**: Unity 6.3 LTS` and a filled naming section
 - `design/gdd/` holds GDDs; no `production/migration-report.md`
 
 **Input:** `/adopt`

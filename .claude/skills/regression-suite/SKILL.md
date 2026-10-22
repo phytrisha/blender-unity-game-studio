@@ -90,9 +90,9 @@ If it does not exist: note "No regression suite found — will create one."
 
 Glob all test files:
 ```
-tests/unit/**/*_test.*
-tests/integration/**/*_test.*
-tests/regression/**/*
+Assets/Tests/EditMode/**/*Tests.cs
+Assets/Tests/PlayMode/**/*Tests.cs
+Assets/Tests/**/Regression/**/*.cs
 ```
 
 For each file, note the system (from directory path) and file name.
@@ -144,7 +144,7 @@ against those smoke paths and skip the GDD-criterion loop below.)
 
 For each GDD acceptance criterion, determine whether a test exists:
 
-1. Grep `tests/unit/[system]/` and `tests/integration/[system]/` for file names
+1. Grep `Assets/Tests/EditMode/[System]/` and `Assets/Tests/PlayMode/[System]/` for file names
    and function names related to the criterion's key noun/verb
 2. Assign coverage:
 
@@ -165,7 +165,7 @@ For each GDD acceptance criterion, determine whether a test exists:
 For each closed bug:
 
 1. Extract the system slug from the bug's metadata
-2. Grep `tests/unit/[system]/` and `tests/integration/[system]/` for a test
+2. Grep `Assets/Tests/EditMode/[System]/` and `Assets/Tests/PlayMode/[System]/` for a test
    that references the bug ID or the specific failure scenario
 3. Assign:
    - **HAS REGRESSION TEST** — a test was found that would catch this bug
@@ -173,7 +173,7 @@ For each closed bug:
 
 For MISSING REGRESSION TEST items:
 - Flag them as regression gaps
-- Suggest the test file path: `tests/unit/[system]/[bug-slug]_regression_test.[ext]`
+- Suggest the test file path: `Assets/Tests/EditMode/[System]/[BugSlug]RegressionTests.cs`
 - Note: "Without this test, this bug can silently return in a future sprint."
 
 ---
@@ -223,8 +223,8 @@ Check for drift indicators:
 ### Recommended New Regression Tests
 | Priority | System | Suggested Test File | Covers |
 |----------|--------|---------------------|--------|
-| HIGH | [system] | `tests/unit/[system]/[slug]_regression_test.[ext]` | BUG-NNNN / AC-[N] |
-| MEDIUM | [system] | `tests/unit/[system]/[slug]_test.[ext]` | [criterion] |
+| HIGH | [system] | `Assets/Tests/EditMode/[System]/[Slug]RegressionTests.cs` | BUG-NNNN / AC-[N] |
+| MEDIUM | [system] | `Assets/Tests/EditMode/[System]/[Slug]Tests.cs` | [criterion] |
 ```
 
 ### Suite manifest format (`tests/regression-suite.md`)
@@ -263,7 +263,7 @@ of which tests should always pass before a release:
 
 | Test File | Test Function (if known) | Covers | Added |
 |-----------|--------------------------|--------|-------|
-| `tests/unit/[system]/[file]_test.[ext]` | `test_[scenario]` | AC-N / BUG-NNNN | [date] |
+| `Assets/Tests/EditMode/[System]/[File]Tests.cs` | `[Scenario]_[Expected]` | AC-N / BUG-NNNN | [date] |
 
 ## Known Gaps
 
@@ -271,7 +271,7 @@ Tests that should exist but don't yet:
 
 | Priority | System | Suggested Path | Covers | Reason Not Yet Written |
 |----------|--------|----------------|--------|------------------------|
-| HIGH | [system] | `tests/unit/[system]/[path]` | BUG-NNNN | Bug fixed without test |
+| HIGH | [system] | `Assets/Tests/EditMode/[System]/[path]` | BUG-NNNN | Bug fixed without test |
 
 ## Quarantined Tests
 

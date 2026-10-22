@@ -393,7 +393,7 @@ if [ -n "$TEST_COV" ] && ! is_num "$TEST_COV"; then
 fi
 
 # v1.0 /setup-engine wrote every specialist line as `agent-name (what it covers)`,
-# and the Unreal code line as `a-specialist (Blueprint) or b-specialist (C++)`.
+# and some lines as `a-specialist (one area) or b-specialist (another)`.
 # Skills pass `specialists.*` straight to the Agent tool as a subagent_type, so
 # anything but the bare agent name is an agent that does not exist. Keep the
 # first agent name per entry; the prose goes to the report, not the yaml.
@@ -514,8 +514,8 @@ yaml_list() {
   #
   # Splits on top-level commas ONLY -- a comma inside parentheses stays part of
   # its element. These values come from a hand-written document, so an entry is
-  # routinely prose: `ue-gas-specialist (abilities, effects)` is ONE specialist,
-  # not two, and splitting it produced entries like `attributes` that read as
+  # routinely prose: `unity-dots-specialist (ECS, jobs)` is ONE specialist,
+  # not two, and splitting it produced entries like `jobs)` that read as
   # real agent names. Every element is quoted for the same reason: prose carries
   # colons, dashes and brackets, all of which make a bare YAML scalar ambiguous
   # or invalid.

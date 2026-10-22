@@ -12,7 +12,7 @@ recommendation pre-stated), presents a 3–5 bullet plan, asks to record it as a
 checkpoint in `production/session-state/active.md`, then asks "May I create the prototype
 directory at `prototypes/[concept-name]-concept/` and begin implementation?".
 Every prototype file starts with a `PROTOTYPE - NOT FOR PRODUCTION` header in
-that file's own comment syntax (`#` in GDScript and Python, `//` in C#, C++ and
+that file's own comment syntax (`#` in Python and shell, `//` in C#, C++ and
 JavaScript, `<!-- -->` in HTML and Markdown), and standards are intentionally
 relaxed.
 
@@ -79,7 +79,7 @@ Fixture defaults.
 
 **Fixture:**
 - `design/gdd/game-concept.md` describes a 2D platformer; `project.yaml` has
-  `engine.name: Godot` and `engine.language: GDScript`
+  `engine.name: Unity` and `engine.language: C#`
 - `prototypes/` has no `grapple-hook-concept/`
 - Review mode: `solo`; `modes.workflow: standard` (pinned: unset resolves to
   minimal, which routes PROCEED to `/create-stories` and `/dev-story` instead of
@@ -97,9 +97,9 @@ Fixture defaults.
 4. Plan is presented and confirmed, with the ask naming
    `production/session-state/active.md`; the checkpoint is written there
 5. Skill asks "May I create the prototype directory at
-   `prototypes/grapple-hook-concept/` and begin implementation?"; every GDScript
-   file it writes starts with `# PROTOTYPE - NOT FOR PRODUCTION` (GDScript
-   comments use `#`; a `//` header would not parse)
+   `prototypes/grapple-hook-concept/` and begin implementation?"; every C#
+   file it writes starts with `// PROTOTYPE - NOT FOR PRODUCTION` (in C# a `#`
+   line is a preprocessor directive; a `#` header would not compile)
 6. Debrief questions are asked one at a time; report drafted from
    `.claude/docs/templates/prototype-report.md`; "May I write this report to
    `prototypes/grapple-hook-concept/REPORT.md` and add its row to
@@ -111,7 +111,7 @@ Fixture defaults.
 - [ ] The hypothesis is falsifiable, with a measurable signal
 - [ ] Engine is recommended in the path prompt before the user chooses
 - [ ] The directory ask names `prototypes/grapple-hook-concept/` and comes before any prototype file is written
-- [ ] Every prototype script carries the `PROTOTYPE - NOT FOR PRODUCTION` header as a `#` comment, never `//`; no file is written under the code root
+- [ ] Every prototype script carries the `PROTOTYPE - NOT FOR PRODUCTION` header as a `//` comment, never `#`; no file is written under the code root `Assets/`
 - [ ] REPORT.md is written only after its ask, that ask also names `prototypes/index.md`, and the index gains a row with verdict PROCEED
 - [ ] PROCEED next steps include `/map-systems` and `/design-system`
 

@@ -55,17 +55,8 @@ ls -t .github/ 2>/dev/null
 ls -t test-results/ 2>/dev/null
 ```
 
-For Godot projects: GdUnit4 outputs XML results compatible with JUnit format,
-under `reports/` (its default report folder, `res://reports/`). Check `reports/`,
-and any `test-results/` you saved runs into, for `.xml` files.
-
-For Unity projects: game-ci test runner outputs NUnit XML to `test-results/`
-by default.
-
-For Unreal projects: automation logs go to `Saved/Logs/`. Grep for
-`Result={Success}` and `Result={Fail}` — each test prints
-`Test Completed. Result={<status>}`
-(`docs/engine-reference/unreal/current-best-practices.md`, "Command Line").
+Unity: the game-ci test runner outputs NUnit XML to `test-results/` by
+default; local `-runTests` runs write the `-testResults` file you named.
 
 ### Option B — Local log files
 
@@ -89,11 +80,6 @@ Stop and ask the user which option to pursue.
 
 For each CI log or result file found, parse:
 
-**JUnit XML format** (GdUnit4):
-- Grep for `<testcase name=` to get test names
-- Grep for `<failure` or `<error` to identify failures
-- Parse `classname` and `name` attributes for full test identifiers
-
 **NUnit XML format** (Unity — the file whose `<test-run>` element `/smoke-check`
 reads):
 - Each test is a `<test-case` element; its `fullname` attribute is the identifier
@@ -103,8 +89,6 @@ reads):
 
 **Plain text logs**:
 - Grep for pass/fail patterns:
-  - Godot: `PASSED` / `FAILED` adjacent to test names
-  - Unreal: `Result={Success}` / `Result={Fail}`
   - Unity: `Test passed` / `Test failed`
 
 Build a table: `test_id → [run1_result, run2_result, run3_result, ...]`
@@ -135,13 +119,13 @@ For each flaky test, classify the likely cause:
 |-------|----------|---------------|
 | **Timing / async** | Fails after awaiting signals or timers; pass rate correlates with system load | Add explicit await/synchronisation; avoid time-based delays |
 | **Order dependency** | Fails when run after specific other tests; passes in isolation | Add proper setup/teardown; ensure test isolation |
-| **Random seed** | Fails intermittently with no pattern; involves RNG | Pass explicit seed; don't use `randf()` in tests |
-| **Resource leak** | Fails more often later in a test run | Fix cleanup in teardown; check orphan nodes (Godot) or object disposal (Unity) |
+| **Random seed** | Fails intermittently with no pattern; involves RNG | Pass explicit seed; don't use unseeded `UnityEngine.Random` in tests |
+| **Resource leak** | Fails more often later in a test run | Fix cleanup in teardown; check object disposal (`Object.DestroyImmediate` in teardown) |
 | **External state** | Fails when a file, scene, or global exists from a prior test | Isolate test from file system; use in-memory mocks |
-| **Floating point** | Fails on comparisons like `== 0.5` | Use epsilon comparison (`is_equal_approx`, `Assert.AreApproximately`) |
-| **Scene/prefab load race** | Fails when scenes are not yet ready | Await one frame after instantiation; use `await get_tree().process_frame` |
+| **Floating point** | Fails on comparisons like `== 0.5` | Use epsilon comparison (`Assert.AreApproximately`, NUnit `Is.EqualTo(x).Within(eps)`) |
+| **Scene/prefab load race** | Fails when scenes are not yet ready | Wait one frame after instantiation (`yield return null` in a `[UnityTest]`) |
 
-Use Grep to check the test file for timing calls, randf, global state access,
+Use Grep to check the test file for timing calls, `Random`, global state access,
 or equality comparisons on floats to narrow down the cause.
 
 ---
@@ -155,20 +139,8 @@ For each flaky test:
 > log it in the `tests/regression-suite.md` quarantine section, and fix the root
 > cause before removing quarantine."
 
-Skip mechanisms, by engine — name only the one for the project's engine:
-- **Godot (gdUnit4), GDScript**: a skip parameter on the test function —
-  `func test_x(_do_skip := true, _skip_reason := "flaky: [cause]")`. gdUnit4 reads
-  the argument names `do_skip` and `skip_reason` (a leading `_` is allowed) in
-  `addons/gdUnit4/src/core/GdUnitTestSuiteScanner.gd`, as of gdUnit4 6.2.2;
-  confirm them there for the installed version.
-- **Godot (gdUnit4), C#**: **NOT SOURCEABLE** — gdUnit4's C# test attributes are
-  not in the `addons/gdUnit4/` source, and `docs/engine-reference/godot/` does not
-  cover them. Log it in the quarantine section and ask the user how their C#
-  tests are skipped; do not invent an attribute.
-- **Unity (NUnit)**: `[Ignore("flaky: [cause]")]` — NUnit 3 requires the reason
-- **Unreal**: **NOT SOURCEABLE** — `docs/engine-reference/unreal/` documents no way
-  to skip an automation test. Log it in the quarantine section and ask the user
-  how their CI excludes a test; do not invent a flag.
+Skip mechanism (Unity Test Framework / NUnit): `[Ignore("flaky: [cause]")]` —
+NUnit 3 requires the reason.
 
 **Investigate and fix soon (Moderate):**
 > "This test is intermittently unreliable. Root cause appears to be [cause].

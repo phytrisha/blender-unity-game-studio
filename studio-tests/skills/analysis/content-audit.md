@@ -8,9 +8,9 @@ for systems and their MVP/priority tier, takes the planned named content from th
 `entities:` and `items:` sections of `design/registry/entities.yaml` when the
 registry has entries, and pre-scans GDDs with two greps (Summary presence and
 digit-plus-content-noun counts) before full-reading only the GDDs it needs
-(Phase 1). It then globs the implementation directories for each content type —
-`assets/data/**/enemies/**`, `assets/data/**/items/**`, scene files under the
-resolved code root, and so on (Phase 2) — and produces a gap table
+(Phase 1). It then globs the implementation directories for each content type
+under `Assets/` — `Assets/**/Enemies/**`, `Assets/**/Items/**` (both cases),
+`*.unity` scene files, and so on (Phase 2) — and produces a gap table
 `System | Content Type | Specified | Found | Gap | Status` with per-row Status
 COMPLETE / IN PROGRESS / EARLY / NOT STARTED, HIGH PRIORITY flags, and a summary
 line (Phase 3). The full report is written to `docs/content-audit-[YYYY-MM-DD].md`
@@ -61,15 +61,15 @@ Fixture defaults.
 - `design/registry/entities.yaml` has no entries
 - `design/gdd/enemies.md` specifies "4 enemy types: Grunt, Sniper, Tank, Boss"
 - `design/gdd/items.md` specifies "3 items"
-- `assets/data/enemies/` contains `grunt.json`, `sniper.json`, `tank.json`, `boss.json`
-- `assets/data/items/` contains 3 item `.json` files
+- `Assets/Settings/Data/Enemies/` contains `Grunt.asset`, `Sniper.asset`, `Tank.asset`, `Boss.asset`
+- `Assets/Settings/Data/Items/` contains 3 item `.asset` files
 
 **Input:** `/content-audit`
 
 **Expected behavior:**
 1. Skill reads the systems index; the empty registry is skipped and the GDD scan is used
 2. The pre-scan greps find both GDDs declare content counts; both are full-read
-3. Skill globs `assets/data/**/enemies/**` and `assets/data/**/items/**`
+3. Skill globs `Assets/**/enemies/**`, `Assets/**/Enemies/**`, `Assets/**/items/**`, `Assets/**/Items/**` and `Assets/**/*Item*.asset`
 4. Gap table: Enemies — Specified 4, Found 4, Gap 0, COMPLETE; Items — Specified 3, Found 3, Gap 0, COMPLETE
 5. Summary line: 7 specified, 7 found, overall gap 0%
 6. Skill presents the table and asks "May I write the full report to `docs/content-audit-[YYYY-MM-DD].md`?"
@@ -90,7 +90,7 @@ Fixture defaults.
 - `modes.workflow` resolves to `full`
 - `design/gdd/systems-index.md` tags Enemies as MVP
 - `design/gdd/enemies.md` specifies "3 enemy types: Grunt, Sniper, Boss"
-- `assets/data/enemies/` contains only `grunt.json`
+- `Assets/Settings/Data/Enemies/` contains only `Grunt.asset`
 
 **Input:** `/content-audit enemies`
 
@@ -164,7 +164,7 @@ Fixture defaults.
 **Fixture:**
 - `modes.workflow` resolves to `full`
 - `design/gdd/systems-index.md` lists Enemies and Quests
-- `design/gdd/enemies.md` has a `## Summary` and specifies "3 enemy types: Grunt, Sniper, Boss"; `assets/data/enemies/` has all 3
+- `design/gdd/enemies.md` has a `## Summary` and specifies "3 enemy types: Grunt, Sniper, Boss"; `Assets/Settings/Data/Enemies/` has all 3
 - `design/gdd/quests.md` has no `## Summary` section and says the game has "a handful of side quests" with no number or named list
 - User answers yes to the report write
 
@@ -216,7 +216,7 @@ Fixture defaults.
 - `modes.workflow` resolves to `standard`
 - `design/gdd/systems-index.md` lists Enemies (MVP)
 - `design/gdd/enemies.md` `## Detailed Design` specifies "3 enemy types: Grunt, Sniper, Boss"; its `## Tuning Knobs` section mentions "2 elite variants"
-- `assets/data/enemies/` contains `grunt.json`, `sniper.json`, `boss.json`
+- `Assets/Settings/Data/Enemies/` contains `Grunt.asset`, `Sniper.asset`, `Boss.asset`
 
 **Input:** `/content-audit`
 
@@ -256,22 +256,22 @@ Fixture defaults.
 
 **Fixture:**
 - `modes.workflow` resolves to `full`
-- `project.yaml` has no `engine.name`; `.claude/docs/technical-preferences.md` reads `[TO BE CONFIGURED]`; both `src/` and `Source/` exist, so the tree does not decide the root
+- `project.yaml` has no `engine.name`; `.claude/docs/technical-preferences.md` reads `[TO BE CONFIGURED]`; there is no `Assets/` folder, so the tree does not decide the root
 - `design/gdd/systems-index.md` lists Levels (MVP) and Enemies (MVP)
 - `design/gdd/levels.md` specifies "6 levels"; `design/gdd/enemies.md` specifies "3 enemy types: Grunt, Sniper, Boss"
-- `assets/data/enemies/` contains 3 enemy files; no scene files exist under `assets/`
+- A top-level `data/enemies/` folder (not a code root) contains 3 enemy files
 
 **Input:** `/content-audit`
 
 **Expected behavior:**
-1. Enemies is audited from `assets/data/`: Specified 3, Found 3, COMPLETE
-2. The level scan needs the code root, which is unresolved: the Levels row's Found is `NOT ASSESSED — code root unresolved` — not 0, and its Status is not NOT STARTED
-3. Levels gets no HIGH PRIORITY flag and stays out of both summary totals; the summary names it
+1. Every content scan needs the code root, which is unresolved: the Levels and Enemies rows' Found is `NOT ASSESSED — code root unresolved` — not 0, and their Status is not NOT STARTED
+2. The `data/enemies/` folder is not scanned on a guess
+3. Neither row gets a HIGH PRIORITY flag and both stay out of the summary totals; the summary names them
 4. The run closes `Verdict: NOT ASSESSED — NO DATA`, naming the unresolved code root
 
 **Assertions:**
-- [ ] The Levels row reads `NOT ASSESSED — code root unresolved`, never Found 0 or NOT STARTED
-- [ ] The summary totals leave Levels out and say so
+- [ ] The Levels and Enemies rows read `NOT ASSESSED — code root unresolved`, never Found 0 or NOT STARTED
+- [ ] The summary totals leave both rows out and say so
 - [ ] Verdict is NOT ASSESSED, not COMPLETE
 
 ---
@@ -286,7 +286,7 @@ Fixture defaults.
 - [ ] Writes only after "May I write" and only to `docs/content-audit-[YYYY-MM-DD].md`; `--summary` writes nothing
 - [ ] A missing required input, a scope with no counts, or an untaken Found count yields `NOT ASSESSED — NO DATA`, never a computed gap percentage or COMPLETE
 - [ ] No director gates are invoked
-- [ ] On Unity, every content glob also runs under `Assets/` without a `data/` segment (e.g. `Assets/**/Items/**`, `*Item*.asset`) — a Unity project's items, abilities, quests and dialogue are never reported NOT STARTED from an `assets/data/`-only scan
+- [ ] Every content glob runs under `Assets/` without a `data/` segment, in both folder cases (e.g. `Assets/**/Items/**`, `*Item*.asset`) — a project's items, abilities, quests and dialogue are never reported NOT STARTED from a `data/`-only scan
 
 ---
 
@@ -296,8 +296,6 @@ Fixture defaults.
   `/content-audit` without `--summary` to write the full report.") is not given
   its own case.
 - Unity levels are found under the code root (`Assets/`, `*.unity`) and the
-  other content types under `Assets/` (asserted in Protocol Compliance); Unreal
-  levels under `Content/` (`*.umap`, with data assets as `*.uasset`); neither
-  engine has its own case.
+  other content types under `Assets/` (asserted in Protocol Compliance).
 - Asset naming, size and format compliance is `/asset-audit`'s job, not this
   skill's.

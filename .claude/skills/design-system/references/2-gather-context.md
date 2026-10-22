@@ -186,7 +186,7 @@ which you picked.
   > **This is not a rare branch.** The domain table above names `Scripting` and
   > `Core` for five of the nine categories (`Narrative`, `Progression`, `Economy`
   > → Scripting; `Persistence`, `Meta` → Core), plus a sub-row each under
-  > `Gameplay` and `Core`. The Godot reference ships `animation, audio, input,
+  > `Gameplay` and `Core`. The Unity reference ships `animation, audio, input,
   > navigation, networking, physics, rendering, ui` — **there is no
   > `scripting.md` and no `core.md`**. So the majority of non-`Gameplay` systems
   > hit the absent branch every time: report it every time.

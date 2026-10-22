@@ -109,14 +109,12 @@ For each story, find the evidence. **Check the story's stated evidence path firs
 — the one Section 2 captured from its `## Test Evidence` section. If it exists, use
 it. Fall back to searching only when no path is stated or it is not found:
 
-**Logic stories**: search the engine's unit-test root — `tests/unit/[system]/`
-(Godot), `Assets/Tests/EditMode/` (Unity), `Source/<Module>/Private/Tests/`
-(Unreal); see `.claude/docs/directory-structure.md` — for a file whose name
+**Logic stories**: search Unity's unit-test root — `Assets/Tests/EditMode/`;
+see `.claude/docs/directory-structure.md` — for a file whose name
 contains the story slug or its system. Test files are named per
 `.claude/rules/test-standards.md`, not necessarily `[story-slug]_test.*`.
 
-**Integration stories**: the same, under the integration root (`tests/integration/[system]/`,
-`Assets/Tests/PlayMode/`, or Unreal's test root)
+**Integration stories**: the same, under the integration root (`Assets/Tests/PlayMode/`)
   - Also check `production/qa/playtests/` for playtest records mentioning the story
 
 **Visual/Feel and UI stories**: Glob `production/qa/evidence/` for a retained image
@@ -162,9 +160,7 @@ Heuristics:
 ### Naming quality
 
 Test function names should describe: the scenario + the expected result.
-Pattern per engine (`.claude/rules/test-standards.md`): Godot
-`test_[scenario]_[expected]`, Unity `[Scenario]_[Expected]`, Unreal
-`<Project>.[System].[Scenario]`.
+Pattern (`.claude/rules/test-standards.md`): `[Scenario]_[Expected]`.
 
 Flag functions named generically (`test_1`, `test_run`, `testBasic`) as
 **naming issues** — they make failures harder to diagnose.

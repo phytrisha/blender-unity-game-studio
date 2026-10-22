@@ -22,8 +22,9 @@
 #                   entities.yaml's entities and items sections, read through
 #                   registry.sh, deprecated ones left out
 #   found [--engine E] [--files]
-#                   content files on disk for the engine (godot, unity or
-#                   unreal; default: engine.name as project-state.sh reads it)
+#                   content files on disk for the engine (unity, the only
+#                   engine this studio supports; default: engine.name as
+#                   project-state.sh reads it)
 #   band FOUND SPECIFIED
 #                   the percentage and status band of one pair
 #   gap             rows `system<TAB>type<TAB>specified<TAB>found` on stdin:
@@ -42,19 +43,11 @@
 # truncated, not rounded, to one decimal, so a printed value never sits on the
 # far side of a band edge (99.96% prints 99.9, never 100.0).
 #
-# Where `found` looks, per engine (the skill's Phase 2 globs, with the engine
-# rules it gives): assets/ and
-#   godot   src/            levels and characters only; no data/ needed under src/
-#   unity   Assets/         every type; no data/ segment needed
-#   unreal  Content/        every type; no data/ segment needed (Source/ holds
-#                           C++ only and is not searched)
-# A root is looked for by its exact name, so Assets/ and assets/ are two roots
-# even on a case-insensitive disk. Each root is printed present or absent.
-# Under assets/ the four data types (characters, items, abilities, quests)
-# need a data/ folder as the first folder, as the skill's assets/data/** globs
-# do; levels and dialogue do not.
-#   levels      the engine's scene files: .tscn, .unity, .umap (one extension
-#               per engine, not all three); by levels counts them in folders
+# Where `found` looks (the skill's Phase 2 globs, with the Unity rules it
+# gives): Assets/, every type, no data/ segment needed. The root is looked for
+# by its exact name (a lowercase assets/ does not count, even on a
+# case-insensitive disk) and printed present or absent.
+#   levels      Unity scene files (.unity); by levels counts them in folders
 #               named levels, areas, maps, worlds or stages. A UI scene counts
 #               too, as the skill says to count every match.
 #   characters  folders enemies, characters, npcs (npcs: the skill's heading
@@ -63,11 +56,10 @@
 #               *Item*.asset (by items *Item*.asset)
 #   abilities   folders abilities, skills, spells
 #   quests      folders quests, missions, objectives (objectives likewise)
-#   dialogue    .dialogue, .csv, .ink files under any root but src/ (by ext)
+#   dialogue    .dialogue, .csv, .ink files (by ext)
 # Folder names compare in any case (items and Items). Files in them count when
-# their extension is one of the engine's data extensions: godot json, tres,
-# asset and, for characters, yaml, tscn and prefab, and for quests json and
-# yaml only; unity json, yaml, asset, prefab; unreal uasset. A file in two
+# their extension is one of Unity's data extensions: json, yaml, asset,
+# prefab. A file in two
 # folders of a type counts once in the type and once in each folder row.
 #
 # Output: TSV.
@@ -295,13 +287,11 @@ if [ -z "$RAW" ] || [ "$RAW" = "-" ]; then
 fi
 LOW=$(printf '%s' "$RAW" | tr '[:upper:]' '[:lower:]')
 case "$LOW" in
-  godot) ENG=godot; ROOTS="assets src" ;;
-  unity) ENG=unity; ROOTS="assets Assets" ;;
-  unreal*) ENG=unreal; ROOTS="assets Content" ;;
+  unity) ENG=unity; ROOTS="Assets" ;;
   *)
-    if [ "$ESRC" = flag ]; then usage "--engine takes godot, unity or unreal, got $RAW"; fi
+    if [ "$ESRC" = flag ]; then usage "--engine takes unity, got $RAW"; fi
     printf 'engine\t%s\t%s\n' "$RAW" "$ESRC"
-    echo "content-count: engine $RAW has no content rules here (godot, unity or unreal)" >&2
+    echo "content-count: engine $RAW is not supported here (this studio is Unity only)" >&2
     exit 3 ;;
 esac
 printf 'engine\t%s\t%s\n' "$ENG" "$ESRC"
@@ -320,9 +310,9 @@ LIST=""
 # shellcheck disable=SC2086
 [ -z "$PRESENT" ] || LIST=$(find $PRESENT -type f 2>/dev/null | sort)
 
-printf '%s\n' "$LIST" | ENG="$ENG" SHOWFILES="$SHOWFILES" awk '
+printf '%s\n' "$LIST" | SHOWFILES="$SHOWFILES" awk '
   BEGIN {
-    BINMODE = 3; eng = ENVIRON["ENG"]
+    BINMODE = 3
     ng = split("levels characters items abilities dialogue quests", G, " ")
     nfl["levels"] = split("levels areas maps worlds stages", t1, " ")
     nfl["characters"] = split("enemies characters npcs", t2, " ")
@@ -332,15 +322,11 @@ printf '%s\n' "$LIST" | ENG="$ENG" SHOWFILES="$SHOWFILES" awk '
     nfl["quests"] = split("quests missions objectives", t6, " ")
     for (i = 1; i <= 6; i++) { FL["levels", i] = t1[i]; FL["characters", i] = t2[i]; FL["items", i] = t3[i]
       FL["abilities", i] = t4[i]; FL["dialogue", i] = t5[i]; FL["quests", i] = t6[i] }
-    if (eng == "unity") { nfl["items"]++; FL["items", nfl["items"]] = "*Item*.asset" }
+    nfl["items"]++; FL["items", nfl["items"]] = "*Item*.asset"
   }
-  # Is e one of the engine data extensions for type g.
+  # Is e one of the Unity data extensions for type g.
   function extok(g, e) {
-    if (eng == "unreal") return (e == "uasset")
-    if (eng == "unity") return (e == "json" || e == "yaml" || e == "asset" || e == "prefab")
-    if (g == "characters") return (e == "json" || e == "tres" || e == "asset" || e == "yaml" || e == "tscn" || e == "prefab")
-    if (g == "quests") return (e == "json" || e == "yaml")
-    return (e == "json" || e == "tres" || e == "asset")
+    return (e == "json" || e == "yaml" || e == "asset" || e == "prefab")
   }
   function isfolder(g, name,    i) {
     for (i = 1; i <= nfl[g]; i++) if (FL[g, i] == name) return 1
@@ -353,27 +339,21 @@ printf '%s\n' "$LIST" | ENG="$ENG" SHOWFILES="$SHOWFILES" awk '
     root = seg[1]; fname = seg[n]
     ext = ""
     if (match(fname, /\.[^.]*$/)) ext = tolower(substr(fname, RSTART + 1))
-    # The first folder to look in: under assets/ only below assets/data/.
-    first = 2; datalock = 0
-    if (root == "assets") { datalock = 1; first = (n >= 3 && tolower(seg[2]) == "data") ? 3 : n }
-    srcroot = (eng == "godot" && root == "src")
+    first = 2
     for (gi = 1; gi <= ng; gi++) {
       g = G[gi]; hit = 0; nh = 0
       if (g == "levels") {
-        sceneext = (eng == "godot") ? "tscn" : ((eng == "unity") ? "unity" : "umap")
-        if (ext != sceneext) continue
+        if (ext != "unity") continue
         hit = 1
         for (i = 2; i < n; i++) { w = tolower(seg[i]); if (isfolder(g, w) && !(w in hs)) { hs[w] = 1; hn[++nh] = w } }
       } else if (g == "dialogue") {
-        if (srcroot) continue
         if (ext != "dialogue" && ext != "csv" && ext != "ink") continue
         hit = 1; hn[++nh] = "." ext
       } else {
-        if (srcroot && g != "characters") continue
         if (extok(g, ext)) {
           for (i = first; i < n; i++) { w = tolower(seg[i]); if (isfolder(g, w) && !(w in hs)) { hs[w] = 1; hn[++nh] = w; hit = 1 } }
         }
-        if (eng == "unity" && g == "items" && root == "Assets" && ext == "asset" && index(fname, "Item") > 0) { hit = 1; hn[++nh] = "*Item*.asset" }
+        if (g == "items" && root == "Assets" && ext == "asset" && index(fname, "Item") > 0) { hit = 1; hn[++nh] = "*Item*.asset" }
       }
       if (hit) {
         tot[g]++

@@ -23,13 +23,13 @@
 
 ### Quality Checks: [X/Y passing]
 - [x] GDD has 8/8 required sections
-- [ ] Tests — FAILED (3 failures in tests/unit/)
+- [ ] Tests — FAILED (3 failures in Assets/Tests/EditMode/)
 - [?] Core loop playtested — MANUAL CHECK NEEDED
 
 ### Blockers
 1. **No Architecture Decision Records** — Run `/architecture-decision` to create one
    covering core system architecture before entering production.
-2. **3 test failures** — Fix failing tests in tests/unit/ before advancing.
+2. **3 test failures** — Fix failing tests in Assets/Tests/EditMode/ before advancing.
 
 ### Recommendations
 - [Priority actions to resolve blockers]

@@ -38,7 +38,7 @@ Verified by reading the agent's `.claude/agents/technical-director.md` frontmatt
 - [ ] Comments only on technical constraints that affect dialogue (e.g., localization string limits, data format) — no judgement of the lines' quality, tone or wording
 
 ### Case 3: Gate verdict — correct vocabulary
-**Scenario:** A concept's identified technical risks (platform: PC; engine: Godot 4.6) include a multiplayer mechanic that raycasts from every active entity against every other entity each frame to detect line-of-sight. At expected counts (1000 entities in a large zone), this is O(n²) — about a million raycasts per frame. The mechanic itself can survive with a different implementation. Request is tagged TD-FEASIBILITY.
+**Scenario:** A concept's identified technical risks (platform: PC; engine: Unity 6.3 LTS) include a multiplayer mechanic that raycasts from every active entity against every other entity each frame to detect line-of-sight. At expected counts (1000 entities in a large zone), this is O(n²) — about a million raycasts per frame. The mechanic itself can survive with a different implementation. Request is tagged TD-FEASIBILITY.
 **Expected:** Returns `TD-FEASIBILITY: CONCERNS` — the gate's middle verdict, a list with mitigation suggestions — citing the O(n²) complexity and the entity count that breaks the frame budget as implemented. Not HIGH RISK, because the concept does not need revising.
 **Assertions:**
 - [ ] Verdict is exactly one of VIABLE / CONCERNS / HIGH RISK (the TD-FEASIBILITY verdicts) — not APPROVE / REJECT and not freeform text
@@ -73,7 +73,7 @@ Verified by reading the agent's `.claude/agents/technical-director.md` frontmatt
 - [ ] Does not reconstruct a requirement list from the architecture document itself and judge coverage against it
 
 ### Case 7: Phase gate — judged against the phase being entered
-**Scenario:** `/gate-check technical-setup` at `workflow: standard` spawns TD-PHASE-GATE. The context gives the target phase (Technical Setup), the tier, and the gate's required and recommended artifacts at that tier: a systems index enumerating the MVP systems, each MVP GDD at the 5 standard sections and reviewed, and — recommended — a cross-GDD review report. All are present; the systems index gives each system's dependencies and data flow both ways. The engine reference path is `docs/engine-reference/godot/VERSION.md`. The architecture document and the ADR list are passed as "not expected before Pre-Production".
+**Scenario:** `/gate-check technical-setup` at `workflow: standard` spawns TD-PHASE-GATE. The context gives the target phase (Technical Setup), the tier, and the gate's required and recommended artifacts at that tier: a systems index enumerating the MVP systems, each MVP GDD at the 5 standard sections and reviewed, and — recommended — a cross-GDD review report. All are present; the systems index gives each system's dependencies and data flow both ways. The engine reference path is `docs/engine-reference/unity/VERSION.md`. The architecture document and the ADR list are passed as "not expected before Pre-Production".
 **Expected:** Returns `TD-PHASE-GATE: READY` — the systems and GDDs give enough to architect from, which is what entering Technical Setup requires. The absent architecture document and ADRs are the work of the phase being entered, not a gap in it.
 **Variant:** the same project at target Pre-Production, where the architecture document is required and is passed as "none" → `TD-PHASE-GATE: NOT READY` or `CONCERNS`, naming the missing architecture document.
 **Assertions:**
@@ -97,6 +97,6 @@ Verified by reading the agent's `.claude/agents/technical-director.md` frontmatt
 
 ## Coverage Notes
 - TD-ADR is covered only for a platform conflict (Case 5); an ADR with missing sections or unflagged post-cutoff APIs has no case yet.
-- TD-ENGINE-RISK assessment for specific engine versions (e.g., Godot 4.6 post-cutoff APIs) is not covered — deferred to engine-specialist integration tests.
+- TD-ENGINE-RISK assessment for specific engine versions (e.g., Unity 6 post-cutoff APIs) is not covered — deferred to engine-specialist integration tests.
 - TD-PHASE-GATE is covered at one target phase (Case 7); its later-phase judgements (Production and on: is the architecture holding up in the build?) have no case yet.
 - Multi-domain architecture reviews (e.g., touching both TD-ARCHITECTURE and TD-ENGINE-RISK simultaneously) are not covered here.

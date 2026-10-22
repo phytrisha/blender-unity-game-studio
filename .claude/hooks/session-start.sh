@@ -190,8 +190,8 @@ fi
 
 # Code health quick check.
 #
-# Reads the ENGINE-SPECIFIC code root, not a literal `src/`. Hardcoding `src/`
-# made this line Godot-only: on a Unity or Unreal project the directory test
+# Reads the ENGINE-SPECIFIC code root (Assets/ on Unity), not a literal `src/`.
+# Hardcoding `src/` broke this line on Unity: the directory test
 # failed, the banner printed no code-health line at all, and a clean project and
 # an unreadable one looked identical. See resolve_code_root in yaml-helper.sh.
 #
@@ -211,7 +211,7 @@ fi
 # block below, so a timeout here lost the recovery too -- and counted each
 # "Binary file ... matches" line as a TODO.
 if [ -n "$CODE_ROOT" ] && [ -d "$CODE_ROOT" ]; then
-    _SS_SRC=(--include='*.gd' --include='*.cs' --include='*.cpp' --include='*.h' --include='*.hpp'
+    _SS_SRC=(--include='*.cs' --include='*.cpp' --include='*.h' --include='*.hpp'
              --include='*.c' --include='*.py' --include='*.rs' --include='*.lua')
     # tr: BSD wc (macOS) right-aligns its count, and these are printed as-is.
     TODO_COUNT=$(grep -rI "${_SS_SRC[@]}" "TODO" "$CODE_ROOT/" 2>/dev/null | wc -l | tr -d ' ')
@@ -234,7 +234,7 @@ if [ -f project.yaml ] && [ -f CLAUDE.md ]; then
           | sed -n 's|^@docs/engine-reference/\([a-z]*\)/VERSION\.md.*|\1|p')
     # engine.name, not the first `name:` line: `project.name: Marrow` above the
     # engine block read as engine "marrow" and warned on a correct project. The
-    # first word only, so "Unreal Engine 5" is the unreal reference folder.
+    # first word only, so "Unity 6" is the unity reference folder.
     CFG=$(awk '/^engine:/ { e = 1; next } e && /^[^[:space:]#]/ { exit }
                e && /^[[:space:]]+name:/ { sub(/^[[:space:]]+name:[[:space:]]*/, ""); gsub(/["'"'"']/, "");
                                            split($0, w, /[[:space:]#]/); print w[1]; exit }' \

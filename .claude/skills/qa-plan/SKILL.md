@@ -186,8 +186,8 @@ Assemble the full QA plan document. Use this structure:
 
 | Story | Type | Automated Test Required | Manual Verification Required |
 |-------|------|------------------------|------------------------------|
-| [story title] | Logic | Unit test — `tests/unit/[system]/` | None |
-| [story title] | Integration | Integration test — `tests/integration/[system]/` | Smoke check |
+| [story title] | Logic | Unit test — `Assets/Tests/EditMode/[System]/` | None |
+| [story title] | Integration | Integration test — `Assets/Tests/PlayMode/[System]/` | Smoke check |
 | [story title] | Visual/Feel | None (not automatable) | Screenshot + lead sign-off |
 | [story title] | UI | None (verified by its screenshots) | Retained screenshot of each screen touched |
 | [story title] | Config/Data | Data validation test | Spot-check in-game values |

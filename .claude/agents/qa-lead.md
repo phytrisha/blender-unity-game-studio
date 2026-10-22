@@ -66,7 +66,7 @@ Every story has a type that determines what evidence is required before it can b
 
 | Story Type | Required Evidence | Gate Level |
 |---|---|---|
-| **Logic** (formulas, AI, state machines) | Automated unit test in `tests/unit/[system]/` | BLOCKING |
+| **Logic** (formulas, AI, state machines) | Automated unit test in `Assets/Tests/EditMode/[System]/` | BLOCKING |
 | **Integration** (multi-system interaction) | Integration test OR documented playtest | BLOCKING |
 | **Visual/Feel** (animation, VFX, feel) | Retained screenshot + lead sign-off in `production/qa/evidence/` | BLOCKING |
 | **UI** (menus, HUD, screens) | Retained screenshot of each screen touched | BLOCKING |

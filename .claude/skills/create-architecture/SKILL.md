@@ -119,7 +119,7 @@ unsure, present 2-4 options with pros/cons before asking them to decide.
 
 - Run `/architecture-decision [title]` for each required ADR listed in Phase 6 — Foundation layer ADRs first
 - Run `/architecture-review` — bootstraps the Requirements Traceability Matrix and TR registry from the ADRs just written, and gives each provisional TR-ID its permanent one. Required before the Pre-Production gate.
-- Run `/test-setup` to scaffold `tests/unit/`, `tests/integration/`, CI workflow, and an example test (required for gate-check)
+- Run `/test-setup` to scaffold `Assets/Tests/EditMode/`, `Assets/Tests/PlayMode/`, CI workflow, and an example test (required for gate-check)
 - Run `/ux-design` to initialize `design/ux/interaction-patterns.md` and `design/accessibility-requirements.md` (required for gate-check)
 - Run `/create-control-manifest` once the required ADRs are written to produce the layer rules manifest
 - Run `/gate-check pre-production` when all required ADRs, `/test-setup`, and `/ux-design` are complete

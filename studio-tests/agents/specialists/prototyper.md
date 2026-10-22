@@ -2,7 +2,7 @@
 
 ## Agent Summary
 - **Domain**: Rapid throwaway prototypes in the `prototypes/` directory, concept validation experiments, mechanical feasibility tests. Standards intentionally relaxed for speed — prototypes are not production code.
-- **Does NOT own**: Production source code in `src/` (gameplay-programmer), design documents (game-designer), production-grade architecture decisions (lead-programmer / technical-director)
+- **Does NOT own**: Production source code in the code root `Assets/` (gameplay-programmer), design documents (game-designer), production-grade architecture decisions (lead-programmer / technical-director)
 - **Gate IDs**: None; produces recommendation docs after prototype conclusion; does not participate in phase gates
 
 ---
@@ -26,17 +26,17 @@
 - Proposes scope in 3–5 bullets (deck, draw N, hand limit 7, a minimal state display) and gets confirmation before building
 - Output goes to `prototypes/card-draw-concept/` (e.g., a single self-contained `prototype.html` that opens by double-click, or `rules.md` + `play-log.md` on the Paper path); every code file starts with the `PROTOTYPE - NOT FOR PRODUCTION` header naming the question and date
 - Code prioritizes speed over correctness: no unit tests, no doc comments required, global state is acceptable; no menus or polish
-- Does NOT implement production patterns (dependency injection, signals, data-driven config) unless they take less time than not using them
+- Does NOT implement production patterns (dependency injection, events, data-driven config) unless they take less time than not using them
 - Asks "May I write this to [filepath]?" before writing
 
 ### Case 2: Out-of-domain request — production-grade implementation
-**Input**: "The card mechanic prototype worked great. Now write the production implementation of the card system for src/gameplay/cards/."
+**Input**: "The card mechanic prototype worked great. Now write the production implementation of the card system for Assets/Scripts/Gameplay/Cards/."
 **Expected behavior**:
-- Does not write production code to `src/`
+- Does not write production code to `Assets/`
 - States clearly that prototype code is throwaway: production implementation of a validated mechanic is written from scratch to proper standards, and the prototype is reference only
 - Points to the prototype's `REPORT.md` (hypothesis, result, recommendation, tuning values discovered, lessons learned) as what carries into production — offering to write it if it does not exist yet — so the knowledge transfers, not the code
 - Routes production architecture questions to `lead-programmer`
-- Does NOT copy the prototype code into src/ or suggest it as a starting point without warning about its non-production quality
+- Does NOT copy the prototype code into `Assets/` or suggest it as a starting point without warning about its non-production quality
 
 ### Case 3: Prototype validates the mechanic — recommendation output
 **Input**: "The card-draw prototype playtested well. Three sessions all enjoyed drawing 3 cards/turn with hand limit 7. No confusion observed. What's next?"
@@ -58,15 +58,15 @@
 - Does NOT mark the result as inconclusive — after 4 sessions with consistent negative responses, the evidence supports a decision
 
 ### Case 5: Context pass — using the project's engine scripting language
-**Input context**: Project uses Godot 4.6 with GDScript (`engine.name` and `engine.language` in `project.yaml`); the user has chosen the Engine path.
+**Input context**: Project uses Unity 6.3 LTS with C# (`engine.name` and `engine.language` in `project.yaml`); the user has chosen the Engine path.
 **Input**: "Prototype a basic grid movement system — player clicks a tile and the character moves to it."
 **Expected behavior**:
-- Produces the prototype in GDScript — not Python, C#, or pseudocode
-- Uses Godot 4.6 node types appropriate for a grid: TileMapLayer (not TileMap, which `docs/engine-reference/godot/deprecated-apis.md` lists as deprecated since 4.3) or a custom grid manager node, CharacterBody2D or Node2D for the player
+- Produces the prototype in C# for Unity — not Python, GDScript, or pseudocode
+- Reads the click through the Input System (`Mouse.current.position.ReadValue()`), not `Input.mousePosition`, which `docs/engine-reference/unity/deprecated-apis.md` lists as deprecated; uses a grid manager MonoBehaviour for the tiles and a GameObject for the player
 - Does NOT apply production coding standards (no required test coverage, no doc comments, global state acceptable)
-- Writes the output to `prototypes/grid-movement-concept/` not to `src/`
+- Writes the output to `prototypes/grid-movement-concept/`, not to the game's code root `Assets/`
 - After writing, hands control back: asks the user to run the project and paste any errors or describe what they observe, rather than assuming it worked
-- If a Godot 4.6 API is uncertain, flags the specific API with a note to verify against the Godot 4.6 docs — `docs/engine-reference/godot/VERSION.md` reaches the agent through `CLAUDE.md`'s import, and its Knowledge Gap Warning says to cross-reference that directory before suggesting Godot API calls
+- If a Unity 6 API is uncertain, flags the specific API with a note to verify against the Unity 6.3 docs — `docs/engine-reference/unity/VERSION.md` reaches the agent through `CLAUDE.md`'s import, and its Knowledge Gap Warning says to cross-reference that directory before suggesting Unity API calls
 
 ---
 
@@ -81,7 +81,7 @@
 ---
 
 ## Coverage Notes
-- Case 2 (production redirect) is critical — prototype code leaking into src/ is a common quality problem
+- Case 2 (production redirect) is critical — prototype code leaking into `Assets/` is a common quality problem
 - Case 4 (abandonment honesty) tests whether the agent avoids sunk-cost bias — prototypes that fail should be cleanly abandoned
 - Case 5 requires that `project.yaml` has `engine.name` and `engine.language` configured; test is incomplete if not configured. With neither `project.yaml` nor `.claude/docs/technical-preferences.md` naming them, the expected output is a question about the engine and language, not a guess
 - The intentional relaxation of coding standards is a feature, not a gap — do not flag missing tests or doc comments as failures in prototype output

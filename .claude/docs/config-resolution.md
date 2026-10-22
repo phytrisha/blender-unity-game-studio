@@ -87,7 +87,7 @@ qa.level: standard (rigor:standard)
 team.size: individual (rigor:standard)
 project.stage: Systems Design (production/stage.txt)
 automation_always_ask: scope_changes, file_deletions, schema_changes (default)
-engine: Godot 4.7 (project.yaml)
+engine: Unity 6.3 (project.yaml)
 testing.strict: logic=true integration=false visual=unset ui=unset config=unset (unset = each skill applies its own default)
 system_overrides: combat=full inventory=minimal
 notes: none
@@ -194,8 +194,7 @@ this starting state. (`team.size` is the one knob the flip does not move:
 > the six explicitly but never sets `rigor` keeps its explicit values and takes
 > the new `minimal` row for the rest -- so an unset `qa.level` that used to
 > resolve `standard` now resolves `minimal`.
-> Pin the old behaviour by setting `modes.rigor: standard` explicitly; see
-> UPGRADING.md.
+> Pin the old behaviour by setting `modes.rigor: standard` explicitly.
 
 `modes.workflow` is **fronted, not replaced**: it keeps
 `workflow_overrides.system_overrides`, which still beats the derived value.
@@ -231,8 +230,8 @@ or `~` reads as unset (the reader returns them as strings, which are not empty).
 | Label | What it prints |
 |---|---|
 | `gate_level` | The gate level per story type: `testing.strict.<type>` (`project.local.yaml`, then `project.yaml`), then the plain `testing.strict: true\|false`, then the default table in `coding-standards.md`. `gate_level: logic=blocking(default) integration=advisory(project.yaml) visual=blocking(default) ui=blocking(default) config=advisory(default; /smoke-check: blocking)` |
-| `engine_values` | `engine.name`, `.version` and `.language`, each falling back to `technical-preferences.md` (its Engine line holds name and version together). `engine_values: name=Godot(project.yaml) version=4.7(project.yaml) language=GDScript(project.yaml)` |
-| `specialists` | The engine specialists: `primary` from the engine, the rest from the `specialists` block, where `null` is unset and never an agent name; `technical-preferences.md` only when the block is absent. `specialists: primary=godot-specialist(engine.name) code=godot-gdscript-specialist shader=unset ui=godot-specialist additional=none (project.yaml; unset = skip that specialist)` |
+| `engine_values` | `engine.name`, `.version` and `.language`, each falling back to `technical-preferences.md` (its Engine line holds name and version together). `engine_values: name=Unity(project.yaml) version=6.3(project.yaml) language=C#(project.yaml)` |
+| `specialists` | The engine specialists: `primary` from the engine, the rest from the `specialists` block, where `null` is unset and never an agent name; `technical-preferences.md` only when the block is absent. `specialists: primary=unity-specialist(engine.name) code=unity-specialist shader=unset ui=unity-ui-specialist additional=none (project.yaml; unset = skip that specialist)` |
 | `review_gate` | Whether a skill's own director gate and the PHASE-GATEs run at the resolved `review_mode` (`director-gates.md`): `solo` none, `lean` the PHASE-GATEs only, `full` all. `review_gate: skill-gates=skip phase-gates=run (review_mode lean, rigor:standard; a --review flag overrides)` |
 | `input_methods` | The input methods from the `platform` block, each listed once: keyboard/mouse when `PC` or `Web` is a target, gamepad and touch when their support is Full or Partial, plus the primary input, where a primary input such as `Keyboard`, `Controller` or `Touchscreen` is read as keyboard/mouse, gamepad or touch; else `technical-preferences.md`'s Input Methods line. `input_methods: keyboard/mouse, gamepad (project.yaml platform; primary: Gamepad)` |
 | `perf_budgets` | The four `performance.*` budgets (`target_framerate`, `frame_budget_ms`, `draw_call_limit`, `memory_ceiling_mb`), from `project.yaml` only: they are not locally overridable. `perf_budgets: target_framerate=60 frame_budget_ms=16.67 draw_call_limit=unset memory_ceiling_mb=unset (project.yaml)` |

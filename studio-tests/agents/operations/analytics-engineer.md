@@ -29,9 +29,9 @@
 - Does NOT produce implementation code — the output is a spec for programmers
 
 ### Case 2: Out-of-domain request — implement the event tracking in code
-**Input**: "Now that the event schema is designed, write the GDScript code to fire these events in our Godot tutorial scene."
+**Input**: "Now that the event schema is designed, write the C# code to fire these events in our Unity tutorial scene."
 **Expected behavior**:
-- Does not produce GDScript or any implementation code — "Implement tracking in game code (write specs for programmers)" is on its Must-NOT list
+- Does not produce C# or any implementation code — "Implement tracking in game code (write specs for programmers)" is on its Must-NOT list
 - Says implementation belongs to the programmers (e.g. `gameplay-programmer`) and that its part is the specification
 - Produces the integration spec the programmer needs: event names, properties, when each event fires, and any privacy or opt-out constraint — the spec is its deliverable here, not an optional extra
 - Asks before writing the spec to a file

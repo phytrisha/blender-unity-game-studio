@@ -45,7 +45,7 @@ design/
   narrative/     [N] files
   levels/        [N] files
 
-[code root]/     (src/, Assets/ or Source/<Module>/)
+[code root]/     (Assets/Scripts/)
   core/          [N] files
   gameplay/      [N] files
   ai/            [N] files

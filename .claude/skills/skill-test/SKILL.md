@@ -57,7 +57,7 @@ If the argument is unrecognized, output usage and stop.
 **The old spec folder.** Glob `CCGS Skill Testing Framework/catalog.yaml`. When
 it exists, say so first: "`CCGS Skill Testing Framework/` was renamed
 `studio-tests/` in 1.2.0, and this skill reads only `studio-tests/`. Move any
-specs you wrote there; UPGRADING.md (v1.1.3 → v1.2.0, `studio-tests/`) says how."
+specs you wrote there to the same paths under `studio-tests/`."
 Then go on with `studio-tests/`.
 
 **Resolve the name before `spec` or `category`.** Look it up in

@@ -21,9 +21,9 @@ No gate IDs assigned.
 ### Case 1: In-domain request — appropriate output
 **Input:** "Create a custom editor tool for placing enemy patrol waypoints in the level."
 **Expected behavior:**
-- Produces an editor extension spec and code scaffold for the configured engine (e.g., Godot EditorPlugin, Unity Editor window, Unreal Detail Customization)
+- Produces an editor extension spec and code scaffold for Unity (e.g., an `EditorWindow` or a custom `Editor` with scene-view handles)
 - Tool allows designer to click-place waypoints in the scene/viewport
-- Waypoints are serialized as engine-native resource (not hardcoded) so level-designer can edit without code
+- Waypoints are serialized as a Unity asset or component data (e.g., a ScriptableObject), not hardcoded, so level-designer can edit without code
 - Includes undo/redo support per editor plugin best practices
 - Does NOT modify the AI pathfinding runtime code (that belongs to ai-programmer)
 

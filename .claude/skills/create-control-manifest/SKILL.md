@@ -123,8 +123,8 @@ Rules for every layer, each with its source (the `project.yaml` key,
 - **Performance budgets** from `performance.*`: target frame rate, frame budget,
   draw calls, memory ceiling.
 - **Forbidden APIs** from `deprecated-apis.md`, **only those that apply to what this
-  project builds.** Never copy the table whole: its `GodotPhysics3D → Jolt Physics
-  3D` row is 3D-only, and a 2D project does not use that engine. When you cannot
+  project builds.** Never copy the table whole: rows can be specific to a module or
+  mode (3D physics, a render pipeline) the project does not use. When you cannot
   tell whether an entry applies (2D or 3D, a module the project may not include),
   scope the rule ("when using 3D physics: …") or leave it out and list it as
   unresolved. `/create-stories` reads this file, and rules that do not apply are

@@ -25,8 +25,7 @@
 # with framework.version in the template's project.yaml.
 #
 # Not framework.version itself: that is the project's file, and an upgrade
-# that keeps your project.yaml leaves it on the old number (UPGRADING.md says
-# so), which would announce the release you already have. This file is replaced
+# that keeps your project.yaml leaves it on the old number, which would announce the release you already have. This file is replaced
 # with the rest of .claude/hooks/ on every upgrade, so its number is the
 # framework actually installed.
 UPDATE_CHECK_VERSION="1.2.0"

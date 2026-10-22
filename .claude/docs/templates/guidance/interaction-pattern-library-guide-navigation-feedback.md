@@ -23,10 +23,10 @@ These three patterns define how screens enter and exit the navigation stack.
 
 **Motion reduction**: All slide animations become fades. Duration reduces to 100ms.
 
-**Implementation Notes**: [Godot: Implement as a `ScreenManager` singleton managing
-a stack of `Control` scenes. `push(screen_scene)` instantiates and animates in.
-`pop()` animates out and frees. `replace(screen_scene)` calls pop then push without
-the intermediate stack state. Use `CanvasLayer` per screen to isolate input handling.
+**Implementation Notes**: [Unity: Implement as a `ScreenManager` service managing
+a stack of screen prefabs (or UI panels). `Push(screenPrefab)` instantiates and animates in.
+`Pop()` animates out and destroys. `Replace(screenPrefab)` calls pop then push without
+the intermediate stack state. Give each screen its own canvas or panel so input handling stays isolated.
 Store the "return focus" element reference before pushing so it can be restored on pop.]
 
 ---

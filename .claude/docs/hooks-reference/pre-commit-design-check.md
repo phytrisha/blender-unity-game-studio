@@ -2,7 +2,7 @@
 
 ## Trigger
 
-Runs before any commit that modifies files in `design/` or `assets/data/`.
+Runs before any commit that modifies files in `design/` or `Assets/Settings/Data/`.
 
 ## Purpose
 
@@ -18,7 +18,7 @@ broken cross-references, and invalid data before they propagate.
 # Place in .git/hooks/pre-commit or configure via your hook manager
 
 DESIGN_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^design/')
-DATA_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^assets/data/')
+DATA_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^Assets/(.*/)?[Dd]ata/')
 
 EXIT_CODE=0
 

@@ -211,8 +211,8 @@ qa:
   level: full               (derived from rigor: full, locked)
 
 engine:
-  name: Godot               (project.yaml, locked)
-  version: 4.7              (project.yaml, locked)
+  name: Unity               (project.yaml, locked)
+  version: 6000.3           (project.yaml, locked)
 
 testing:
   strict:
@@ -241,7 +241,7 @@ config block:
 ```
 Schema validation: ERRORS
   [project.yaml] modes.review_mode: 'chaotic' is not a valid value (expected: full|lean|solo)
-  [project.local.yaml] engine.name: 'Pygame' is not a valid value (expected: Godot|Unity|Unreal)
+  [project.local.yaml] engine.name: 'Pygame' is not a valid value (expected: Unity)
 ```
 
 ## Phase 3: View-one Mode

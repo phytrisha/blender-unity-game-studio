@@ -155,50 +155,43 @@ the two happened — a reader cannot tell from a green result.
 For each content type found in Phase 1, scan the relevant directories to count
 what has been implemented. Use Glob and Grep to locate files.
 
-**On Unreal, content lives in `Content/`** — maps and data assets both — and the
-code root (`Source/<Module>/`) holds only C++. So on Unreal, every `assets/…` glob
-below also runs under `Content/` (`*.uasset` in place of the data extensions),
-and levels are `Content/**/*.umap`. Skipping this finds zero levels on every
-Unreal project and reports them NOT STARTED.
-
-**On Unity, content lives under `Assets/`** (compare the case exactly —
-`.claude/docs/code-root-resolution.md`), and rarely in a `data/` folder. So on
-Unity every `assets/…` glob below also runs under `Assets/`, without requiring
-a `data/` segment — for items, `Assets/**/items/**`, `Assets/**/Items/**` and
-`Assets/**/*Item*.asset` — and data files include `.asset` (ScriptableObjects)
-and `.prefab`. Skipping this finds zero items, abilities, quests and dialogue
-on a Unity project and reports them NOT STARTED.
+**Content lives under `Assets/`** on Unity (compare the case exactly —
+`.claude/docs/code-root-resolution.md`), and rarely in a `data/` folder. So the
+globs below run under `Assets/` without requiring a `data/` segment, and each
+folder name is tried in both lowercase and PascalCase (`items/` and `Items/`).
+Data files include `.asset` (ScriptableObjects), `.prefab` and `.json`. Skipping
+this finds zero items, abilities, quests and dialogue and reports them NOT STARTED.
+**If the code root is unresolved, report `NOT ASSESSED — code root unresolved`
+rather than zero hits.**
 
 **Levels / Areas / Maps:**
-- Glob `assets/**/*.tscn`, `assets/**/*.unity`, `assets/**/*.umap`
-- Glob the **code root** for scene files: `*.tscn` (Godot), `*.unity` (Unity); on Unreal, `Content/**/*.umap` instead (above). Resolve the root per `.claude/docs/code-root-resolution.md`. **If the code root is unresolved, report `NOT ASSESSED — code root unresolved` rather than zero hits.**
+- Glob `Assets/**/*.unity`
 - Look for scene files in subdirectories named `levels/`, `areas/`, `maps/`,
-  `worlds/`, `stages/`
+  `worlds/`, `stages/` (either case)
 - Count unique files that appear to be level/scene definitions (not UI scenes)
 
 **Enemies / Characters / NPCs:**
-- Glob `assets/data/**/enemies/**`, `assets/data/**/characters/**`
-- Glob `<code root>/**/enemies/**`, `<code root>/**/characters/**`
-- Look for `.json`, `.tres`, `.asset`, `.yaml` data files defining entity stats
-- Look for scene/prefab files in character subdirectories
+- Glob `Assets/**/enemies/**`, `Assets/**/Enemies/**`, `Assets/**/characters/**`, `Assets/**/Characters/**`
+- Look for `.json`, `.asset`, `.yaml` data files defining entity stats
+- Look for prefab files in character subdirectories
 
 **Items / Equipment / Loot:**
-- Glob `assets/data/**/items/**`, `assets/data/**/equipment/**`,
-  `assets/data/**/loot/**`
-- Look for `.json`, `.tres`, `.asset` data files
+- Glob `Assets/**/items/**`, `Assets/**/Items/**`, `Assets/**/*Item*.asset`,
+  and the same for `equipment` / `Equipment` and `loot` / `Loot`
+- Look for `.json`, `.asset` data files
 
 **Abilities / Skills / Spells:**
-- Glob `assets/data/**/abilities/**`, `assets/data/**/skills/**`,
-  `assets/data/**/spells/**`
-- Look for `.json`, `.tres`, `.asset` data files
+- Glob `Assets/**/abilities/**`, `Assets/**/Abilities/**`, and the same for
+  `skills` / `Skills` and `spells` / `Spells`
+- Look for `.json`, `.asset` data files
 
 **Dialogue / Conversations / Cutscenes:**
-- Glob `assets/**/*.dialogue`, `assets/**/*.csv`, `assets/**/*.ink`
-- Grep for dialogue data files in `assets/data/`
+- Glob `Assets/**/*.dialogue`, `Assets/**/*.csv`, `Assets/**/*.ink`, `Assets/**/*.yarn`
+- Grep for dialogue data files under `Assets/`
 
 **Quests / Missions:**
-- Glob `assets/data/**/quests/**`, `assets/data/**/missions/**`
-- Look for `.json`, `.yaml` definition files
+- Glob `Assets/**/quests/**`, `Assets/**/Quests/**`, `Assets/**/missions/**`, `Assets/**/Missions/**`
+- Look for `.json`, `.asset`, `.yaml` definition files
 
 **Engine-specific notes (acknowledge in the report):**
 - Counts are approximations — the skill cannot perfectly parse every engine

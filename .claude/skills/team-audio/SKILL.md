@@ -85,7 +85,7 @@ enforced.**
      direction starts from the GDDs alone" — so the gap is visible in the output.
      Carry the gap forward: say so in the audio-director's Step 1 brief, and
      recommend creating a sound bible in Next Steps.
-   - Read existing audio asset lists in `assets/audio/`
+   - Read existing audio asset lists in `Assets/Art/Audio/`
    - Read any existing sound design docs for this area
 
 ## How to Delegate
@@ -160,8 +160,8 @@ Spawn the `technical-artist` agent to:
 - Plan streaming vs preloaded asset strategy
 - Design any audio-reactive visual effects
 
-Spawn the **primary engine specialist** in parallel (`<engine>-specialist` derived from `engine.name` — Godot→`godot-specialist`, Unity→`unity-specialist`, Unreal→`unreal-specialist`; fall back to the Primary line of `## Engine Specialists` in `.claude/docs/technical-preferences.md`) to validate the integration approach:
-- Is the proposed audio middleware integration idiomatic for the engine? (e.g., Godot's built-in AudioStreamPlayer vs FMOD, Unity's Audio Mixer vs Wwise, Unreal's MetaSounds vs FMOD)
+Spawn the **primary engine specialist** in parallel (`unity-specialist` when `engine.name` is Unity; fall back to the Primary line of `## Engine Specialists` in `.claude/docs/technical-preferences.md`) to validate the integration approach:
+- Is the proposed audio middleware integration idiomatic for the engine? (e.g., Unity's Audio Mixer vs FMOD or Wwise)
 - Any engine-specific audio node/component patterns that should be used?
 - Known audio system changes in the pinned engine version that affect the integration plan?
 - Output: engine audio integration notes to merge with the technical-artist's plan
@@ -213,7 +213,7 @@ this does not violate the Collaboration Protocol" — the path is one you named,
 artifact is new under `production/`, `docs/` or `tests/`, and the phase is gated by
 an `AskUserQuestion`. A sub-agent does **not** prompt per write inside those bounds;
 outside them it must ask. **Implementation files** — gameplay-programmer's audio
-integration code, anything under the code root or `assets/` — are outside those
+integration code, anything under the code root (`Assets/`) — are outside those
 bounds: the agent returns the files it will create or change, you ask once for the
 set, and it writes after a yes. The **one exception is the final compiled audio design
 document**: the orchestrator already holds every input, so it compiles and writes

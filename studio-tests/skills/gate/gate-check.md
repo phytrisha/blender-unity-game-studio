@@ -391,10 +391,10 @@ before it is made.
 
 **Fixture:**
 - `project.yaml` sets `modes.rigor: minimal` (so `workflow: minimal`) and
-  `engine.name: Godot`
-- `src/` holds 15 GDScript files (the code root already holds the game)
+  `engine.name: Unity`
+- `Assets/Scripts/` holds 15 C# files (the code root already holds the game)
 - No `design/game-brief.md`, no `design/gdd/game-concept.md`, no GDDs
-- Variant: `src/` is empty (a new project)
+- Variant: `Assets/` holds no source files (a new project)
 
 **Input:** `/gate-check systems-design`
 
@@ -406,13 +406,13 @@ before it is made.
    `/design-system`) because the minimal route is not the ladder, and offers the
    first incomplete step of `paths.minimal`: the brief
 4. Because the code root already holds the game, that step is
-   `/reverse-document design src/` (it writes the brief from what is built), not
+   `/reverse-document design Assets/` (it writes the brief from what is built), not
    `/brainstorm`
-5. Variant (empty `src/`): the step is `/brainstorm`
+5. Variant (no source files in `Assets/`): the step is `/brainstorm`
 
 **Assertions:**
 - [ ] The closing widget is built from the minimal route, with no `/map-systems` or `/design-system` option
-- [ ] With a built game and no brief, the first option is `/reverse-document design src/`, with the code root filled in, and `/brainstorm` is not offered as the way to get the brief
+- [ ] With a built game and no brief, the first option is `/reverse-document design Assets/`, with the code root filled in, and `/brainstorm` is not offered as the way to get the brief
 - [ ] Variant — with an empty code root the first option is `/brainstorm`, not `/reverse-document`
 - [ ] The verdict is FAIL and the stage is not written, whatever the route offered
 

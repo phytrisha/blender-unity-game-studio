@@ -74,6 +74,6 @@ No gate IDs assigned.
 ---
 
 ## Coverage Notes
-- Behavior tree output (Case 1) should be validated by a unit test in `tests/unit/ai/`
+- Behavior tree output (Case 1) should be validated by a unit test in `Assets/Tests/EditMode/AI/`
 - Level-layout context (Case 5) verifies the agent implements the provided documents rather than inventing geometry or designing enemy behavior itself
 - Pathfinding performance (Case 4) confirms the agent keeps work its Key Responsibilities assign it, and involves engine-programmer only for core engine changes

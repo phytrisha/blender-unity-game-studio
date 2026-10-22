@@ -33,7 +33,7 @@ If no subcommand is provided, output usage and stop. Verdict: **FAIL** — missi
 ## Phase 2A: Scan Mode
 
 Search the **code root** (resolve per `.claude/docs/code-root-resolution.md`:
-`src/`, `Assets/` or `Source/` by engine) for debt indicators:
+`Assets/` on Unity) for debt indicators:
 
 - `TODO` comments (count and categorize)
 - `FIXME` comments (these are bugs disguised as debt)

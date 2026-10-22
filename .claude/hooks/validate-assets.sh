@@ -31,8 +31,9 @@ fi
 [ -n "$CCGS_ROOT" ] && cd "$CCGS_ROOT" 2>/dev/null || true
 
 # Claude Code PostToolUse hook: Validates asset files after Write/Edit
-# Checks JSON validity of data files and, in Godot's assets/, naming conventions.
-# Asset roots per engine: Godot assets/, Unity Assets/, Unreal Content/.
+# Checks JSON validity of data files under Unity's asset root, Assets/.
+# Asset naming (PascalCase with type prefixes) is not checked here: /asset-audit
+# reads the naming rule the art bible states.
 #
 # Exit behavior:
 #   exit 0 = success or advisory warnings only
@@ -49,7 +50,7 @@ fi
 # a promise the hook cannot keep, delivered to the one party who cannot act on it.
 #
 # Input schema (PostToolUse for Write/Edit):
-# { "tool_name": "Write", "tool_input": { "file_path": "assets/data/foo.json", "content": "..." } }
+# { "tool_name": "Write", "tool_input": { "file_path": "Assets/Settings/Data/foo.json", "content": "..." } }
 
 INPUT=$(cat)
 
@@ -64,7 +65,7 @@ fi
 # Two rules, order significant -- see the long note in validate-skill-change.sh.
 # Short version: hook input is JSON, so a Windows path arrives as `\\`. Without
 # jq the fallback cannot unescape it, and a single-rule sed turns each escaped
-# pair into two slashes, so `assets/` never matches and this hook silently
+# pair into two slashes, so `Assets/` never matches and this hook silently
 # validates nothing on Windows.
 FILE_PATH=$(printf '%s' "$FILE_PATH" | sed 's|\\\\|/|g; s|\\|/|g')
 
@@ -84,32 +85,20 @@ case "$FILE_PATH" in
 esac
 shopt -u nocasematch
 
-# Only check files under an asset root.
+# Only check files under the asset root.
 case "$REL_PATH" in
-    assets/*|Assets/*|Content/*) ;;
+    Assets/*) ;;
     *) exit 0 ;;
 esac
 
-FILENAME=$(basename "$REL_PATH")
 WARNINGS=""   # Style/convention issues -- exit 0 with advisory message
 ERRORS=""     # Build-breaking issues -- exit 2 so Claude hears about it
 
-# ADVISORY: naming convention -- lowercase with underscores, the Godot
-# convention, so only in Godot's assets/. Unity and Unreal name assets in
-# PascalCase with type prefixes; warning on every one of them trains the user
-# to ignore this hook. Naming issues warn, never block.
-# Uses grep -E (POSIX) not grep -P (Perl) for Windows Git Bash compatibility
-case "$REL_PATH" in
-    assets/*)
-        if echo "$FILENAME" | grep -qE '[A-Z[:space:]-]'; then
-            WARNINGS="$WARNINGS\n  NAMING: $REL_PATH must be lowercase with underscores (got: $FILENAME)"
-        fi ;;
-esac
-
-# BLOCKING: Check JSON validity for data files, in any engine's data folder --
+# BLOCKING: Check JSON validity for data files in a Data folder under Assets/ --
 # the same set validate-commit.sh blocks on.
+# Uses grep -E (POSIX) not grep -P (Perl) for Windows Git Bash compatibility
 # Invalid JSON will break runtime loading -- this is a build-breaking error
-if echo "$REL_PATH" | grep -qE '^(assets|Assets|Content)/(.*/)?[Dd]ata/.*\.[Jj][Ss][Oo][Nn]$'; then
+if echo "$REL_PATH" | grep -qE '^Assets/(.*/)?[Dd]ata/.*\.[Jj][Ss][Oo][Nn]$'; then
     FILE_PATH="$REL_PATH"
     if [ -f "$FILE_PATH" ]; then
         # Find a working Python command

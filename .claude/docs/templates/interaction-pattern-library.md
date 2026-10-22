@@ -6,8 +6,8 @@
 > **Author**: [user + ux-designer]
 > **Last Updated**: [today's date]
 > **Version**: [1.0]
-> **Engine**: [Godot 4.7 / Unity 6 / Unreal Engine 5]
-> **UI Framework**: [Godot Control nodes / Unity UI Toolkit / Unreal UMG]
+> **Engine**: [Unity 6.x]
+> **UI Framework**: [Unity UI Toolkit / uGUI]
 > **Related Documents**:
 > - `design/art/art-bible.md` — visual standards (colors, typography, iconography)
 > - `design/accessibility-requirements.md` — accessibility commitments per feature
@@ -746,7 +746,7 @@ These three patterns define how screens enter and exit the navigation stack.
 
 | Question | Owner | Deadline | Resolution |
 |----------|-------|----------|-----------|
-| [Does the engine's accessibility node system support screen reader announcements for toast notifications without requiring focus? Verify against engine-reference/godot/ for Godot 4.7.] | [ux-designer] | [Before first menu implementation] | [Unresolved] |
+| [Does the engine's accessibility node system support screen reader announcements for toast notifications without requiring focus? Verify against docs/engine-reference/unity/ for the pinned Unity version.] | [ux-designer] | [Before first menu implementation] | [Unresolved] |
 | [What is the platform-correct confirm/cancel button mapping for Nintendo Switch release? Nintendo first-party convention differs from Xbox/PlayStation.] | [producer] | [Before platform certification submission] | [Unresolved] |
 | [Should damage numbers be pooled as Label3D nodes or rendered in a SubViewport? Verify performance budget in coordination with technical-director.] | [lead-programmer, ux-designer] | [Before combat HUD implementation] | [Unresolved] |
 | [What is the maximum number of simultaneous toast notifications before the queue becomes visually overwhelming? Needs playtesting.] | [ux-designer] | [First playtesting session] | [Unresolved] |

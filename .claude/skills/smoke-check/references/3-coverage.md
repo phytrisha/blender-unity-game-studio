@@ -18,7 +18,7 @@ For each story in scope:
 
 1. Extract the system slug from the story's file path
    (e.g., `production/epics/combat/story-001.md` → `combat`)
-2. Glob `tests/unit/[system]/` and `tests/integration/[system]/` for files
+2. Glob `Assets/Tests/EditMode/[System]/` and `Assets/Tests/PlayMode/[System]/` for files
    whose name contains the story slug or a closely related term
 3. Check the story file itself for a `Test file:` header field or a
    "Test Evidence" section

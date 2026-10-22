@@ -5,12 +5,12 @@
 `/localize` runs the localization pipeline through one required subcommand:
 `scan`, `extract`, `validate`, `status`, `brief`, `cultural-review`,
 `vo-pipeline`, `rtl-check`, `freeze` or `qa`. It works on a single source string
-table under `assets/data/strings/` (`strings-en.json` is the English source; the
+table under `Assets/Settings/Data/Strings/` (`strings-en.json` is the English source; the
 other locales sit beside it) and writes reports under `production/localization/`.
 
 `scan`, `validate` and `status` are read-only. `extract` shows a diff of new
 keyed entries and asks "May I write these new entries to
-`assets/data/strings/strings-en.json`?" before appending only the diff; its
+`Assets/Settings/Data/Strings/strings-en.json`?" before appending only the diff; its
 verdict is **COMPLETE**. With no subcommand the skill prints usage and stops with
 verdict **FAIL** — missing required subcommand. A scan whose code root cannot be
 resolved reports `NOT ASSESSED — code root unresolved`; a status run with no
@@ -59,29 +59,29 @@ Fixture defaults.
 ### Case 1: Extract — New Strings Keyed and Appended After Approval
 
 **Fixture:**
-- `project.yaml` has `engine.name: Godot`, so the code root is `src/`
-- `src/ui/hud.gd` wraps three strings in `tr()` that have no entry in
-  `assets/data/strings/strings-en.json`
+- `project.yaml` has `engine.name: Unity`, so the code root is `Assets/`
+- `Assets/Scripts/UI/Hud.cs` wraps three strings in the project's `Loc.Tr()` localization call that have no entry in
+  `Assets/Settings/Data/Strings/strings-en.json`
 - No `production/localization/freeze-status.md` exists
 
 **Input:** `/localize extract`
 
 **Expected behavior:**
 1. Skill scans source files for localized string references and compares them
-   against the table in `assets/data/strings/`
+   against the table in `Assets/Settings/Data/Strings/`
 2. Skill proposes one new entry per unkeyed string, with a key in the form
    `[category].[subcategory].[description]` (e.g. `ui.hud.health_label`)
 3. Each new entry carries a `context` field: where it appears, maximum length,
    placeholder meaning
 4. Skill presents the diff and asks "May I write these new entries to
-   `assets/data/strings/strings-en.json`?"
+   `Assets/Settings/Data/Strings/strings-en.json`?"
 5. On approval it writes only the new entries (not a full replacement);
    verdict is COMPLETE
 
 **Assertions:**
 - [ ] Proposed keys follow `[category].[subcategory].[description]`
 - [ ] Every new entry includes a `context` field
-- [ ] The diff is shown and "May I write" names `assets/data/strings/strings-en.json` before any write
+- [ ] The diff is shown and "May I write" names `Assets/Settings/Data/Strings/strings-en.json` before any write
 - [ ] Only the three new entries are written — existing entries are not rewritten
 - [ ] Verdict is COMPLETE
 
@@ -110,7 +110,7 @@ Fixture defaults.
 ### Case 3: Validate — Gaps Reported by Locale, Nothing Written
 
 **Fixture:**
-- `assets/data/strings/` holds `strings-en.json`, `strings-fr.json` and
+- `Assets/Settings/Data/Strings/` holds `strings-en.json`, `strings-fr.json` and
   `strings-de.json`
 - `strings-de.json` lacks 4 keys present in the English source
 - One French entry omits the `{playerName}` placeholder its English source has
@@ -118,7 +118,7 @@ Fixture defaults.
 **Input:** `/localize validate`
 
 **Expected behavior:**
-1. Skill reads every string table file in `assets/data/strings/`
+1. Skill reads every string table file in `Assets/Settings/Data/Strings/`
 2. For `de` it reports the 4 keys as Completeness gaps
 3. For `fr` it reports a Placeholder mismatch on the affected key
 4. Results are grouped by locale and severity
@@ -135,7 +135,7 @@ Fixture defaults.
 ### Case 4: Status With No String Table — NOT ASSESSED
 
 **Fixture:**
-- `assets/data/strings/` does not exist
+- `Assets/Settings/Data/Strings/` does not exist
 
 **Input:** `/localize status`
 
@@ -156,7 +156,7 @@ Fixture defaults.
 ### Case 5: Director Gate Check — None; Cultural Review Uses localization-lead
 
 **Fixture:**
-- `assets/data/strings/strings-en.json` exists with player-facing strings
+- `Assets/Settings/Data/Strings/strings-en.json` exists with player-facing strings
 - Any review mode
 
 **Input:** `/localize cultural-review`
@@ -183,23 +183,23 @@ Fixture defaults.
 **Fixture:**
 - `project.yaml` has no `engine.name`; `.claude/docs/technical-preferences.md`
   reads `[TO BE CONFIGURED]`
-- Both `src/` and `Assets/` exist and hold UI code with hardcoded strings
-  (ambiguous tree)
+- No `Assets/` folder exists; UI code with hardcoded strings sits in a
+  top-level `scripts/` folder that is not a code root
 
 **Input:** `/localize scan`
 
 **Expected behavior:**
-1. Skill tries to resolve the code root and cannot (no engine, two candidate roots)
+1. Skill tries to resolve the code root and cannot (no engine, no `Assets/`)
 2. It reports `NOT ASSESSED — code root unresolved` for the hardcoded-string
    search and says which checks did not run
-3. It does not guess `src/`, and does not report zero hits or "no hardcoded
+3. It does not guess a root, and does not report zero hits or "no hardcoded
    strings found" — that would read as "nothing to localize"
 4. Nothing is written — scan is read-only
 
 **Assertions:**
 - [ ] Output reads `NOT ASSESSED — code root unresolved` for the code search
 - [ ] No "no hardcoded strings" or zero-hit result is reported
-- [ ] The code root is not assumed to be `src/`
+- [ ] The code root is not assumed — neither `Assets/` nor the `scripts/` folder
 - [ ] No file is written and no "May I write" ask appears
 
 ---
@@ -207,7 +207,7 @@ Fixture defaults.
 ### Case 7: QA on a Locale Nobody Has Played — NOT ASSESSED
 
 **Fixture:**
-- `assets/data/strings/strings-en.json` and `strings-fr.json` exist and validate
+- `Assets/Settings/Data/Strings/strings-en.json` and `strings-fr.json` exist and validate
   cleanly
 - No one has played the French build: there are no in-game observations for the
   functional, overflow, contextual-accuracy or VO checks

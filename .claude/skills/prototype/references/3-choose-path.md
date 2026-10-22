@@ -89,7 +89,7 @@ Reframe the hypothesis and simplify aggressively, or switch to Paper path.
 
 **Output:** A minimal runnable engine project in `prototypes/[name]-concept/`.
 
-**Lighter alternative — Love2D (Lua):** If the project engine (Godot, Unity, Unreal)
+**Lighter alternative — Love2D (Lua):** If the project engine (Unity)
 feels too heavy to stand up for a throwaway build, consider Love2D — a minimal 2D
 framework that installs in minutes, requires no project scaffolding, and renders
 natively with no browser latency. Used by many indie devs for rapid 2D action and
@@ -126,8 +126,8 @@ cannot tell you whether jumping feels right or whether explosions feel satisfyin
 **Narrative tools for this path:** For dialogue-heavy and story-driven games, skip the
 generic rules doc — use a dedicated narrative scripting tool instead:
 - **Twine** — zero-code hypertext fiction; ideal for branching structure experiments and choice-impact testing
-- **Ink** (Inkle) — plain-text scripting language used in *80 Days*, *Heaven's Vault*, and *Overboard*; exports directly to Unity and Godot
-- **Yarn Spinner** — dialogue scripting used in *A Short Hike*, *DREDGE*, and *Night in the Woods*; integrates natively with Unity and Godot
+- **Ink** (Inkle) — plain-text scripting language used in *80 Days*, *Heaven's Vault*, and *Overboard*; exports directly to Unity
+- **Yarn Spinner** — dialogue scripting used in *A Short Hike*, *DREDGE*, and *Night in the Woods*; integrates natively with Unity
 
 All three let you write and playtest branching dialogue in minutes. Key metric for
 narrative prototypes: **time to first emotional beat** — how many exchanges before

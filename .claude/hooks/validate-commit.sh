@@ -232,7 +232,7 @@ done
 # also commits every modified tracked file, and `git commit <path>` commits the
 # named paths' WORKING copies, staged or not -- both read from the working tree
 # (WT_FILES). core.quotePath=false: without it a non-ASCII path comes back
-# quoted ("assets/data/caf\303\251.json") and no pattern below matched it.
+# quoted ("Assets/Data/caf\303\251.json") and no pattern below matched it.
 _GIT="git -c core.quotePath=false"
 COMMIT_ARGS=" ${COMMIT_SEG#*[[:space:]]commit}"
 INDEX_FILES=$($_GIT diff --cached --name-only 2>/dev/null)
@@ -241,7 +241,7 @@ if printf '%s' "$COMMIT_ARGS" | grep -qE '[[:space:]](-[ABDEGHIJKLMNOPQRTUVWXYZb
     WT_FILES=$($_GIT diff --name-only 2>/dev/null)
 fi
 # Pathspecs after the `commit` word. ANY pathspec takes working copies -- `.`,
-# `-- .`, a folder, a glob, `:/` -- not only a literal assets/ path, and a
+# `-- .`, a folder, a glob, `:/` -- not only a literal Assets/ path, and a
 # message or an -F file is not one. So Python tokenises the command as a shell
 # would (shlex; COMMIT_SEG was split at quotes and cannot say where `-m "a b"`
 # ends) and git expands the pathspecs. Without Python only literal data paths
@@ -252,7 +252,7 @@ fi
 # modified tracked file unchecked. `-a` counts in a short-option cluster only
 # before a letter that takes a value (`-am x` is -a; `-ma` is the message "a").
 #
-# A path-limited commit (`git commit -m x src/player.gd`, no -i/--include)
+# A path-limited commit (`git commit -m x Assets/Scripts/Player.cs`, no -i/--include)
 # records ONLY those paths -- `git commit --dry-run` lists nothing else -- so a
 # broken file staged for later must not block it. The tokeniser says so on its
 # first line (CCGS-ONLY), and only when it read every commit in the command:
@@ -293,7 +293,7 @@ REDIR = re.compile(r"^[<>]+&?$|^&>+$")  # >, >>, >&, <, <<, &>: a redirection op
 COMMIT_ARG = {"--message", "--file", "--reuse-message", "--reedit-message", "--fixup", "--squash",
               "--author", "--date", "--template", "--cleanup", "--trailer", "--pathspec-from-file"}
 def words(line):
-    if PS:  # git reads assets/data/x.json as assets\data\x.json
+    if PS:  # git reads Assets/Data/x.json as Assets\Data\x.json
         line = line.replace("\\", "/")
     try:
         lx = shlex.shlex(line, posix=True, punctuation_chars=True)
@@ -430,7 +430,7 @@ fi
 WT_FILES=$(printf '%s\n' "$WT_FILES" | grep -v '^$' | sort -u)
 # A project in a subfolder of a larger repository (game/ in a monorepo): git
 # names every path above from the repository's top level, and every check below
-# matches from the PROJECT root (^assets/, ^design/gdd/, the code root) and
+# matches from the PROJECT root (^Assets/, ^design/gdd/, the code root) and
 # reads files relative to it. Unconverted, nothing matched and the commit went
 # through unchecked. Keep this project's paths with the prefix dropped; files
 # outside the project are not ours to check. "" at the top level.
@@ -490,13 +490,12 @@ trap '[ -n "$TMP_DESIGN" ] && rm -f "$TMP_DESIGN"' EXIT
 # Making it merely faster is not enough -- the cost stays linear and the hook
 # starves again at a larger file count. Batch it, or it returns.
 #
-# WHERE DATA LIVES is engine-specific, like the code root: Godot keeps it in
-# assets/data/, Unity under Assets/ (Assets/Data/, Assets/Game/Data/), Unreal
-# under Content/. Anchored to ^assets/data/ alone, this -- the hook's only
-# blocking check -- never fired on Unity or Unreal. It stays inside the asset
-# roots so an editor's JSON-with-comments (.vscode/settings.json) never blocks.
+# WHERE DATA LIVES: Unity keeps it under Assets/ (Assets/Data/,
+# Assets/Game/Data/, Assets/Settings/Data/). Anchored to a fixed folder alone,
+# this -- the hook's only blocking check -- never fired on Unity. It stays inside
+# Assets/ so an editor's JSON-with-comments (.vscode/settings.json) never blocks.
 # ---------------------------------------------------------------------------
-DATA_FILES=$(echo "$STAGED" | grep -E '^(assets|Assets|Content)/(.*/)?[Dd]ata/.*\.[Jj][Ss][Oo][Nn]$')
+DATA_FILES=$(echo "$STAGED" | grep -E '^Assets/(.*/)?[Dd]ata/.*\.[Jj][Ss][Oo][Nn]$')
 if [ -n "$DATA_FILES" ]; then
     PYTHON_CMD="$_VC_PY"
     if [ -n "$PYTHON_CMD" ]; then
@@ -751,15 +750,13 @@ fi
 # --- resolve the code root before either scan below ------------------------
 #
 # Both scans used to be hardcoded to `^src/gameplay/` and `^src/`. Per
-# .claude/docs/directory-structure.md, `src/` is the GODOT row of the code-root
-# table -- Unity compiles only `Assets/`, Unreal builds only from `Source/`. So
-# on two of the three supported engines both greps matched nothing on every
-# commit, both checks silently did not run, and the hook exited 0. A scan that
-# cannot run and a scan that found nothing produced the identical artifact.
+# .claude/docs/directory-structure.md, Unity compiles only `Assets/`, so on a
+# Unity project both greps matched nothing on every commit, both checks silently
+# did not run, and the hook exited 0. A scan that cannot run and a scan that
+# found nothing produced the identical artifact.
 #
-# The `/gameplay/` narrowing is dropped rather than translated: it describes a
-# Godot source layout and has no Unity or Unreal equivalent, so keeping it would
-# leave the check Godot-only by a second route. The hardcoded-value scan instead
+# The `/gameplay/` narrowing is dropped rather than translated: it described a
+# `src/` layout with no Unity equivalent. The hardcoded-value scan instead
 # widens to the whole code root and is bounded by source-code EXTENSION, which
 # is what actually keeps it precise -- without it, a Unity commit would drag
 # `.meta`, `.asset` and `.prefab` YAML (all full of `speed: 5`) into a scan
@@ -775,15 +772,15 @@ fi
 # itself. Only fires when source code is actually being committed, so a
 # docs-only or config-only commit stays quiet and the notice keeps its meaning.
 if [ -z "$CODE_ROOT" ]; then
-    if echo "$STAGED" | grep -qiE '\.(gd|cs|cpp|cc|hpp|h|c|py|js|ts|rs|java|kt|lua|gdshader|shader|hlsl)$'; then
-        WARNINGS="$WARNINGS\nSKIPPED: source files are staged but no code root could be resolved (engine.name unset, and the tree does not name one unambiguously). The hardcoded-value and TODO-owner scans did NOT run. Run /setup-engine, or set engine.name in project.yaml."
+    if echo "$STAGED" | grep -qiE '\.(cs|cpp|cc|hpp|h|c|py|js|ts|rs|java|kt|lua|shader|hlsl)$'; then
+        WARNINGS="$WARNINGS\nSKIPPED: source files are staged but no code root could be resolved (engine.name unset or not Unity, and no Assets/ folder to derive it from). The hardcoded-value and TODO-owner scans did NOT run. Run /setup-engine, or set engine.name in project.yaml."
     fi
 fi
 
 CODE_FILES=""
 [ -n "$CODE_ROOT" ] && CODE_FILES=$(echo "$STAGED" \
     | grep -E "^${CODE_ROOT}/" \
-    | grep -iE '\.(gd|cs|cpp|cc|hpp|h|c|py|js|ts|rs|java|kt|lua)$')
+    | grep -iE '\.(cs|cpp|cc|hpp|h|c|py|js|ts|rs|java|kt|lua)$')
 if [ -n "$CODE_FILES" ]; then
     HARDCODED=$(printf '%s\n' "$CODE_FILES" | tr '\n' '\0' \
         | xargs -0 grep -lE '(damage|health|speed|rate|chance|cost|duration)[[:space:]]*[:=][[:space:]]*[0-9]+' 2>/dev/null || true)

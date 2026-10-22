@@ -18,7 +18,7 @@ If invoked as `/setup-engine upgrade [old-version] [new-version]`:
 
 ### Step 1 — Read Current Version State
 
-Read `docs/engine-reference/<engine>/VERSION.md` to confirm the current pinned
+Read `docs/engine-reference/unity/VERSION.md` to confirm the current pinned
 version, risk level, and any migration note URLs already recorded. If
 `old-version` was not provided as an argument, use the pinned version from this
 file.
@@ -54,8 +54,8 @@ Pre-Upgrade Audit: [engine] [old-version] → [new-version]
 Files requiring changes:
   File                              | Deprecated API Found       | Effort
   --------------------------------- | -------------------------- | ------
-  src/gameplay/player_movement.gd   | old_api_name               | Low
-  src/ui/hud.gd                     | removed_node_type          | Medium
+  Assets/Scripts/Gameplay/PlayerMovement.cs | old_api_name        | Low
+  Assets/Scripts/UI/Hud.cs           | removed_component_type     | Medium
 
 Breaking changes to watch for:
   - [change description from migration guide]
@@ -85,7 +85,7 @@ Wait for explicit confirmation before continuing.
 
 After confirmation:
 
-1. Update `docs/engine-reference/<engine>/VERSION.md`:
+1. Update `docs/engine-reference/unity/VERSION.md`:
    - `Engine Version` → `[new-version]`
    - `Project Pinned` → today's date
    - `Last Docs Verified` → today's date

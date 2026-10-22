@@ -58,12 +58,12 @@
 - Does NOT produce a generic "test everything" checklist — the value of a targeted regression is specificity
 
 ### Case 5: Context pass — test evidence format from coding-standards.md
-**Input context**: coding-standards.md (imported by CLAUDE.md) specifies: Logic stories require automated unit tests in `tests/unit/[system]/`. Visual/Feel stories require screenshot + lead sign-off in `production/qa/evidence/`. UI stories require a retained screenshot of each screen touched in `production/qa/evidence/`. The project's `project.yaml` sets `qa.level: minimal`.
+**Input context**: coding-standards.md (imported by CLAUDE.md) specifies: Logic stories require automated unit tests in `Assets/Tests/EditMode/[System]/` (the Unity test root; coding-standards' `tests/unit/[system]/` placeholder resolves there). Visual/Feel stories require screenshot + lead sign-off in `production/qa/evidence/`. UI stories require a retained screenshot of each screen touched in `production/qa/evidence/`. The project's `project.yaml` sets `qa.level: minimal`.
 **Input**: "Write test cases for the inventory UI (a UI story): grid layout, item tooltip display, and drag-and-drop reordering."
 **Expected behavior**:
 - Classifies this correctly as a UI story per the provided standards
 - Produces manual test cases whose evidence is a retained screenshot of each screen touched (not automated unit tests) — because the coding standard specifies screenshots for UI stories
-- Specifies the output location: `production/qa/evidence/` (not `tests/unit/`)
+- Specifies the output location: `production/qa/evidence/` (not `Assets/Tests/`)
 - Test cases include: grid layout verification (all items appear, no overflow), tooltip display (correct item name, stats, description appear on hover/focus), and drag-and-drop (item moves to target slot, original slot becomes empty, slot limits respected)
 - States the story type (UI), output location and gate level (BLOCKING) at the start of the test cases, as its Test Evidence Routing section requires for every test case it produces
 - Does not drop or downgrade the screenshot evidence because the project runs `qa.level: minimal` — coding-standards.md: "Not waived at `qa.level: minimal` — tests are, the look is not"

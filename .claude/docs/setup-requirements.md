@@ -89,7 +89,7 @@ alone.
 | `promptCacheTtl` | How long the main conversation's prompt cache lives. | Raise it if you work in long sessions with gaps; the cache surviving a break avoids re-sending context. |
 | `subagentPromptCacheTtl` | The same, for subagents and other off-conversation requests. | Worth raising on a 49-agent project like this one, where `team-*` skills spawn repeatedly. |
 | `autoCompactWindow` | How full the context gets before Claude Code compacts it. | Lower it if compaction keeps surprising you mid-task; raise it if you would rather compact less often and keep more history. |
-| `skillListingBudgetFraction` | How much context the skill listing may occupy. | CCGS ships 74 skills, so the listing is not small. Lower it if you want more room for work; `skillListingMaxDescChars` trims each description instead. |
+| `skillListingBudgetFraction` | How much context the skill listing may occupy. | This studio ships 80 skills, so the listing is not small. Lower it if you want more room for work; `skillListingMaxDescChars` trims each description instead. |
 
 `sandbox.enabled` isolates shell commands from your filesystem and network. It
 is worth turning on, but it runs on **macOS, Linux and WSL2 only** — it is not
@@ -105,8 +105,8 @@ own config sets `acceptEdits` or `auto`.
 It sets the mode a session starts in. It is a backstop, not a guarantee, and
 these routes go around it:
 
-- **Starting in a subfolder** such as `design/` or the code root (`src/`,
-  `Assets/` or `Source/`, depending on the engine). Claude Code loads
+- **Starting in a subfolder** such as `design/` or the code root
+  (`Assets/`). Claude Code loads
   `.claude/settings.json` only from the folder it starts in, so that session has
   none of this project's hooks, deny rules or permission mode. Start at the root.
 - **Resuming a session.** A resumed session keeps the mode it ended in.

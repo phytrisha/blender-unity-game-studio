@@ -48,7 +48,7 @@ will determine whether the automated test row contributes to a FAIL verdict."
 
 | Story | Type | Test File | Coverage Status |
 |-------|------|-----------|----------------|
-| [title] | Logic | `tests/unit/[system]/[slug]_test.[ext]` | COVERED |
+| [title] | Logic | `Assets/Tests/EditMode/[System]/[Slug]Tests.cs` | COVERED |
 | [title] | Visual/Feel | `production/qa/evidence/[slug]-screenshots.md` | MANUAL |
 | [title] | Logic | — | MISSING ⚠ |
 | [title] | Config/Data | — | EXPECTED |
@@ -78,7 +78,7 @@ Stories that must have test evidence before they can be marked COMPLETE via
 `/story-done`:
 
 - **[story title]** (`[path]`) — Logic story has no test file.
-  Expected location: `tests/unit/[system]/[story-slug]_test.[ext]`
+  Expected location: `Assets/Tests/EditMode/[System]/[StorySlug]Tests.cs`
 
 [If none:] "All Logic and Integration stories have test coverage."
 [If `quick`:] "Not checked (quick run)." — never the line above, which a quick
@@ -107,9 +107,8 @@ Any platform with one or more FAIL checks contributes to the overall FAIL verdic
 **FAIL** if ANY of:
 - Automated test suite ran and reported one or more test failures
 - The automated suite did not complete: a timeout, a compile, parse or build
-  error, or no results file after the run (Phase 2 names each engine's form)
-- The build check (WAIVED path) failed: a non-zero exit, a timeout, or a Godot
-  `SCRIPT ERROR` or no-main-scene line
+  error, or no results file after the run (Phase 2 names Unity's form)
+- The build check (WAIVED path) failed: a non-zero exit or a timeout
 - Any Batch 1 (core stability) check returned FAIL
 - Any Batch 2 (primary sprint mechanic or regression check) returned FAIL
 

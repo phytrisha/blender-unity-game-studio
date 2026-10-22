@@ -52,9 +52,10 @@ report the release gate reads.
 Read `project.yaml` to determine the following, falling back to `.claude/docs/technical-preferences.md` for engine/language/platforms when a key is absent or empty:
 - `engine.name` and `engine.language` — **load-bearing: they select the Phase 3
   pattern set, and an engine with no sourced set for a category makes that
-  category `NOT ASSESSED`.** If `engine.name` is absent or empty, say so in the
+  category `NOT ASSESSED`.** If `engine.name` is absent or empty — or names any
+  engine other than Unity, which this studio does not support — say so in the
   report and treat every grep category as `NOT ASSESSED`; do not fall back to
-  the Godot lists because they are the ones written out in full
+  the Unity lists
 - `platform.targets` (affects which attack surfaces apply)
 - `platform.multiplayer` and `platform.online` — whether multiplayer/networking is
   in scope. `technical-preferences.md` has no equivalent fields, so the legacy
@@ -104,7 +105,7 @@ Scope: {full | network | save | input | quick}
 Engine: {engine.name} {engine.version}, language {engine.language}
 platform.multiplayer: {true | false | unset}    platform.online: {true | false | unset}    Phase 1 answer: {multiplayer | single-player | not asked}
 Code root: {the resolved code root, or "unresolved"}
-Also scan: {assets/data/ and the config files that exist, or "none"}
+Also scan: {data files under `Assets/` (JSON, ScriptableObject assets) and the config files that exist, or "none"}
 Categories to run, with their checks and grep patterns for this engine:
 {each Phase 3 category this scope runs, copied as written, with the table's row for this engine}
 NOT SOURCEABLE on this engine: {categories, or "none"} — report each NOT ASSESSED; never call it reviewed, verified safe or passed
@@ -144,33 +145,31 @@ platform.online are false`).
 
 ### Engine pattern sets — read this before any Category below
 
-**Every pattern list in Categories 1–3 is written for Godot.** On a Unity or
-Unreal project they match nothing, and a zero-hit scan renders the report clean,
-"the most dangerous possible failure for a security audit". Use the table for
-`engine.name` resolved in Phase 1.
+A zero-hit scan with the wrong pattern names renders the report clean, "the
+most dangerous possible failure for a security audit". Use this table — Unity
+is the only engine this studio supports:
 
-| Category | Godot | Unity | Unreal |
-|---|---|---|---|
-| 1 — Save / serialization | the Godot list below | **NOT SOURCEABLE** | **NOT SOURCEABLE** |
-| 2 — Network / multiplayer | the Godot list below | `ServerRpc`, `ClientRpc`, `NetworkVariable`, `NetworkObject`, `NetworkManager`, `NetworkBehaviour`, `IsServer`, `IsOwner` | `UFUNCTION`, `Server`, `Client`, `NetMulticast`, `Replicated`, `DOREPLIFETIME`, `GetLifetimeReplicatedProps`, `HasAuthority` |
-| 3 — Input | the Godot list below | `InputSystem`, `PlayerInput`, `ReadValue`, `InputValue` | `EnhancedInput`, `UInputAction`, `InputMappingContext`, `BindAction`, `FInputActionValue` |
-| 4 — Data exposure | engine-agnostic — the list below applies to all three | | |
-| 5, 6 | judgement and manifests, not greps — no engine set needed | | |
+| Category | Unity |
+|---|---|
+| 1 — Save / serialization | **NOT SOURCEABLE** |
+| 2 — Network / multiplayer | `ServerRpc`, `ClientRpc`, `NetworkVariable`, `NetworkObject`, `NetworkManager`, `NetworkBehaviour`, `IsServer`, `IsOwner` |
+| 3 — Input | `InputSystem`, `PlayerInput`, `ReadValue`, `InputValue` |
+| 4 — Data exposure | engine-agnostic — the list below |
+| 5, 6 | judgement and manifests, not greps — no engine set needed |
 
-The Unity and Unreal names above are **sourced from this repo's pinned
-references** (`docs/engine-reference/unity/modules/{networking,input}.md`,
-`docs/engine-reference/unreal/modules/{networking,input}.md`), not from recall.
+The Unity names above are **sourced from this repo's pinned reference**
+(`docs/engine-reference/unity/modules/{networking,input}.md`), not from recall.
 Verify them against the pin before use and add what the reference documents that
 this table omits — it is a floor, not a complete set.
 
-> **`NOT SOURCEABLE` is a verdict, not a gap to fill from memory.** Neither
-> reference tree carries a serialization/save module, so the save-API names for
-> Unity and Unreal cannot be confirmed here. **Do not write them from training
+> **`NOT SOURCEABLE` is a verdict, not a gap to fill from memory.** The
+> reference tree carries no serialization/save module, so Unity's save-API names
+> cannot be confirmed here. **Do not write them from training
 > data.** A confidently wrong pattern list is worse in this skill than in any
 > other: it produces a scan that looks thorough, finds nothing, and reads as a
 > pass. Where the table says NOT SOURCEABLE, that category is **`NOT ASSESSED`**
 > for this engine — see Phase 5. To close it properly, add a save/serialization
-> module, sourced like the others, to `docs/engine-reference/<engine>/modules/`;
+> module, sourced like the others, to `docs/engine-reference/unity/modules/`;
 > when one is there, take the category's pattern names from it, cite it in the
 > report, and the category runs.
 
@@ -182,22 +181,18 @@ this table omits — it is a floor, not a complete set.
 - Does the game trust numeric values from save files without bounds checking?
 - Are there any eval() or dynamic code execution calls near save loading?
 
-Grep patterns — **check the pinned engine reference before trusting this list**
-(see the API-name warning below): `FileAccess`, `File.open`, `open(`, `load`,
-`deserialize`, `parse`, `parse_string`, `from_json`, `read_file`, `get_var`,
-`bytes_to_var` — check each for validation.
+Grep patterns: **NOT SOURCEABLE on Unity** (table above) — this category is
+`NOT ASSESSED` until a save/serialization module exists in
+`docs/engine-reference/unity/modules/`. Still answer the questions above by
+reading the save/load code you can find, and report them as judgement, not as a
+scan.
 
-> **API names are version-specific and this list is a starting point, not a
-> complete set.** `File.open` is **Godot 3.x**; Godot 4 renamed the class to
-> `FileAccess` (`docs/engine-reference/godot/breaking-changes.md`). Before relying
-> on these patterns, read `docs/engine-reference/<engine>/` for the version this
-> project pins and add the names it documents. A grep for a class that no longer
-> exists returns zero hits, and **zero hits in this category renders the report
-> clean** — which is the most dangerous possible failure for a security audit.
-> Searching only `File.open` against a Godot 4 project finds nothing and reports
-> CLEAR TO SHIP on a codebase nobody checked. If you cannot confirm the correct
-> names for the pinned version, say so in the report rather than presenting a
-> zero-hit scan as a pass.
+> **API names are version-specific.** Read `docs/engine-reference/unity/` for
+> the version this project pins before relying on any pattern name. A grep for a
+> class that no longer exists returns zero hits, and **zero hits in this category
+> renders the report clean** — which is the most dangerous possible failure for a
+> security audit. If you cannot confirm the correct names for the pinned
+> version, say so in the report rather than presenting a zero-hit scan as a pass.
 
 ### Category 2: Network and Multiplayer Security (skip if single-player only)
 - Is game state authoritative on the server, or does the client dictate outcomes?
@@ -207,14 +202,8 @@ Grep patterns — **check the pinned engine reference before trusting this list*
 - Are authentication tokens handled correctly (never sent in plaintext)?
 - Does the game expose any debug endpoints in release builds?
 
-Grep for: `recv`, `receive`, `PacketPeer`, `socket`, `MultiplayerPeer`,
-`ENetMultiplayerPeer`, `NetworkedMultiplayerPeer`, `rpc`, `rpc_id`,
-`@rpc` — check each call site for validation.
-
-> Same version caveat as Category 1. `NetworkedMultiplayerPeer` is **Godot 3.x**;
-> Godot 4 uses `ENetMultiplayerPeer`
-> (`docs/engine-reference/godot/modules/networking.md`). The bare substring
-> `MultiplayerPeer` matches both and is the safer probe.
+Grep for the Unity network names in the table above — check each call site for
+validation. Same version caveat as Category 1.
 
 ### Category 3: Input Validation
 - Are any player-supplied strings used in file paths? (path traversal)
@@ -222,18 +211,17 @@ Grep for: `recv`, `receive`, `PacketPeer`, `socket`, `MultiplayerPeer`,
 - Are numeric inputs (e.g., item quantities, character stats) bounds-checked before use?
 - Are achievement/stat values checked before being written to any backend?
 
-Grep for: `get_input`, `Input.get_`, `input_map`, user-facing text fields — check validation.
+Grep for the Unity input names in the table above and user-facing text fields — check validation.
 
 ### Category 4: Data Exposure
-- Are any API keys, credentials, or secrets hardcoded in the code root or `assets/`?
+- Are any API keys, credentials, or secrets hardcoded under `Assets/` (code and content)?
 - Are debug symbols or verbose error messages included in release builds?
 - Does the game log sensitive player data to disk or console?
 - Are any internal file paths or system information exposed to players?
 
 Grep case-insensitively in release-facing code for: `api[_-]?key`, `secret`,
 `password`, `token`, `private[_-]?key`, `sk_live`, `BEGIN PRIVATE KEY`, `DEBUG`,
-and the engine's print call (`print(` on Godot, `Debug.Log` on Unity, `UE_LOG`
-on Unreal).
+and Unity's print call (`Debug.Log`).
 
 ### Category 5: Cheat and Anti-Tamper Vectors
 - Are gameplay-critical values stored only in memory, not in easily-editable files?
@@ -422,8 +410,8 @@ If it is **NOT ASSESSED**:
 >
 > Name the missing input for each category: `engine.name`, the code root, the
 > multiplayer scope (`/settings platform.multiplayer=…`), or — for a category the
-> Phase 3 table marks NOT SOURCEABLE on this engine, the usual cause on Unity and
-> Unreal — a save/serialization module in `docs/engine-reference/<engine>/modules/`
+> Phase 3 table marks NOT SOURCEABLE, the usual cause on Unity — a
+> save/serialization module in `docs/engine-reference/unity/modules/`
 > (Phase 3), naming that category.
 
 If it is **CLEAR TO SHIP**:

@@ -213,11 +213,11 @@ ADRs: ADR-0001 Accepted · ADR-0002 Accepted · ADR-0004 Proposed   (every ADR, 
 
 Story 001: [title] — Logic — ADR-0001 — Ready — Estimate M
   Covers: TR-[system]-001 ([one-line requirement])
-  Test required: tests/unit/[system]/[slug]_test.[ext]
+  Test required: Assets/Tests/EditMode/[System]/[Slug]Tests.cs
 
 Story 002: [title] — Integration — ADR-0004 — BLOCKED (ADR-0004 is Proposed) — Estimate L
   Covers: TR-[system]-002, TR-[system]-003
-  Test required: tests/integration/[system]/[slug]_test.[ext]
+  Test required: Assets/Tests/PlayMode/[System]/[Slug]Tests.cs
 
 Story 003: [title] — Visual/Feel — ADR-0001 — Ready — Estimate S
   Covers: TR-[system]-004

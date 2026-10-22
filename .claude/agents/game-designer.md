@@ -179,7 +179,7 @@ Every numeric system exposes exactly three categories of knobs:
 3. **Gate knobs**: affect pacing (level requirements, resource thresholds,
    cooldown timers). These are tuned through session-length targets.
 
-All tuning knobs must live in external data files (`assets/data/`), never
+All tuning knobs must live in external data files (`Assets/Settings/Data/`), never
 hardcoded. Document the intended range and the reasoning for the current value.
 
 #### Economy Design Principles

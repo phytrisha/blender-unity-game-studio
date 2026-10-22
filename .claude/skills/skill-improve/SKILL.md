@@ -41,8 +41,8 @@ Verify `.claude/skills/[name]/SKILL.md` exists. If not, stop with:
 
 Glob `CCGS Skill Testing Framework/catalog.yaml`. When it exists, say so first:
 "`CCGS Skill Testing Framework/` was renamed `studio-tests/` in 1.2.0, and this
-skill reads only `studio-tests/`. Move any specs you wrote there; UPGRADING.md
-(v1.1.3 → v1.2.0, `studio-tests/`) says how." Then go on.
+skill reads only `studio-tests/`. Move any specs you wrote there to the same
+paths under `studio-tests/`." Then go on.
 
 ---
 

@@ -35,8 +35,8 @@ matcher of `Bash|PowerShell` covers both.
 {
   "tool_name": "Write",
   "tool_input": {
-    "file_path": "src/gameplay/health.gd",
-    "content": "extends Node\n..."
+    "file_path": "Assets/Scripts/Gameplay/Health.cs",
+    "content": "public class Health : MonoBehaviour\n..."
   }
 }
 ```
@@ -47,9 +47,9 @@ matcher of `Bash|PowerShell` covers both.
 {
   "tool_name": "Edit",
   "tool_input": {
-    "file_path": "src/gameplay/health.gd",
-    "old_string": "var health = 100",
-    "new_string": "var health: int = 100"
+    "file_path": "Assets/Scripts/Gameplay/Health.cs",
+    "old_string": "int health = 100;",
+    "new_string": "[SerializeField] int health = 100;"
   }
 }
 ```
@@ -60,15 +60,15 @@ matcher of `Bash|PowerShell` covers both.
 {
   "tool_name": "Read",
   "tool_input": {
-    "file_path": "src/gameplay/health.gd"
+    "file_path": "Assets/Scripts/Gameplay/Health.cs"
   }
 }
 ```
 
 In real payloads a file tool's `file_path` is absolute, with the platform's own
 separators — backslashes on Windows. Strip the project root first, then match
-from the start of what is left (`assets/data/`). A segment such as
-`/assets/data/` matched anywhere also fires on a parent folder of the same name
+from the start of what is left (`Assets/Settings/Data/`). A segment such as
+`/Assets/Settings/Data/` matched anywhere also fires on a parent folder of the same name
 and on files outside the project, such as the user's own `~/.claude/skills/`.
 `validate-assets.sh` shows the stripping.
 
@@ -84,11 +84,11 @@ the debug log only, so an advisory warning must be hook JSON on stdout.
 {
   "tool_name": "Write",
   "tool_input": {
-    "file_path": "assets/data/enemy_stats.json",
+    "file_path": "Assets/Settings/Data/enemy_stats.json",
     "content": "{\"goblin\": {\"health\": 50}}"
   },
   "tool_response": {
-    "filePath": "assets/data/enemy_stats.json",
+    "filePath": "Assets/Settings/Data/enemy_stats.json",
     "type": "create"
   }
 }
@@ -100,11 +100,11 @@ the debug log only, so an advisory warning must be hook JSON on stdout.
 {
   "tool_name": "Edit",
   "tool_input": {
-    "file_path": "assets/data/enemy_stats.json",
+    "file_path": "Assets/Settings/Data/enemy_stats.json",
     "old_string": "\"health\": 50",
     "new_string": "\"health\": 75"
   },
-  "tool_response": { "filePath": "assets/data/enemy_stats.json" }
+  "tool_response": { "filePath": "Assets/Settings/Data/enemy_stats.json" }
 }
 ```
 

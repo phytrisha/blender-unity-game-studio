@@ -15,10 +15,10 @@
 # Usage: bash .claude/scripts/flaky-stats.sh [--root DIR] [--format F] [--runs] [--all] [FILE ...]
 #   FILE        one test run per file, in run order (the order of the pattern);
 #               relative to the root. With none, the files under test-results/,
-#               reports/ and Saved/Logs/ named *.xml, *.log or *.txt, sorted by
+#               named *.xml, *.log or *.txt, sorted by
 #               path: pass the files yourself when their names do not sort in
 #               run order
-#   --format F  auto (default: found per file), junit, nunit, unreal or text
+#   --format F  auto (default: found per file), junit, nunit or text
 #   --runs      also print one RUN row per file
 #   --all       also list tests with no fail and no skip (default: only tests
 #               with at least one fail or skip are listed; the rest are counted)
@@ -26,18 +26,14 @@
 #   -h, --help  this text
 #
 # What it parses (one result per test case, in file order):
-#   junit   gdUnit4's JUnit XML: each <testcase>; id is classname.name (name
+#   junit   JUnit XML (CI tools): each <testcase>; id is classname.name (name
 #           alone when there is no classname); a <failure> or <error> inside it
 #           is a fail, else <skipped> is a skip, else a pass
 #   nunit   Unity's NUnit XML: each <test-case>; id is its fullname (name when
 #           none); result Passed is a pass, Failed a fail, and every other
 #           value (Inconclusive, Skipped) a skip, so only Passed and Failed
 #           enter the history, as /test-flakiness says
-#   unreal  lines holding "Test Completed. Result={W}": Success is a pass, Fail
-#           a fail, any other word a skip and listed as `unrecognised`; id is
-#           Path={...}, else Name={...}; a result with neither is counted as
-#           no_id and kept out of the tests
-#   text    a line with PASSED or FAILED as a whole word (Godot), or Test passed
+#   text    a line with PASSED or FAILED as a whole word, or Test passed
 #           or Test failed (Unity): the id is the line without the marker, a
 #           leading ISO timestamp, ANSI colour codes, timing words like 12ms or
 #           (0.5s), and the punctuation [](): > | * - , around it. A line with
@@ -109,8 +105,8 @@ while [ $# -gt 0 ]; do
   esac
 done
 case "$FORMAT" in
-  auto|junit|nunit|unreal|text) ;;
-  *) echo "flaky-stats: --format takes auto, junit, nunit, unreal or text, got $FORMAT" >&2; exit 2 ;;
+  auto|junit|nunit|text) ;;
+  *) echo "flaky-stats: --format takes auto, junit, nunit or text, got $FORMAT" >&2; exit 2 ;;
 esac
 
 if [ -n "$ROOT_ARG" ]; then
@@ -120,9 +116,8 @@ else
 fi
 
 if [ -z "$FILES" ]; then
-  # The folders the skill names: gdUnit4's reports/, the game-ci and saved
-  # test-results/, and Unreal's Saved/Logs/.
-  for d in test-results reports Saved/Logs; do
+  # The folder the skill names: the game-ci and saved test-results/.
+  for d in test-results; do
     if [ -d "$d" ]; then
       printf 'scan\t%s\tpresent\n' "$d"
       FILES="$FILES$(find "$d" -type f \( -name '*.xml' -o -name '*.log' -o -name '*.txt' \) 2>/dev/null)$NL"
@@ -132,7 +127,7 @@ if [ -z "$FILES" ]; then
   done
   FILES=$(printf '%s' "$FILES" | awk 'NF' | sort -u)
   if [ -z "$FILES" ]; then
-    echo "flaky-stats: no test result files under test-results/, reports/ or Saved/Logs/; name the files" >&2
+    echo "flaky-stats: no test result files under test-results/; name the files" >&2
     exit 3
   fi
 else
@@ -162,16 +157,15 @@ printf '%s\n' "$FILES" | FORMAT="$FORMAT" SHOWRUNS="$SHOWRUNS" ALL="$ALL" awk '
     }
   }
   # The format of one file: NUnit if any <test-case, else JUnit if any
-  # <testcase, else Unreal if any "Test Completed. Result={", else text.
-  function detect(f,    l, nu, ju, un) {
-    nu = 0; ju = 0; un = 0
+  # <testcase, else text.
+  function detect(f,    l, nu, ju) {
+    nu = 0; ju = 0
     while ((getline l < f) > 0) {
       if (index(l, "<test-case") > 0) nu = 1
       else if (index(l, "<testcase") > 0) ju = 1
-      if (index(l, "Test Completed. Result={") > 0) un = 1
     }
     close(f)
-    return nu ? "nunit" : (ju ? "junit" : (un ? "unreal" : "text"))
+    return nu ? "nunit" : (ju ? "junit" : "text")
   }
   function trim(s) { sub(/^[ \t]+/, "", s); sub(/[ \t]+$/, "", s); return s }
   # XML entities in an id; &amp; last so &amp;lt; stays &lt;.
@@ -274,25 +268,6 @@ printf '%s\n' "$FILES" | FORMAT="$FORMAT" SHOWRUNS="$SHOWRUNS" ALL="$ALL" awk '
       xml_tag(substr(s, 1, q)); s = substr(s, q + 1)
     }
   }
-  function brace(s, key,    p, e) {
-    p = index(s, key "={")
-    if (p == 0) return ""
-    s = substr(s, p + length(key) + 2); e = index(s, "}")
-    return trim(e ? substr(s, 1, e - 1) : s)
-  }
-  function unreal_line(s,    mk, p, rest, q, w, id, code) {
-    mk = "Test Completed. Result={"
-    p = index(s, mk)
-    if (p == 0) return
-    rest = substr(s, p + length(mk)); q = index(rest, "}")
-    if (q == 0) return
-    w = substr(rest, 1, q - 1); rest = substr(rest, q + 1)
-    id = brace(rest, "Path"); if (id == "") id = brace(rest, "Name")
-    if (w == "Success") code = "P"
-    else if (w == "Fail") code = "F"
-    else { code = "S"; unrec("unreal", w) }
-    record(id, code)
-  }
   function text_line(s,    hp, hf, tpz, tfl, code, marker, p, t, n, a, i, out) {
     gsub(/\033\[[0-9;]*m/, "", s)
     hp = match(s, /(^|[^A-Za-z0-9_])PASSED([^A-Za-z0-9_]|$)/) > 0
@@ -356,7 +331,6 @@ printf '%s\n' "$FILES" | FORMAT="$FORMAT" SHOWRUNS="$SHOWRUNS" ALL="$ALL" awk '
     }
     line = $0; sub(/\r$/, "", line)
     if (cf == "nunit" || cf == "junit") xml_line(line)
-    else if (cf == "unreal") unreal_line(line)
     else text_line(line)
   }
   END {

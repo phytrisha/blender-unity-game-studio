@@ -130,8 +130,7 @@ If yes, create the directory. Every file must begin with:
 [comment] Date: [Current date]
 ```
 
-Write `[comment]` in each file's own comment syntax — `#` in GDScript (`.gd`) and
-Python, `//` in C#, C++ and JavaScript, `--` in Lua, `<!-- … -->` in HTML and
+Write `[comment]` in each file's own comment syntax — `#` in Python and shell, `//` in C#, C++ and JavaScript, `--` in Lua, `<!-- … -->` in HTML and
 Markdown. A header in another language's syntax is a parse error, not a label.
 Files that cannot hold a comment (JSON, engine-generated scene and project
 files) are exempt.

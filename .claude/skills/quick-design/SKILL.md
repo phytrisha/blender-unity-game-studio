@@ -89,7 +89,7 @@ content mode) and Read those ranges with offset and limit.
   dependency tier check." and continue.
 - Check `design/quick-specs/` for any prior quick specs that touched this
   system — avoid contradicting them.
-- If this is a Tuning change, also check `assets/data/` for the data file that
+- If this is a Tuning change, also check `Assets/Settings/Data/` for the data file that
   holds the relevant values.
 
 Report what was found: "Found GDD at [path]. Relevant section: [section name].
@@ -129,7 +129,7 @@ New value is [within / at the edge of / outside] the documented range.
 
 ## Acceptance Criteria
 
-- [ ] [Parameter] reads [new value] from `assets/data/[file]`
+- [ ] [Parameter] reads [new value] from `Assets/Settings/Data/[file]`
 - [ ] Behavior difference is observable in [specific context]
 - [ ] No regression in [related behavior]
 ```
@@ -219,7 +219,7 @@ implement without asking questions.]
 |------|---------|-------|----------|-----------|
 | [name] | [value] | [min–max] | [feel/curve/gate] | [why this default] |
 
-All values must live in `assets/data/[appropriate-file].json`, not hardcoded.
+All values must live in data under `Assets/Settings/Data/` (a ScriptableObject `.asset` or `[appropriate-file].json`), not hardcoded.
 
 ## Acceptance Criteria
 

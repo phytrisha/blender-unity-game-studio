@@ -15,9 +15,7 @@ Before starting the soak:
 - [ ] Game is running from a **fresh launch** (not resumed from a prior session)
 - [ ] All background applications closed (minimise OS memory interference)
 - [ ] Performance monitoring tool open and recording:
-  - **Godot**: Debugger → Monitors tab → Memory section visible
   - **Unity**: Memory Profiler window open
-  - **Unreal**: `stat memory` ready in console
   - Tool actually used, as named in this editor: [record it — the names above
     are NOT SOURCEABLE from `docs/engine-reference/`; none found → NOT ASSESSED]
 - [ ] Soak target confirmed: [session design intent from game concept]

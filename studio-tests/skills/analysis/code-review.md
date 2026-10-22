@@ -53,31 +53,31 @@ Fixture defaults.
 ### Case 1: Happy Path — Standards-compliant file that follows its ADR
 
 **Fixture:**
-- `project.yaml`: `engine.name: godot`, `specialists.code: godot-gdscript-specialist`, `specialists.shader: null`, `specialists.ui: null`
-- `src/gameplay/health_component.gd` meets all six Phase 4 checks:
-  - Doc comments (`##`) on every public method and the class
+- `project.yaml`: `engine.name: Unity`, `specialists.code: unity-specialist`, `specialists.shader: null`, `specialists.ui: null`
+- `Assets/Scripts/Gameplay/HealthComponent.cs` meets all six Phase 4 checks:
+  - XML doc comments (`///`) on every public method and the class
   - Every method under cyclomatic complexity 10 and under 40 lines
   - Dependencies injected; no singletons
-  - All tuning values loaded from `assets/data/`
+  - All tuning values loaded from data assets (ScriptableObjects under `Assets/`)
   - Depends on interfaces, not concrete classes
-- Header comment: `# Implements ADR-0004 (docs/architecture/adr-0004-health.md)`
+- Header comment: `// Implements ADR-0004 (docs/architecture/adr-0004-health.md)`
 - `docs/architecture/adr-0004-health.md` has `## Decision` and `## Consequences` sections, and the code follows the chosen approach
 - The specialist reports no issues; there is nothing to suggest
 
-**Input:** `/code-review src/gameplay/health_component.gd`
+**Input:** `/code-review Assets/Scripts/Gameplay/HealthComponent.cs`
 
 **Expected behavior:**
 1. Skill reads the source file and the coding standards
 2. Skill finds the `ADR-0004` reference in the file header
 3. Skill greps the ADR's `^## ` headings, then reads only the `## Decision` and `## Consequences` spans
-4. `godot-gdscript-specialist` is spawned via `Agent` for the `.gd` file; `shader: null` and `ui: null` are treated as unset and not spawned
+4. `unity-specialist` is spawned via `Agent` for the `.cs` file; `shader: null` and `ui: null` are treated as unset and not spawned
 5. Report shows ADR Compliance: COMPLIANT, Standards Compliance: 6/6 passing, Engine Specialist Findings: CLEAN, Testability: `N/A — no story path given`, and a Positive Observations section
 6. Verdict is APPROVED
 7. Phase 9 `AskUserQuestion` offers [A] Run `/story-done` and [B] Stop here
 
 **Assertions:**
 - [ ] The ADR is read with a heading map and bounded reads of `## Decision` and `## Consequences`, not an unbounded full read
-- [ ] `godot-gdscript-specialist` is spawned for the `.gd` file; no agent named `null` is spawned
+- [ ] `unity-specialist` is spawned for the `.cs` file; no agent named `null` is spawned
 - [ ] Standards Compliance reads `6/6 passing` and ADR Compliance reads COMPLIANT
 - [ ] Testability reads `N/A — no story path given`; no `qa-tester` is spawned without a story
 - [ ] Positive Observations section is present
@@ -89,18 +89,18 @@ Fixture defaults.
 ### Case 2: Changes Required — Missing doc comments and singleton usage, no ADR
 
 **Fixture:**
-- `project.yaml`: `engine.name: godot`, `specialists.code: godot-gdscript-specialist`
-- `src/ui/inventory_ui.gd` has:
-  - 2 public methods (`refresh_slots`, `sort_items`) without doc comments
-  - `GameManager.instance` used at lines 42 and 87
+- `project.yaml`: `engine.name: Unity`, `specialists.code: unity-specialist`
+- `Assets/Scripts/UI/InventoryUI.cs` has:
+  - 2 public methods (`RefreshSlots`, `SortItems`) without doc comments
+  - `GameManager.Instance` used at lines 42 and 87
   - All other standards met
 - No ADR reference in the file header, and no commit touching it names an ADR
 - No story path is passed
 
-**Input:** `/code-review src/ui/inventory_ui.gd`
+**Input:** `/code-review Assets/Scripts/UI/InventoryUI.cs`
 
 **Expected behavior:**
-1. Skill searches the file header and `git log --oneline -- src/ui/inventory_ui.gd` for `ADR-NNNN` references and finds none
+1. Skill searches the file header and `git log --oneline -- Assets/Scripts/UI/InventoryUI.cs` for `ADR-NNNN` references and finds none
 2. Output notes: "No ADR references found — ADR compliance check skipped. For full ADR compliance review, provide the story path: `/code-review [files] [story-path]`."
 3. Standards Compliance shows 4/6 passing and lists the failures with line references: the two undocumented methods and the singleton at lines 42 and 87
 4. Required Changes lists the missing doc comments and the singleton, with dependency injection as the fix
@@ -109,7 +109,7 @@ Fixture defaults.
 
 **Assertions:**
 - [ ] The "No ADR references found" note names the story-path form of the command
-- [ ] Missing doc comments are listed with method names (`refresh_slots`, `sort_items`), not only line references
+- [ ] Missing doc comments are listed with method names (`RefreshSlots`, `SortItems`), not only line references
 - [ ] Singleton usage is flagged with file and line numbers (42, 87)
 - [ ] Standards Compliance reads `4/6 passing`
 - [ ] Verdict is CHANGES REQUIRED and Phase 9 offers the three CHANGES REQUIRED options
@@ -120,17 +120,17 @@ Fixture defaults.
 ### Case 3: Architectural Violation — Code uses a pattern its ADR rejects
 
 **Fixture:**
-- `project.yaml`: `engine.name: godot`, `specialists.code: godot-gdscript-specialist`
-- `src/core/save_system.gd` header: `# Implements ADR-0010 (docs/architecture/adr-0010-save-format.md)`
-- `adr-0010-save-format.md` `## Decision`: save data goes through `SaveService` as JSON; direct `FileAccess` writes from gameplay code are explicitly rejected
-- `save_system.gd` writes save data with `FileAccess.open(..., FileAccess.WRITE)` directly at line 58
+- `project.yaml`: `engine.name: Unity`, `specialists.code: unity-specialist`
+- `Assets/Scripts/Core/SaveSystem.cs` header: `// Implements ADR-0010 (docs/architecture/adr-0010-save-format.md)`
+- `adr-0010-save-format.md` `## Decision`: save data goes through `SaveService` as JSON; direct file writes from gameplay code are explicitly rejected
+- `SaveSystem.cs` writes save data with `System.IO.File.WriteAllText(...)` directly at line 58
 - Code otherwise meets all six standards checks
 
-**Input:** `/code-review src/core/save_system.gd`
+**Input:** `/code-review Assets/Scripts/Core/SaveSystem.cs`
 
 **Expected behavior:**
 1. Skill reads only the Decision and Consequences sections of ADR-0010
-2. The direct `FileAccess` write is classified ARCHITECTURAL VIOLATION (BLOCKING) — a pattern the ADR explicitly rejects
+2. The direct `File.WriteAllText` write is classified ARCHITECTURAL VIOLATION (BLOCKING) — a pattern the ADR explicitly rejects
 3. ADR Compliance reads VIOLATION, listing ADR-0010, the result and the deviation with its severity
 4. The violation appears under Required Changes
 5. Verdict is CHANGES REQUIRED
@@ -148,21 +148,21 @@ Fixture defaults.
 ### Case 4: Edge Case — No source files at the specified path
 
 **Fixture:**
-- `project.yaml`: `engine.name: godot`
-- `src/networking/` does not exist
+- `project.yaml`: `engine.name: Unity`
+- `Assets/Scripts/Networking/` does not exist
 
-**Input:** `/code-review src/networking/`
+**Input:** `/code-review Assets/Scripts/Networking/`
 
 **Expected behavior:**
 1. Skill records its inputs as FOUND / ABSENT; the target source files are ABSENT
 2. Every required input is ABSENT, so the skill stops before producing review sections
-3. Output reports `NOT ASSESSED — NO DATA` as the whole verdict, naming `src/networking/` as missing
+3. Output reports `NOT ASSESSED — NO DATA` as the whole verdict, naming `Assets/Scripts/Networking/` as missing
 4. No specialist or `qa-tester` agent is spawned
 5. No review section is filled in, and the result is not presented as APPROVED
 
 **Assertions:**
 - [ ] Skill does not crash when the path does not exist
-- [ ] Output names the attempted path `src/networking/`
+- [ ] Output names the attempted path `Assets/Scripts/Networking/`
 - [ ] Verdict is `NOT ASSESSED — NO DATA`, not APPROVED
 - [ ] No specialist agent is spawned when there is nothing to review
 
@@ -172,9 +172,9 @@ Fixture defaults.
 
 **Fixture:**
 - `project.yaml` has `modes.review_mode: full` and no `engine.name`; `.claude/docs/technical-preferences.md` reads `[TO BE CONFIGURED]`
-- `src/gameplay/loot_system.gd` hardcodes a drop rate `0.05` at line 31; everything else meets the standards
+- `Assets/Scripts/Gameplay/LootSystem.cs` hardcodes a drop rate `0.05f` at line 31; everything else meets the standards
 
-**Input:** `/code-review src/gameplay/loot_system.gd`
+**Input:** `/code-review Assets/Scripts/Gameplay/LootSystem.cs`
 
 **Expected behavior:**
 1. Phase 2 finds no engine configured and skips the engine specialist steps
@@ -199,9 +199,9 @@ Fixture defaults.
 
 **Fixture:**
 - `project.yaml` has no `engine.name`; `.claude/docs/technical-preferences.md` reads `[TO BE CONFIGURED]`
-- `src/gameplay/loot_table.gd` meets all six Phase 4 checks and raises no architecture, SOLID or game-specific concern
+- `Assets/Scripts/Gameplay/LootTable.cs` meets all six Phase 4 checks and raises no architecture, SOLID or game-specific concern
 
-**Input:** `/code-review src/gameplay/loot_table.gd`
+**Input:** `/code-review Assets/Scripts/Gameplay/LootTable.cs`
 
 **Expected behavior:**
 1. Phase 2 records `Engine validation: NOT ASSESSED — no engine configured`; no engine specialist is spawned
@@ -217,13 +217,13 @@ Fixture defaults.
 ### Case 6: Referenced ADR missing — the section's NOT ASSESSED reaches the verdict
 
 **Fixture:**
-- `project.yaml`: `engine.name: godot`, `specialists.code: godot-gdscript-specialist`
-- `src/gameplay/stamina.gd` meets all six Phase 4 checks and raises no
+- `project.yaml`: `engine.name: Unity`, `specialists.code: unity-specialist`
+- `Assets/Scripts/Gameplay/Stamina.cs` meets all six Phase 4 checks and raises no
   architecture, SOLID or game-specific concern; the specialist reports it clean
-- Its header reads `# Implements ADR-0008 (docs/architecture/adr-0008-stamina.md)`,
+- Its header reads `// Implements ADR-0008 (docs/architecture/adr-0008-stamina.md)`,
   and no such file exists
 
-**Input:** `/code-review src/gameplay/stamina.gd`
+**Input:** `/code-review Assets/Scripts/Gameplay/Stamina.cs`
 
 **Expected behavior:**
 1. Phase 3 finds the `ADR-0008` reference but cannot read the ADR

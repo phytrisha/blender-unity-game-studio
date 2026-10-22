@@ -55,15 +55,15 @@ Fixture defaults.
 
 **Fixture:**
 - `project.yaml` resolves `workflow: full`; no `system_overrides` row for health
-- `src/gameplay/health_system.gd` exists (~80 lines) with:
-  - `@export var max_health: int = 100`
-  - `func take_damage(amount: int)` containing
-    `health = clamp(health - amount, 0, max_health)`
-  - `signal health_changed(new_value: int)`
-  - Docstrings on all public methods
+- `Assets/Scripts/Gameplay/HealthSystem.cs` exists (~80 lines) with:
+  - `[SerializeField] int maxHealth = 100;`
+  - `public void TakeDamage(int amount)` containing
+    `health = Mathf.Clamp(health - amount, 0, maxHealth);`
+  - `public event Action<int> HealthChanged;`
+  - XML doc comments on all public methods
 - The user answers every `UNCLEAR INTENT AREAS` question and approves the write
 
-**Input:** `/reverse-document design src/gameplay/health_system.gd`
+**Input:** `/reverse-document design Assets/Scripts/Gameplay/HealthSystem.cs`
 
 **Expected behavior:**
 1. Skill reads the source and passes the Phase 3b sufficiency check
@@ -74,7 +74,7 @@ Fixture defaults.
 4. The Formulas section records the clamp expression; Tuning Knobs lists
    `max_health = 100`
 5. The provenance banner ("Reverse-documented from implementation … from
-   `src/gameplay/health_system.gd`") sits directly under the title
+   `Assets/Scripts/Gameplay/HealthSystem.cs`") sits directly under the title
 6. Skill asks "May I write this to `design/gdd/health-system.md`?"
 7. File written on approval; verdict is COMPLETE
 
@@ -92,7 +92,7 @@ Fixture defaults.
 
 **Fixture:**
 - `project.yaml` resolves `workflow: full`
-- `src/gameplay/enemy_ai.gd` exists (~120 lines) with:
+- `Assets/Scripts/Gameplay/EnemyAI.cs` exists (~120 lines) with:
   - A patrol/chase/attack state machine
   - Inline constants with use sites: `if distance < 150:`, `speed = 3.5`
   - No arithmetic expression that computes a gameplay value from inputs
@@ -100,7 +100,7 @@ Fixture defaults.
 - The user replies "just draft it" without answering the intent questions, then
   approves the write
 
-**Input:** `/reverse-document design src/gameplay/enemy_ai.gd`
+**Input:** `/reverse-document design Assets/Scripts/Gameplay/EnemyAI.cs`
 
 **Expected behavior:**
 1. Sufficiency check passes (mechanics and tuning values found)
@@ -128,11 +128,11 @@ Fixture defaults.
 
 **Fixture:**
 - `project.yaml` resolves `workflow: minimal`
-- `src/core/combat/` holds `combat_system.gd` and `damage_resolver.gd`;
-  `combat_system.gd` calls `damage_resolver.gd` through an injected reference
+- `Assets/Scripts/Core/Combat/` holds `CombatSystem.cs` and `DamageResolver.cs`;
+  `CombatSystem.cs` calls `DamageResolver.cs` through an injected reference
 - The user answers the architecture questions and approves the write
 
-**Input:** `/reverse-document architecture src/core/combat/`
+**Input:** `/reverse-document architecture Assets/Scripts/Core/Combat/`
 
 **Expected behavior:**
 1. Skill reads every file under the directory path
@@ -156,15 +156,15 @@ Fixture defaults.
 ### Case 4: Thin Source — Sufficiency check stops the run
 
 **Fixture:**
-- `src/gameplay/inventory_system.gd` exists with only
-  `class_name InventorySystem`, `extends Node` and an empty `_ready()` —
+- `Assets/Scripts/Gameplay/InventorySystem.cs` exists with only
+  `public class InventorySystem : MonoBehaviour` and an empty `Awake()` —
   no mechanics, no formulas, no tuning values (under 20 non-boilerplate lines)
 
-**Input:** `/reverse-document design src/gameplay/inventory_system.gd`
+**Input:** `/reverse-document design Assets/Scripts/Gameplay/InventorySystem.cs`
 
 **Expected behavior:**
 1. Skill reads the file; Phase 3b counts 0 mechanics, 0 formulas, 0 values
-2. Skill stops with: "`src/gameplay/inventory_system.gd` does not contain enough
+2. Skill stops with: "`Assets/Scripts/Gameplay/InventorySystem.cs` does not contain enough
    implementation to reverse-document. Found: 0 mechanics, 0 formulas, 0 tuning
    values. …"
 3. Skill points to `/design-system [name]` as the skill that captures a design
@@ -184,7 +184,7 @@ Fixture defaults.
 **Fixture:**
 - Same source as Case 1; the user declines at the "May I write" prompt
 
-**Input:** `/reverse-document design src/gameplay/health_system.gd`
+**Input:** `/reverse-document design Assets/Scripts/Gameplay/HealthSystem.cs`
 
 **Expected behavior:**
 1. Skill analyzes, presents findings, and drafts the document
@@ -203,10 +203,10 @@ Fixture defaults.
 **Fixture:**
 - `project.yaml` sets no `modes.rigor` and no `modes.workflow`, so the resolved
   tier is `minimal` — the default; no `system_overrides`
-- Same source as Case 1 (`src/gameplay/health_system.gd`)
+- Same source as Case 1 (`Assets/Scripts/Gameplay/HealthSystem.cs`)
 - The user answers every `UNCLEAR INTENT AREAS` question and approves the write
 
-**Input:** `/reverse-document design src/gameplay/health_system.gd`
+**Input:** `/reverse-document design Assets/Scripts/Gameplay/HealthSystem.cs`
 
 **Expected behavior:**
 1. The tier resolves to `minimal` from the config block, not assumed
@@ -229,12 +229,12 @@ Fixture defaults.
 ### Case 7: Minimal Tier, Path Is the Code Root — the whole-game brief
 
 **Fixture:**
-- `project.yaml`: `engine.name: Godot` (code root `src/`); `modes.rigor: minimal` (workflow `minimal`); no `system_overrides`
-- `src/` holds a small finished game: `src/gameplay/health_system.gd` (as in Case 1), `src/gameplay/enemy_ai.gd` (as in Case 2) and `src/main.gd` that starts the game loop — 14 source files in all
+- `project.yaml`: `engine.name: Unity` (code root `Assets/`); `modes.rigor: minimal` (workflow `minimal`); no `system_overrides`
+- `Assets/Scripts/` holds a small finished game: `Assets/Scripts/Gameplay/HealthSystem.cs` (as in Case 1), `Assets/Scripts/Gameplay/EnemyAI.cs` (as in Case 2) and `Assets/Scripts/GameBootstrap.cs` that starts the game loop — 14 source files in all
 - No `design/game-brief.md` exists
 - The user answers every `UNCLEAR INTENT AREAS` question and approves the write
 
-**Input:** `/reverse-document design src/`
+**Input:** `/reverse-document design Assets/`
 
 **Expected behavior:**
 1. The tier resolves to `minimal` from the config block; the path is the code root itself, so the target is the whole game, not one system
@@ -251,7 +251,7 @@ Fixture defaults.
 - [ ] "May I write" names `design/game-brief.md` and is asked before the file is written
 - [ ] Verdict is COMPLETE
 
-**Case 7b — a path inside the code root:** the same fixture with `/reverse-document design src/gameplay/health_system.gd`.
+**Case 7b — a path inside the code root:** the same fixture with `/reverse-document design Assets/Scripts/Gameplay/HealthSystem.cs`.
 
 **Assertions (7b):**
 - [ ] The brief is written to `design/health-system-brief.md` (Case 6), never to `design/game-brief.md`

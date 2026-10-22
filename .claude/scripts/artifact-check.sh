@@ -233,7 +233,7 @@ def pattern_hits(files, pattern):
     argument and never on stdin: on Windows an argv element is re-quoted into
     a command line and re-split by MSYS grep, and a `"` in the pattern did not
     survive the round trip — the step read ABSENT against a file that matched
-    (the quoted `name: "Godot"`). Stdin (-f -) was tried next, but BSD grep's
+    (the quoted `name: "Unity"`). Stdin (-f -) was tried next, but BSD grep's
     reading of `-f -` is unconfirmed, and a build that does not read stdin
     there exits 2, which this function would have to treat as UNKNOWN anyway
     — so it writes the pattern to a real file instead, which every grep reads

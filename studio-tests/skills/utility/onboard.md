@@ -51,12 +51,12 @@ Fixture defaults.
 
 ## Test Cases
 
-### Case 1: Happy Path — Programmer Role on a Godot Project
+### Case 1: Happy Path — Programmer Role on a Unity Project
 
 **Fixture:**
 - `CLAUDE.md` exists
-- `project.yaml` has `engine.name: Godot`, so the code root is `src/`
-- `src/` holds game code; `.claude/agents/gameplay-programmer.md` exists
+- `project.yaml` has `engine.name: Unity`, so the code root is `Assets/`
+- `Assets/Scripts/` holds game code; `.claude/agents/gameplay-programmer.md` exists
 - `production/sprints/sprint-005.md` exists; git log has recent commits
 - `modes.automation` is unset (defaults to `collaborative`)
 
@@ -64,7 +64,7 @@ Fixture defaults.
 
 **Expected behavior:**
 1. Skill reads `CLAUDE.md` and `.claude/agents/gameplay-programmer.md`
-2. Skill scans the code root `src/` for architecture, patterns and key files, and
+2. Skill scans the code root `Assets/` for architecture, patterns and key files, and
    reads recent git history
 3. Skill generates a document headed `# Onboarding: gameplay-programmer` with the
    template sections (Project Summary, Your Role, Project Architecture, Current
@@ -77,7 +77,7 @@ Fixture defaults.
 
 **Assertions:**
 - [ ] The agent definition for the named role is read
-- [ ] The code root `src/` is scanned for this programmer role
+- [ ] The code root `Assets/` is scanned for this programmer role
 - [ ] The document uses the `# Onboarding: [Role/Area]` template sections
 - [ ] The document is presented before the "May I write" ask naming `production/onboarding/onboard-gameplay-programmer-[date].md`
 - [ ] Verdict is COMPLETE and next steps name `/sprint-status` and `/help`
@@ -89,7 +89,7 @@ Fixture defaults.
 **Fixture:**
 - `CLAUDE.md` exists; `.claude/agents/game-designer.md` exists
 - `design/gdd/` holds three system GDDs
-- `src/` also holds code
+- `Assets/Scripts/` also holds code
 
 **Input:** `/onboard game-designer`
 
@@ -142,14 +142,15 @@ Fixture defaults.
 **Fixture:**
 - `CLAUDE.md` exists; `.claude/agents/gameplay-programmer.md` exists
 - `project.yaml` has no `engine.name`, technical-preferences has
-  `[TO BE CONFIGURED]`, and both `src/` and `Assets/` exist (ambiguous tree)
+  `[TO BE CONFIGURED]`, and there is no `Assets/` folder — the C# scripts sit in a
+  top-level `scripts/` folder that is not a code root
 
 **Input:** `/onboard gameplay-programmer`
 
 **Expected behavior:**
-1. Skill tries to resolve the code root and finds it unresolved (two candidate
-   roots, no engine set)
-2. It does not default to `src/`
+1. Skill tries to resolve the code root and finds it unresolved (no `Assets/`,
+   no engine set)
+2. It does not default to `Assets/` or to the `scripts/` folder
 3. The code-dependent sections (Project Architecture, Key Files) are written as
    `NOT ASSESSED — code root unresolved` rather than filled from a guess — the
    code exists, so this is not a missing-data case
@@ -158,7 +159,7 @@ Fixture defaults.
    before the "May I write" ask
 
 **Assertions:**
-- [ ] The code root is not assumed to be `src/`
+- [ ] The code root is not assumed — neither `Assets/` nor `scripts/`
 - [ ] Architecture/key-file content is marked `NOT ASSESSED — code root unresolved`, not `NO DATA`
 - [ ] Sections with found inputs are still generated
 - [ ] "May I write" is asked before any file is written

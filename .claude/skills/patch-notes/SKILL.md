@@ -46,7 +46,7 @@ before Phase 2 and stop if it fails.
 > Excluding them addresses that exactly, and a repo-level stop does not.
 
 Corroborate before you proceed, cheaply: the Game commits should name systems
-that appear in `design/` and the code root (`src/`, `Assets/` or `Source/`). If
+that appear in `design/` and the code root (`Assets/`). If
 they name a product those directories
 never mention, that is the real wrong-history signal — stop.
 

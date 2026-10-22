@@ -79,7 +79,7 @@ Fixture defaults.
 **Fixture:**
 - Git repository; the live build is the release tag `v1.2.0` on `main`, and no
   `release/*` branch exists (the trunk default)
-- Bug in `src/gameplay/arena.gd` (crash on boss arena entry);
+- Bug in `Assets/Scripts/Arena/BossArena.cs` (crash on boss arena entry);
   `production/qa/bugs/BUG-0031.md` exists with `**Status**: Open`
 - All three sign-offs return APPROVE; `qa-lead` picks a smoke check, which returns PASS
 

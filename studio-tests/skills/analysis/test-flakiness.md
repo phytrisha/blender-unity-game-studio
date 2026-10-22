@@ -3,9 +3,8 @@
 ## Skill Summary
 
 `/test-flakiness` finds flaky tests from the results of multiple CI or local
-test runs. It takes a log path, `scan` (all available result files — JUnit XML
-from gdUnit4 in `reports/` or saved into `test-results/`, NUnit XML from Unity in
-`test-results/`, Unreal automation logs in `Saved/Logs/`), or `registry` (remediation guidance for tests already in the
+test runs. It takes a log path, `scan` (all available result files — NUnit XML
+from Unity in `test-results/`), or `registry` (remediation guidance for tests already in the
 quarantine section of `tests/regression-suite.md`). With no result data it lists
 three ways to get some and stops to ask. It builds a per-test history across
 runs, classifies each test that both passed and failed by fail rate — >25% High
@@ -51,32 +50,32 @@ Fixture defaults.
 
 ## Test Cases
 
-### Case 1: Happy Path — High flakiness from JUnit history, quarantined on approval
+### Case 1: Happy Path — High flakiness from NUnit XML history, quarantined on approval
 
 **Fixture:**
-- `project.yaml`: `engine.name: godot`; `modes.automation` unset (collaborative)
-- `test-results/` holds 6 gdUnit4 JUnit XML files from 6 runs of the same commit
-- `test_loot_drop_rolls_rare_item` fails in 2 of the 6 runs (33%); the other 40 tests pass in all 6
-- `tests/unit/loot/loot_drop_test.gd` calls `randf()` with no seed
+- `project.yaml`: `engine.name: Unity`; `modes.automation` unset (collaborative)
+- `test-results/` holds 6 NUnit XML files from 6 Edit Mode runs of the same commit
+- `LootDropTests.RollsRareItem_WithinRate` fails in 2 of the 6 runs (33%); the other 40 tests pass in all 6
+- `Assets/Tests/EditMode/LootDropTests.cs` calls `UnityEngine.Random.value` with no seed set
 - `tests/regression-suite.md` has a Quarantined Tests table with 1 existing entry
 
 **Input:** `/test-flakiness scan`
 
 **Expected behavior:**
-1. Skill finds the XML files in `test-results/` and parses `<testcase name=` and `<failure` / `<error` entries
+1. Skill finds the XML files in `test-results/` and parses each `<test-case` element's `fullname` and `result` (`Passed` / `Failed`; `Inconclusive` and `Skipped` do not enter the history)
 2. Skill builds `test_id → [run1 … run6]` and finds one test with both outcomes
 3. 33% is above 25% over 6 runs → **High** flakiness, Confidence confirmed → quarantine immediately
-4. Grep of `loot_drop_test.gd` finds `randf` → likely cause Random seed; fix direction: pass an explicit seed
-5. The quarantine recommendation names gdUnit4's GDScript skip parameters (`_do_skip := true`, `_skip_reason := "flaky: ..."`) as the way to skip it
+4. Grep of `LootDropTests.cs` finds `Random` → likely cause Random seed; fix direction: pass an explicit seed
+5. The quarantine recommendation names NUnit's `[Ignore("flaky: ...")]` attribute, with its required reason, as the way to skip it
 6. Summary shows Runs analysed 6, Tests tracked 41, the flaky test with a 33% fail rate, and 40 tests with consistent results
 7. Skill asks "May I update the quarantine section of `tests/regression-suite.md` with the flaky tests found?" and, separately, "May I write a full flakiness report to `production/qa/flakiness-report-[date].md`?"
 8. On approval, the new entry is appended with `Edit`; the existing entry stays
 9. Verdict: **COMPLETE** — flakiness report written
 
 **Assertions:**
-- [ ] JUnit XML results in `test-results/` are parsed per test across all 6 runs
+- [ ] NUnit XML results in `test-results/` are parsed per test across all 6 runs
 - [ ] The flaky test is named with its fail rate, Confidence confirmed, and classified High → quarantine
-- [ ] The skip mechanism named is gdUnit4's `_do_skip` / `_skip_reason` parameter pair, not an invented flag
+- [ ] The skip mechanism named is NUnit's `[Ignore("...")]` with a reason, not an invented flag
 - [ ] The likely cause is Random seed, with the explicit-seed fix direction
 - [ ] The two writes are asked about separately, each before it happens
 - [ ] The quarantine entry is appended and the existing entry is not removed
@@ -87,29 +86,29 @@ Fixture defaults.
 ### Case 2: Moderate Flakiness — Fix directly, do not quarantine
 
 **Fixture:**
-- `project.yaml`: `engine.name: godot`
-- `test-results/` holds 20 JUnit XML files from 20 runs of the same commit
-- `test_physics_bounce_height_matches_spec` fails in 3 of 20 runs (15%)
-- The test asserts `bounce_height == 0.5`
+- `project.yaml`: `engine.name: Unity`
+- `test-results/` holds 20 NUnit XML files from 20 runs of the same commit
+- `PhysicsTests.BounceHeight_MatchesSpec` fails in 3 of 20 runs (15%)
+- The test asserts `Assert.AreEqual(0.5f, bounceHeight)` with no tolerance
 
 **Input:** `/test-flakiness scan`
 
 **Expected behavior:**
 1. Skill computes a 15% fail rate → **Moderate** flakiness
 2. Grep of the test file finds a float equality comparison → likely cause Floating point
-3. Recommendation: "This test is intermittently unreliable… Do not quarantine yet — fix the test directly", with the fix direction of an epsilon comparison (`is_equal_approx`)
+3. Recommendation: "This test is intermittently unreliable… Do not quarantine yet — fix the test directly", with the fix direction of an epsilon comparison (`Assert.AreApproximately`, or NUnit `Is.EqualTo(x).Within(eps)`)
 
 **Assertions:**
 - [ ] A 15% fail rate is classified Moderate
 - [ ] The recommendation is to fix directly, not to quarantine
-- [ ] The cause is Floating point and the fix names an epsilon comparison such as `is_equal_approx`
+- [ ] The cause is Floating point and the fix names an epsilon comparison such as `Is.EqualTo(x).Within(eps)`
 
 ---
 
 ### Case 3: No Result Data — List options and stop
 
 **Fixture:**
-- No `test-results/` directory, no `.github/` directory, no `Saved/Logs/`
+- No `test-results/` directory and no `.github/` directory
 - No log path is given
 
 **Input:** `/test-flakiness scan`
@@ -131,9 +130,9 @@ Fixture defaults.
 ### Case 4: Too Few Runs — Suspected, not confirmed
 
 **Fixture:**
-- `project.yaml`: `engine.name: godot`
-- `test-results/` holds only 2 JUnit XML files, from 2 runs of the same commit
-- `test_save_roundtrip_preserves_inventory` passes in one run and fails in the other
+- `project.yaml`: `engine.name: Unity`
+- `test-results/` holds only 2 NUnit XML files, from 2 runs of the same commit
+- `SaveTests.Roundtrip_PreservesInventory` passes in one run and fails in the other
 
 **Input:** `/test-flakiness scan`
 
@@ -156,13 +155,13 @@ Fixture defaults.
 
 **Fixture:**
 - `project.yaml`: `modes.review_mode: full`
-- `tests/regression-suite.md` Quarantined Tests table lists `test_ai_path_recalc_avoids_blocked_tile` (reason: timing) and `test_scene_load_spawns_player` (reason: scene not ready)
+- `tests/regression-suite.md` Quarantined Tests table lists `AiPathTests.Recalc_AvoidsBlockedTile` (reason: timing) and `SceneLoadTests.Load_SpawnsPlayer` (reason: scene not ready)
 
 **Input:** `/test-flakiness registry`
 
 **Expected behavior:**
 1. Skill reads the quarantine section of `tests/regression-suite.md`
-2. For each quarantined test it gives remediation guidance from the cause table: Timing / async → explicit await or synchronisation instead of time-based delays; Scene/prefab load race → await one frame after instantiation (`await get_tree().process_frame`)
+2. For each quarantined test it gives remediation guidance from the cause table: Timing / async → explicit await or synchronisation instead of time-based delays; Scene/prefab load race → wait one frame after instantiation (`yield return null` in a `[UnityTest]`)
 3. No director gate is invoked regardless of review mode
 4. Existing quarantine entries are not removed and no test file is deleted or edited by the skill
 
@@ -176,7 +175,7 @@ Fixture defaults.
 
 ## Protocol Compliance
 
-- [ ] Locates result data (`test-results/` XML, `Saved/Logs/`, or a given log path) before analysis; with none, lists the three options and stops to ask
+- [ ] Locates result data (`test-results/` XML, or a given log path) before analysis; with none, lists the three options and stops to ask
 - [ ] Classifies tests with both outcomes by fail rate: >25% High (quarantine), 5–25% Moderate (fix, do not quarantine), 1–5% Low (monitor)
 - [ ] Names a likely cause and fix direction from the cause table, using Grep on the test file
 - [ ] Counts a test as flaky only when it both passed and failed across runs with no code change between them
@@ -192,11 +191,6 @@ Fixture defaults.
 
 - The no-argument path (run `scan` when CI logs are accessible, else
   `registry`) is not tested here.
-- Unity NUnit XML follows the same flow as Case 1, read from `<test-case`
-  elements and their `result` attribute; not tested separately.
-- Unreal differs and is not tested here: its results are plain-text
-  `Result={Success}` / `Result={Fail}` lines in `Saved/Logs/` (each test prints
-  `Test Completed. Result={<status>}`), and its skip
-  mechanism is NOT SOURCEABLE, so a quarantined Unreal test is logged and the
-  user is asked how their CI excludes it. The same applies to gdUnit4 C# tests.
+- Plain-text Unity logs (`Test passed` / `Test failed` lines) follow the same
+  flow as Case 1; not tested separately.
 - The Low tier (1–5%) needs 20 or more runs to reach and is not tested.

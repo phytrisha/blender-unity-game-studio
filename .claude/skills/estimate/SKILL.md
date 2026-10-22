@@ -31,8 +31,7 @@ Identify files and modules that would need to change:
     lines holding a branch or a boolean operator. The count
     approximates cyclomatic complexity (comments and strings count too); report
     it as that, never as a measured complexity.
-  - **Dependencies:** what each file pulls in — `preload`/`load(` (GDScript),
-    `using` (C#), `#include` (C++) — and which other files reference it.
+  - **Dependencies:** what each file pulls in — `using` (C#), `Resources.Load`/Addressables loads — and which other files reference it.
   - Name any file Grep could not count (missing, binary, unreadable) under Notes
     and Assumptions rather than leaving it out of the totals.
 - Identify integration points with other systems

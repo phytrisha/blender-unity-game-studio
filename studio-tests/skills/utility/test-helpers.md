@@ -3,11 +3,11 @@
 ## Skill Summary
 
 `/test-helpers [system-name | all | scaffold]` generates test helper files in
-the engine's **helper root** — the only place its test runner compiles them:
-`tests/helpers/` on Godot, `Assets/Tests/EditMode/Helpers/` on Unity (inside the
-`EditModeTests` assembly), `Source/<Module>/Private/Tests/Helpers/` on Unreal. It
-writes base assertion and factory helpers (`scaffold`), and a
-`[helper root]/[system]_factory.[ext]` per system built from that system's GDD
+Unity's **helper root** — the only place its test runner compiles them:
+`Assets/Tests/EditMode/Helpers/` (inside the `EditModeTests` assembly). An
+engine other than Unity is not supported by this studio. It writes base
+assertion and factory helpers (`scaffold`), and a
+`[helper root]/[System]TestFactory.cs` per system built from that system's GDD
 (`[system-name]` or `all`). No argument runs `scaffold` when no helpers exist,
 else `all`. It reads `engine.name`, `engine.language` and `testing.framework`
 from `project.yaml` (falling back to `technical-preferences.md`), samples up to
@@ -15,7 +15,7 @@ from `project.yaml` (falling back to `technical-preferences.md`), samples up to
 Edge Cases, Detailed Rules/Design) rather than reading it whole.
 
 Helpers must assert through the configured framework's API — never bare
-`assert()` — and must not extend the framework's test-suite base class. If the
+`assert()` — and must not be test fixtures. If the
 framework's assertion API cannot be confirmed, the skill says so and generates
 no helper. It never overwrites an existing helper: it skips it with a message.
 After presenting the file list it asks "May I write these helper files to
@@ -53,15 +53,15 @@ Fixture defaults.
 
 ## Test Cases
 
-### Case 1: Happy Path — Player helper generated for Godot/GDScript
+### Case 1: Happy Path — Player helper generated for Unity/C#
 
 **Fixture:**
-- `project.yaml` has `engine.name: Godot`, `engine.language: GDScript`,
-  `testing.framework: gdUnit4`; `addons/gdUnit4/` is installed, so its
-  assertion API can be confirmed from the project
-- `tests/unit/player/player_movement_test.gd` exists
+- `project.yaml` has `engine.name: Unity`, `engine.language: C#`,
+  `testing.framework: NUnit`; `com.unity.test-framework` is in
+  `Packages/manifest.json`, so NUnit's assertion API can be confirmed from the project
+- `Assets/Tests/EditMode/PlayerMovementTests.cs` exists
 - `design/gdd/player.md` has a Formulas section bounding health to 0–100
-- No existing files in `tests/helpers/`; the user approves the write
+- No existing files in `Assets/Tests/EditMode/Helpers/`; the user approves the write
 
 **Input:** `/test-helpers player`
 
@@ -69,19 +69,19 @@ Fixture defaults.
 1. Skill reads engine, language and framework; samples the existing test file
 2. Skill greps `design/gdd/player.md` for the Formulas / Edge Cases / Detailed
    Rules headings instead of reading it whole
-3. Skill drafts `tests/helpers/player_factory.gd`: a `class_name` helper that
-   `extends RefCounted`, static `make_*` factories with default parameters,
+3. Skill drafts `Assets/Tests/EditMode/Helpers/PlayerTestFactory.cs`: a plain
+   `public static class` with `Make*` factories taking default parameters,
    bound constants commented as coming from the GDD, and a header line
    "Based on: design/gdd/player.md"
-4. Every assertion goes through gdUnit4's confirmed API — no bare `assert()`,
-   no `FAIL_IF` placeholder
-5. Skill presents the file list and asks "May I write these helper files to `tests/helpers/`?"
+4. Every assertion goes through NUnit's `Assert` (directly or via `GameAssertions`)
+   — no bare `assert()`, no `FAIL_IF` placeholder
+5. Skill presents the file list and asks "May I write these helper files to `Assets/Tests/EditMode/Helpers/`?"
 6. Files written on approval; verdict COMPLETE, followed by the per-engine usage note
 
 **Assertions:**
-- [ ] Generated helper is GDScript at `tests/helpers/player_factory.gd`
+- [ ] Generated helper is C# at `Assets/Tests/EditMode/Helpers/PlayerTestFactory.cs`
 - [ ] Bound constants trace to the GDD's Formulas section (not invented values)
-- [ ] Helper extends `RefCounted`, not the test-suite base class, and uses no Autoload/singleton
+- [ ] Helper is a plain static class, not a test fixture (no `[TestFixture]`/`[Test]` markers), and uses no singleton
 - [ ] No bare `assert()` and no unresolved `FAIL_IF` reaches the file
 - [ ] Verdict is COMPLETE
 
@@ -111,45 +111,43 @@ Fixture defaults.
 ### Case 3: Helper Already Exists — Skipped, never overwritten
 
 **Fixture:**
-- Godot/GDScript/gdUnit4 configured as in Case 1
-- `tests/helpers/game_assertions.gd` already exists with hand-written additions
-- `tests/helpers/game_factory.gd` and `tests/helpers/scene_runner_helper.gd` do
-  not exist; the user approves the write
+- Unity/C#/NUnit configured as in Case 1
+- `Assets/Tests/EditMode/Helpers/GameAssertions.cs` already exists with hand-written additions
+- `Assets/Tests/EditMode/Helpers/GameFactory.cs` does not exist; the user approves the write
 
 **Input:** `/test-helpers scaffold`
 
 **Expected behavior:**
-1. Skill drafts the Godot base helpers only — `game_assertions.gd`,
-   `game_factory.gd` and `scene_runner_helper.gd`; no system-specific helpers in
-   `scaffold` mode
-2. Skill asks "May I write these helper files to `tests/helpers/`?"
-3. The two missing files, `tests/helpers/game_factory.gd` and
-   `tests/helpers/scene_runner_helper.gd`, are created
-4. For the existing file, skill reports: "Skipping `tests/helpers/game_assertions.gd`
+1. Skill drafts the Unity base helpers only — `GameAssertions.cs` and
+   `GameFactory.cs`; no system-specific helpers in `scaffold` mode
+2. Skill asks "May I write these helper files to `Assets/Tests/EditMode/Helpers/`?"
+3. The missing file, `Assets/Tests/EditMode/Helpers/GameFactory.cs`, is created
+4. For the existing file, skill reports: "Skipping `Assets/Tests/EditMode/Helpers/GameAssertions.cs`
    — already exists. Remove the file manually if you want it regenerated."
 5. Verdict COMPLETE
 
 **Assertions:**
-- [ ] `scaffold` mode generates no `[system]_factory` helper
-- [ ] The existing `game_assertions.gd` is left byte-for-byte unchanged
+- [ ] `scaffold` mode generates no `[System]TestFactory` helper
+- [ ] The existing `GameAssertions.cs` is left byte-for-byte unchanged
 - [ ] The skip message names the existing file and how to regenerate it
-- [ ] Only the two missing files are written; Verdict is COMPLETE
+- [ ] Only the missing file is written; Verdict is COMPLETE
 
 ---
 
 ### Case 4: Framework Assertion API Unconfirmed — No helper generated
 
 **Fixture:**
-- `project.yaml` has `engine.name: Godot`, `engine.language: GDScript`;
+- `project.yaml` has `engine.name: Unity`, `engine.language: C#`;
   `testing.framework` is absent and `technical-preferences.md` shows no Framework
-- No `addons/gdUnit4/` and no existing test files to learn the API from
+- `com.unity.test-framework` is not in `Packages/manifest.json` and there are no
+  existing test files to learn the API from
 
 **Input:** `/test-helpers scaffold`
 
 **Expected behavior:**
 1. Skill cannot confirm which assertion call registers a failure with the runner
 2. Skill says so, and generates no helper rather than guessing a form such as
-   `assert_that`, `assert_eq`, `assert_true` or a bare `assert()`
+   `Assert.AreEqual`, `Assert.That` or a bare `assert()`
 3. No "May I write" is asked and nothing is written
 
 **Assertions:**
@@ -211,11 +209,10 @@ Fixture defaults.
 ## Protocol Compliance
 
 - [ ] Reads engine, language and test framework before generating any helper
-- [ ] Writes helpers only to the engine's helper root (`tests/helpers/`, `Assets/Tests/EditMode/Helpers/` or `Source/<Module>/Private/Tests/Helpers/`)
+- [ ] Writes helpers only to Unity's helper root, `Assets/Tests/EditMode/Helpers/`
 - [ ] Section-greps the GDD for system helpers (numbered headings such as `## 4. Formulas` included); constants trace to its Formulas section
-- [ ] Godot signal asserts keep their flag in a Dictionary the lambda mutates and connect a variadic lambda (`func(...args)`) — a captured `bool` never changes in the caller, and a one-argument lambda fails on any other signal
 - [ ] Asserts only through the configured framework — never bare `assert()` — and generates nothing when that API cannot be confirmed
-- [ ] Helpers never extend the framework's test-suite base class
+- [ ] Helpers are never test fixtures (no fixture markers, so the runner does not discover them as empty suites)
 - [ ] Never overwrites an existing helper; reports the skip instead
 - [ ] Asks "May I write" before any file is created
 - [ ] Verdict is COMPLETE when helper files are written
@@ -226,8 +223,8 @@ Fixture defaults.
 
 - `all` mode (one factory per system with test files) follows Case 1 per system;
   not separately tested.
-- Unreal helper generation (`Source/<Module>/Private/Tests/Helpers/`) follows
-  Case 6's pattern for its own helper root; not separately tested. Nor is a
-  Unity project whose PlayMode tests need the helpers too (the skill asks before
-  creating a shared `TestHelpers.asmdef`).
+- A Unity project whose PlayMode tests need the helpers too (the skill asks
+  before creating a shared `TestHelpers.asmdef`) is not separately tested.
+- An `engine.name` other than Unity (unsupported: nothing generated) is not
+  separately tested.
 - A requested system with no GDD is not tested; the skill does not define that path.

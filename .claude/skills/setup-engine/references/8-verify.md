@@ -12,11 +12,10 @@ the `ENGINE-REFERENCE-IMPORT` marker. This step only confirms the result.
 Read `CLAUDE.md` and confirm the line under the marker reads:
 
 ```markdown
-@docs/engine-reference/<engine>/VERSION.md
+@docs/engine-reference/unity/VERSION.md
 ```
 
-with `<engine>` the engine just configured. If it still points at a different
-engine, Section 4 did not complete — go back and finish it rather than patching
+If it points anywhere else or is missing, Section 4 did not complete — go back and finish it rather than patching
 the line here.
 
 > **Why this is a check and not a second write.** Repeating the edit here with
@@ -29,31 +28,28 @@ the line here.
 
 ## 8.5 Read Back What You Just Wrote
 
-Section 5.5.1's rendering/physics table warns against the two mistakes most
-often made here, and it is still easy to make **both** of them, writing
-`Forward+` and `Jolt` for a 2D browser game. Section 3's `Installed at pin time`
-row is just as easy to drop silently, because a missing row leaves no trace.
-Catch both by verifying the files after writing them:
+Section 5.5.1's values and Section 3's `Installed at pin time` row are easy to
+get subtly wrong or drop silently, because a missing row leaves no trace. Catch
+both by verifying the files after writing them:
 
 ```bash
 bash .claude/scripts/project-coherence.sh
 ```
 
-It compares `project.yaml` against `docs/engine-reference/<engine>/VERSION.md`,
-against `project.godot`, and against the engine binary actually on PATH, and it
-checks that the files `commands.build` and `commands.test` name exist.
+It compares `project.yaml` against `docs/engine-reference/unity/VERSION.md`
+and against the Unity editor actually installed (the path in `commands.test`, else
+the Hub folder for `engine.version`), and it checks that the files
+`commands.build` and `commands.test` name exist.
 
 **Report every `[DIFFERS]` line to the user and resolve it before finishing.**
 Each one means two files this skill just wrote disagree, or describe something
 that is not there.
 
-One is expected on a new Godot project: `commands.test` names the gdUnit4
-runner under `addons/gdUnit4/`, which `/test-setup` installs later. Report that
-line as expected, name `/test-setup` as the step that clears it, and never edit
-`commands.test` to make it go away. Every other `[DIFFERS]` line is resolved here.
+Every `[DIFFERS]` line is resolved here; never edit a command just to make a
+line go away.
 
 **`[NOT CHECKED]` is not a pass.** Each such line names why a comparison could
-not be made -- an absent binary, a missing `project.godot`. Say which ones
+not be made -- an absent editor, a missing Unity project. Say which ones
 applied. A comparison that could not run has not established agreement.
 
 The script emits observations and never a verdict, per the convention in

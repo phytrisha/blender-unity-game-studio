@@ -52,12 +52,11 @@ No gate IDs assigned.
 - Documents the coordination requirement before proceeding
 
 ### Case 5: Context pass — checks engine version reference
-**Input:** Engine version reference (Godot 4.6) provided in context. Request: "Set up the default physics engine for the project."
+**Input:** Engine version reference (Unity 6.3 LTS) provided in context. Request: "Set up the default physics settings for the project."
 **Expected behavior:**
-- Reads the engine version reference and notes Godot 4.6 change: Jolt physics is now the default
-- Produces configuration guidance that accounts for the Jolt-as-default change (4.6 migration note)
-- Flags the GodotPhysics3D→Jolt differences `docs/engine-reference/godot/modules/physics.md` documents — HingeJoint3D `damp` is unsupported under Jolt, collision margins may behave differently, Jolt warns at runtime about unsupported properties — and that existing projects keep their current engine setting; says the reference lists no other API differences rather than inventing any
-- Does NOT suggest deprecated or pre-4.6 physics setup steps without noting they apply to older versions
+- Reads the engine version reference and notes the Unity 6 change: PhysX 5.1 replaces the PhysX 4.x of 2022 LTS
+- Produces configuration guidance that accounts for the changes `docs/engine-reference/unity/modules/physics.md` documents — default solver iterations raised from 6 to 8 (`Physics.defaultSolverIterations`), improved continuous collision detection — and flags code that relied on the old default; says the reference lists no other API differences rather than inventing any
+- Does NOT suggest 2022-LTS-era physics setup steps without noting they apply to older versions
 
 ---
 
@@ -74,6 +73,6 @@ No gate IDs assigned.
 ---
 
 ## Coverage Notes
-- Object pool (Case 1) must include a unit test in `tests/unit/engine/`
+- Object pool (Case 1) must include an Edit Mode unit test under `Assets/Tests/EditMode/`
 - Memory leak diagnosis (Case 3) should produce evidence artifacts in `production/qa/evidence/`
 - Engine version check (Case 5) confirms the agent treats VERSION.md as authoritative, not LLM training data

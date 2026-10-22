@@ -3,7 +3,7 @@
 ## Trigger
 
 Runs after any merge to `main` (the trunk) or a `release/*` branch that
-includes changes to `assets/`.
+includes changes to `Assets/`.
 
 ## Purpose
 
@@ -18,7 +18,7 @@ accumulating on the trunk.
 # Post-merge hook: Asset validation
 # Checks merged assets against project standards
 
-MERGED_ASSETS=$(git diff --name-only HEAD@{1} HEAD | grep -E '^assets/')
+MERGED_ASSETS=$(git diff --name-only HEAD@{1} HEAD | grep -E '^Assets/' | grep -vE '\.(meta|cs|asmdef)$')
 
 if [ -z "$MERGED_ASSETS" ]; then
     exit 0
@@ -30,9 +30,10 @@ WARNINGS=""
 for file in $MERGED_ASSETS; do
     filename=$(basename "$file")
 
-    # Check naming convention (lowercase with underscores)
-    if echo "$filename" | grep -qE '[A-Z[:space:]-]'; then
-        WARNINGS="$WARNINGS\nNAMING: $file -- must be lowercase with underscores"
+    # Check naming convention (PascalCase with a type prefix: SM_, SK_, T_, M_ ...;
+    # use the art bible's rule)
+    if echo "$filename" | grep -qE '[[:space:]]'; then
+        WARNINGS="$WARNINGS\nNAMING: $file -- no spaces in asset names"
         EXIT_CODE=1
     fi
 
@@ -55,12 +56,12 @@ for file in $MERGED_ASSETS; do
     size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null)
     if [ -n "$size" ]; then
         # Textures: max 4MB
-        if [[ "$file" == assets/art/* ]] && [ "$size" -gt 4194304 ]; then
+        if [[ "$file" == Assets/Art/* ]] && [ "$size" -gt 4194304 ]; then
             WARNINGS="$WARNINGS\nBUDGET: $file -- ${size} bytes exceeds 4MB texture budget"
             EXIT_CODE=1
         fi
         # Audio: max 10MB for music, 512KB for SFX
-        if [[ "$file" == assets/audio/sfx* ]] && [ "$size" -gt 524288 ]; then
+        if [[ "$file" == Assets/Audio/SFX/* ]] && [ "$size" -gt 524288 ]; then
             WARNINGS="$WARNINGS\nBUDGET: $file -- ${size} bytes exceeds 512KB SFX budget"
         fi
     fi

@@ -20,8 +20,8 @@ exists because the memory is the agent's own working notes about how to do its
 job, not a project artifact.
 
 None of the three extends anywhere else. The Collaboration Protocol still governs
-every other write under the code root (`src/`, `Assets/` or `Source/`),
-`design/`, `docs/`, `production/` and `assets/`: ask first, naming the path.
+every other write under the code root (`Assets/`),
+`design/`, `docs/` and `production/`: ask first, naming the path.
 Writing a memory is never a substitute for asking, and a memory must never be
 used to record something the user declined to have written.
 
@@ -44,7 +44,7 @@ So:
   captured profile exist before profiling; return BLOCKED naming what is missing
   rather than estimating" is durable. "There is no game here" is a timestamp.
 - **If you must record a state, state what invalidates it**, on the same line:
-  `INVALIDATED WHEN: project.yaml declares an engine, or the code root (src/, Assets/ or Source/) contains game code.`
+  `INVALIDATED WHEN: project.yaml declares an engine, or the code root (Assets/) contains game code.`
   A reader with no other context must be able to tell whether the note still
   holds.
 - **Never record absence of a game, of assets, of tests or of config as a

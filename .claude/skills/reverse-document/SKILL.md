@@ -1,7 +1,7 @@
 ---
 name: reverse-document
 description: "Generate missing design or architecture docs from existing implementation — works backwards from code and prototypes."
-argument-hint: "<type> <path> (e.g., 'design src/gameplay/combat' or 'architecture Assets/Scripts/Core')"
+argument-hint: "<type> <path> (e.g., 'design Assets/Scripts/Combat' or 'architecture Assets/Scripts/Core')"
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Write, Edit, Bash(bash "*/.claude/skills/reverse-document/../../hooks/yaml-helper.sh" resolve_config *)
 model: sonnet
@@ -30,11 +30,10 @@ appropriate design or architecture documentation. Use this when:
 - `architecture` → Generate an Architecture Decision Record (ADR)
 - `concept` → Generate a concept document from prototype
 
-**Path**: Directory or file to analyze, under the code root — `src/` Godot,
-`Assets/` Unity, `Source/<Module>/` Unreal (`.claude/docs/code-root-resolution.md`)
-- `src/gameplay/combat/` → All combat-related code (Godot)
-- `Assets/Scripts/Core/EventSystem.cs` → Specific file (Unity)
-- `Source/MyGame/Private/AI/` → A module folder (Unreal)
+**Path**: Directory or file to analyze, under the code root — `Assets/`
+(`.claude/docs/code-root-resolution.md`)
+- `Assets/Scripts/Combat/` → All combat-related code
+- `Assets/Scripts/Core/EventSystem.cs` → Specific file
 - `prototypes/stealth-mech/` → Prototype directory
 
 !`bash "${CLAUDE_SKILL_DIR}/../../hooks/yaml-helper.sh" resolve_config --keys workflow,system_overrides,automation`
@@ -62,8 +61,8 @@ generated — see Phase 5. Semantics of each tier are in
 
 **Examples**:
 ```bash
-/reverse-document design src/gameplay/magic-system
-/reverse-document architecture Source/MyGame/Private/EntityComponent
+/reverse-document design Assets/Scripts/MagicSystem
+/reverse-document architecture Assets/Scripts/Core/EntityComponent
 /reverse-document concept prototypes/vehicle-combat
 ```
 

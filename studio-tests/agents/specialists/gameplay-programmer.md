@@ -21,10 +21,10 @@ No gate IDs assigned.
 ### Case 1: In-domain request — appropriate output
 **Input:** "Implement a melee combo system where three consecutive light attacks chain into a finisher."
 **Expected behavior:**
-- Produces code or a code scaffold following the project's language (GDScript/C#) and coding standards
+- Produces C# code or a code scaffold following the project's coding standards
 - Models the combo as a state machine with an explicit transition table, and keeps the input-window check and finisher trigger as logic unit tests can drive without the full game running (logic separated from presentation)
 - References the relevant GDD section if one is provided in context
-- Does NOT implement UI feedback or enemy reactions: emits events/signals for them instead of referencing UI code, leaving the UI side to `ui-programmer` and enemy reactions to `ai-programmer`
+- Does NOT implement UI feedback or enemy reactions: emits C# events / UnityEvents for them instead of referencing UI code, leaving the UI side to `ui-programmer` and enemy reactions to `ai-programmer`
 - Output includes doc comments on all public methods per coding standards
 
 ### Case 2: Out-of-domain request — redirects correctly
@@ -74,7 +74,7 @@ No gate IDs assigned.
 ---
 
 ## Coverage Notes
-- Combo system test (Case 1) should be validated with a unit test in `tests/unit/gameplay/`
+- Combo system test (Case 1) should be validated with an Edit Mode unit test under `Assets/Tests/EditMode/`
 - Threading escalation (Case 3) verifies the agent does not over-reach into engine territory
 - ADR conflict (Case 4) confirms the agent respects the architecture governance process
 - Cases 1 and 5 together verify the agent implements to spec rather than improvising

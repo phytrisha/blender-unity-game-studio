@@ -11,7 +11,7 @@ After setup is complete, output:
 Engine Setup Complete
 =====================
 Engine:          [name] [version]
-Language:        [GDScript | C# | GDScript + C# | C# | C++ + Blueprint | Blueprint + C++]
+Language:        C#
 Knowledge Risk:  [LOW/MEDIUM/HIGH]
 Reference Docs:  [created/skipped]
 CLAUDE.md:       [updated]
@@ -20,7 +20,7 @@ project.yaml:    [created/updated]
 Agent Config:    [verified]
 
 Next Steps:
-1. Review docs/engine-reference/<engine>/VERSION.md
+1. Review docs/engine-reference/unity/VERSION.md
 ```
 
 Then print **one** Next-Steps list, matching the resolved `workflow` tier:

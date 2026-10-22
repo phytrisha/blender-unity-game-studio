@@ -56,7 +56,7 @@ check governs is whether that output is usable, not whether it is fetched.
 > history it is. Change both together.
 
 The genuine wrong-history signal is different: Game commits naming a product that
-`design/` and the code root (`src/`, `Assets/` or `Source/`) never mention. If you
+`design/` and the code root (`Assets/`) never mention. If you
 see that, stop.
 
 If **no** commit in the range is this game's, say so and stop:

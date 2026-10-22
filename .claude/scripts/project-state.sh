@@ -26,7 +26,7 @@
 #   engine          engine.name: project.local.yaml, then project.yaml, then
 #                   the legacy `Engine:` line of .claude/docs/technical-preferences.md
 #   code_root       the same answer and source label as resolve_code_root in
-#                   .claude/hooks/yaml-helper.sh; never defaults to src
+#                   .claude/hooks/yaml-helper.sh; never defaults to Assets
 #   source_files    `unknown` when code_root is unset: unknown is not zero
 #   stage_yaml      project.stage in project.yaml as written (even if invalid)
 #   stage_txt       first non-blank line of production/stage.txt as written
@@ -157,28 +157,28 @@ if [ -z "$ENGINE" ] && [ -f "$LEGACY" ]; then
   esac
   [ -n "$ENGINE" ] && { ESRC="$LEGACY"; CSRC="$LEGACY"; }
 fi
-# The code root each engine's own toolchain builds from
-# (.claude/docs/directory-structure.md): Godot src/, Unity Assets/, Unreal Source/.
+# The code root Unity's toolchain builds from (.claude/docs/directory-structure.md):
+# Assets/. Any other engine.name is unsupported by this studio and not guessed at.
 case "$(printf '%s' "$ENGINE" | tr '[:upper:]' '[:lower:]')" in
-  godot) CODE_ROOT="src" ;;
   unity) CODE_ROOT="Assets" ;;
-  unreal*) CODE_ROOT="Source" ;;
+  "") ;;
+  *) CSRC="unsupported:$ENGINE" ;;
 esac
-if [ -z "$CODE_ROOT" ]; then
-  # No usable engine: believe the tree only when exactly one root is present.
+if [ -z "$CODE_ROOT" ] && [ -z "$ENGINE" ]; then
+  # No engine at all: believe the tree only when an Assets/ folder is listed.
   # Names are compared exactly against the listing, never with `[ -d Assets ]`,
-  # which is also true for Godot's assets/ on a case-insensitive filesystem.
+  # which is also true for a lowercase assets/ on a case-insensitive filesystem.
   n=0; found=""
   for d in */; do
     d="${d%/}"
-    case "$d" in src|Assets|Source) found="$d"; n=$((n + 1)) ;; esac
+    case "$d" in Assets) found="$d"; n=$((n + 1)) ;; esac
   done
   if [ "$n" = 1 ]; then CODE_ROOT="$found"; CSRC="detected"; else CSRC=""; fi
 fi
 
 if [ -n "$CODE_ROOT" ]; then
   # The source extensions detect-gaps.sh check 1 counts.
-  SRC_FILES=$(count "$CODE_ROOT" -type f \( -name '*.gd' -o -name '*.cs' -o -name '*.cpp' \
+  SRC_FILES=$(count "$CODE_ROOT" -type f \( -name '*.cs' -o -name '*.cpp' \
               -o -name '*.c' -o -name '*.h' -o -name '*.hpp' -o -name '*.rs' -o -name '*.py' \
               -o -name '*.js' -o -name '*.ts' \))
   SSRC="$CODE_ROOT"

@@ -76,17 +76,16 @@ fi
 
 # Check if source code exists.
 #
-# All three code roots, not just `src/`. Per .claude/docs/directory-structure.md
-# `src/` is the Godot row; Unity builds from `Assets/` and Unreal from
-# `Source/`. Testing only `src/` meant a Unity project with a full codebase
+# Unity's code root, `Assets/` (.claude/docs/directory-structure.md), not
+# `src/`. Testing only `src/` meant a Unity project with a full codebase
 # could still be greeted with "NEW PROJECT ... Run: /start".
 #
 # Tested directly rather than through resolve_code_root: this check runs before
 # the config helper is guaranteed to be sourced, and "is there any code at all"
 # does not need the engine to be known.
-for _root in src Assets Source; do
+for _root in Assets; do
   [ -d "$_root" ] || continue
-  SRC_CHECK=$(find "$_root" -type f \( -name "*.gd" -o -name "*.cs" -o -name "*.cpp" -o -name "*.c" -o -name "*.h" -o -name "*.hpp" -o -name "*.rs" -o -name "*.py" -o -name "*.js" -o -name "*.ts" \) 2>/dev/null | head -1)
+  SRC_CHECK=$(find "$_root" -type f \( -name "*.cs" -o -name "*.cpp" -o -name "*.c" -o -name "*.h" -o -name "*.hpp" -o -name "*.rs" -o -name "*.py" -o -name "*.js" -o -name "*.ts" \) 2>/dev/null | head -1)
   if [ -n "$SRC_CHECK" ]; then
     FRESH_PROJECT=false
     break
@@ -94,8 +93,8 @@ for _root in src Assets Source; do
 done
 
 # --- Check 0b: v1.0 project — legacy config present, project.yaml absent ---
-# The migration story depends on users discovering /adopt; UPGRADING.md only
-# reaches people who read it. An unconfigured technical-preferences.md template
+# The migration story depends on users discovering /adopt; upgrade notes only
+# reach people who read them. An unconfigured technical-preferences.md template
 # does not count as legacy data (same rule as migrate-v1-config.sh), and legacy
 # config also means the project is not fresh — the NEW PROJECT banner below
 # would be wrong for it.
@@ -162,9 +161,8 @@ fi
 
 # --- Resolve the engine-specific code root for checks 1, 3 and 4 ------------
 #
-# Checks 1, 3 and 4 were all hardcoded to `src/`, which .claude/docs/directory-
-# structure.md defines as the GODOT row of the code-root table -- Unity uses
-# `Assets/`, Unreal `Source/`. On those two engines every directory test below
+# Checks 1, 3 and 4 were all hardcoded to `src/`, but per .claude/docs/directory-
+# structure.md Unity's code root is `Assets/`. On Unity every directory test below
 # failed, the source-file count came back 0, and NONE of the three checks ran.
 # A project with 200 undocumented Unity systems produced the same empty output
 # as a fully documented one.
@@ -186,8 +184,8 @@ fi
 # .claude/rules/skill-authoring.md). Announce it, once, and only when the checks
 # would otherwise have had somewhere to look.
 if [ "$DOC_CHECKS" = true ] && [ -z "$CODE_ROOT" ]; then
-  if [ -d src ] || [ -d Assets ] || [ -d Source ]; then
-    echo "ℹ️  NOT CHECKED: code exists but the code root is ambiguous (engine.name unset, and the tree does not name one unambiguously)."
+  if [ -d Assets ]; then
+    echo "ℹ️  NOT CHECKED: code exists but the code root is unresolved (engine.name is set to an engine other than Unity, or Assets/ is missing)."
     echo "    Checks 1, 3 and 4 (design and architecture docs for existing code) did NOT run."
     echo "    Suggested action: /setup-engine, or set engine.name in project.yaml"
   fi
@@ -196,7 +194,7 @@ fi
 # --- Check 1: Substantial codebase but sparse design docs ---
 if [ -n "$CODE_ROOT" ] && [ -d "$CODE_ROOT" ]; then
   # Count source files (cross-platform, handles Windows paths)
-  SRC_FILES=$(find "$CODE_ROOT" -type f \( -name "*.gd" -o -name "*.cs" -o -name "*.cpp" -o -name "*.c" -o -name "*.h" -o -name "*.hpp" -o -name "*.rs" -o -name "*.py" -o -name "*.js" -o -name "*.ts" \) 2>/dev/null | wc -l)
+  SRC_FILES=$(find "$CODE_ROOT" -type f \( -name "*.cs" -o -name "*.cpp" -o -name "*.c" -o -name "*.h" -o -name "*.hpp" -o -name "*.rs" -o -name "*.py" -o -name "*.js" -o -name "*.ts" \) 2>/dev/null | wc -l)
 else
   SRC_FILES=0
 fi

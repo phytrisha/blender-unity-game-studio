@@ -99,7 +99,7 @@ Fixture defaults.
 
 **Fixture:**
 - `project.yaml` sets `project.stage: Concept`, `modes.rigor: full`, and
-  `engine.name: "Godot"` (`full`, because at `standard` the art bible is
+  `engine.name: "Unity"` (`full`, because at `standard` the art bible is
   required only when visual-asset stories exist — `.claude/docs/workflow-modes.md`
   — and a Concept-stage project has no stories to decide it by)
 - No `design/gdd/game-concept.md`, no `design/art/art-bible.md`, no
@@ -191,7 +191,7 @@ Fixture defaults.
 ### Case 5: Director Gate Check — minimal path, no gate and no gate-check route
 
 **Fixture:**
-- `project.yaml` has `engine.name: "Godot"` and no `modes` block (`modes.rigor`
+- `project.yaml` has `engine.name: "Unity"` and no `modes` block (`modes.rigor`
   defaults to `minimal`, so `workflow` resolves to `minimal`)
 - `design/game-brief.md` exists
 - `production/epics/core/story-001.md` is `Status: Complete`,
@@ -286,11 +286,11 @@ Fixture defaults.
 ### Case 8: Minimal path, no game brief — a built game is documented, not re-brainstormed
 
 **Fixture:**
-- `project.yaml` has `engine.name: "Godot"` and no `modes` block (`workflow` resolves
+- `project.yaml` has `engine.name: "Unity"` and no `modes` block (`workflow` resolves
   to `minimal`)
 - No `design/game-brief.md`, no `design/gdd/game-concept.md`, no stories under
   `production/epics/`
-- Run A: `src/` holds 12 `.gd` files. Run B: `src/` holds 3 `.gd` files
+- Run A: `Assets/` holds 12 `.cs` files. Run B: `Assets/` holds 3 `.cs` files
 
 **Input:** `/help`
 
@@ -299,7 +299,7 @@ Fixture defaults.
    `engine-setup` PRESENT and `game-brief` not PRESENT
 2. Run A: the code root already holds the game (10 or more source files, the same
    test Step 2 uses for `production`), so `→ Next up` is the game brief via
-   `/reverse-document design src/`, which writes `design/game-brief.md` from what
+   `/reverse-document design Assets/`, which writes `design/game-brief.md` from what
    is built
 3. Run B: the code root is not yet a game, so `→ Next up` is the game brief via
    `/brainstorm`
@@ -307,7 +307,7 @@ Fixture defaults.
 5. Verdict is COMPLETE
 
 **Assertions:**
-- [ ] Run A's `→ Next up` is `/reverse-document design src/` (the code root for Godot), not `/brainstorm`, which on a built game would start a new idea
+- [ ] Run A's `→ Next up` is `/reverse-document design Assets/` (the Unity code root), not `/brainstorm`, which on a built game would start a new idea
 - [ ] Run B's `→ Next up` is `/brainstorm`
 - [ ] The 10-source-file threshold decides between them: 12 files route to `/reverse-document`, 3 files do not
 - [ ] No phase label, concept doc, art bible, systems map or `/gate-check` is presented as required
@@ -336,5 +336,4 @@ Fixture defaults.
   assert that listing.
 - The minimal path's "every story Complete" branch (three ways on: play the
   build, `/create-stories`, `/settings`) is not separately tested.
-- The `/reverse-document` route for a built game with no brief is Case 8; the code
-  root for Unity (`Assets/`) and Unreal (`Source/<Module>/`) is not given a fixture.
+- The `/reverse-document` route for a built game with no brief is Case 8.

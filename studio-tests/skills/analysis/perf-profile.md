@@ -58,12 +58,12 @@ Fixture defaults.
 ### Case 1: Happy Path — Budgets committed, combat hotspots found
 
 **Fixture:**
-- `project.yaml`: `engine.name: godot`, `performance.target_framerate: 60`,
+- `project.yaml`: `engine.name: Unity`, `performance.target_framerate: 60`,
   `performance.frame_budget_ms: 16.6`, `performance.draw_call_limit: 200`,
   `performance.memory_ceiling_mb: 2048`; `performance.enforce` unset (resolves
   to `warn`); `modes.automation` unset (collaborative)
 - No config key, design doc or `CLAUDE.md` section states a load-time target
-- `src/gameplay/combat/enemy_manager.gd` has a `_process()` that loops over every
+- `Assets/Scripts/Gameplay/Combat/EnemyManager.cs` has an `Update()` that loops over every
   enemy and, inside that loop, over every active projectile, and casts a ray per
   enemy every frame
 - Reworking the nested loop into a spatial partition is a multi-day change
@@ -74,8 +74,8 @@ Fixture defaults.
 1. Skill records its inputs: source code FOUND, committed budgets FOUND
 2. Phase 0: `performance.enforce` resolves to `warn` — violations are findings, not blockers
 3. Phase 2: the four `performance.*` keys are read with `get_effective_yaml_key` before any fallback
-4. Phase 3: the combat `_process()` functions are listed; the nested loop and the per-frame raycast are identified
-5. Phase 4: the report's Performance Budgets table uses 16.6 ms, 2048 MB and 200 draw calls as budgets, each of those three rows with an OK / WARNING / OVER status; the Load time row has no committed budget and is `NOT ASSESSED`; hotspots and recommendations cite `enemy_manager.gd` with a line number
+4. Phase 3: the combat `Update()` methods are listed; the nested loop and the per-frame raycast are identified
+5. Phase 4: the report's Performance Budgets table uses 16.6 ms, 2048 MB and 200 draw calls as budgets, each of those three rows with an OK / WARNING / OVER status; the Load time row has no committed budget and is `NOT ASSESSED`; hotspots and recommendations cite `EnemyManager.cs` with a line number
 6. Summary gives the top 3 hotspots, estimated headroom against the three set budgets, `no budget set — headroom not assessed` for load time, and a recommended next action
 7. Skill asks "May I write this profiling report to `production/polish/combat-report-[date].md`?"
 8. The nested-loop hotspot is rated Fix Effort M or L, so Phase 5 offers: implement, reduce scope via `/scope-check`, defer to Polish, or escalate via `/architecture-decision`
@@ -96,9 +96,9 @@ Fixture defaults.
 ### Case 2: No Committed Budget — Budget rows are NOT ASSESSED
 
 **Fixture:**
-- `project.yaml` has `engine.name: godot` and no `performance` block
+- `project.yaml` has `engine.name: Unity` and no `performance` block
 - No design doc and no `CLAUDE.md` section states a frame-rate, memory, load-time or draw-call target
-- `src/` contains gameplay scripts with `_process()` functions
+- `Assets/Scripts/` contains gameplay scripts with `Update()` methods
 
 **Input:** `/perf-profile full`
 
@@ -120,7 +120,7 @@ Fixture defaults.
 ### Case 3: Nothing to Profile — Whole verdict NOT ASSESSED — NO DATA
 
 **Fixture:**
-- Fresh project: `project.yaml` has `engine.name: godot` and no `performance` block, and the code root `src/` is absent
+- Fresh project: `project.yaml` has `engine.name: Unity` and no `performance` block, and the code root `Assets/` is absent
 - No design docs exist
 - No profiler output exists anywhere
 
@@ -143,9 +143,9 @@ Fixture defaults.
 ### Case 4: Local Enforcement Override `block` — Violations are blockers
 
 **Fixture:**
-- `project.yaml`: `engine.name: godot`, `performance.enforce: warn`, `performance.draw_call_limit: 200`, the other three budgets set
+- `project.yaml`: `engine.name: Unity`, `performance.enforce: warn`, `performance.draw_call_limit: 200`, the other three budgets set
 - `project.local.yaml`: `performance.enforce: block`, so the resolved block at the top of the skill shows `block`
-- `src/levels/forest/forest_builder.gd` instantiates 600 individual foliage `MeshInstance3D` nodes, each with its own material and no instancing
+- `Assets/Scripts/Levels/Forest/ForestBuilder.cs` instantiates 600 individual foliage GameObjects with a `MeshRenderer` each, each with its own material and no GPU instancing
 - `modes.automation` unset (collaborative)
 
 **Input:** `/perf-profile forest`
@@ -168,8 +168,8 @@ Fixture defaults.
 ### Case 5: Enforcement Level `off` in Full Review Mode — Informational only, no gates
 
 **Fixture:**
-- `project.yaml`: `engine.name: godot`, `modes.review_mode: full`, `modes.workflow: standard` (pinned: unset resolves to `minimal`, which has no sprints, so Phase 6 would name the brief's build order instead of `/sprint-plan update`), `performance.enforce: off`, all four budgets set
-- `src/` contains a `_process()` whose estimated frame cost exceeds `performance.frame_budget_ms`
+- `project.yaml`: `engine.name: Unity`, `modes.review_mode: full`, `modes.workflow: standard` (pinned: unset resolves to `minimal`, which has no sprints, so Phase 6 would name the brief's build order instead of `/sprint-plan update`), `performance.enforce: off`, all four budgets set
+- `Assets/Scripts/` contains an `Update()` whose estimated frame cost exceeds `performance.frame_budget_ms`
 
 **Input:** `/perf-profile full`
 
@@ -192,7 +192,7 @@ Fixture defaults.
 ### Case 6: `workflow` — where an accepted optimization goes
 
 **Fixture:**
-- As Case 1: budgets committed, `enemy_manager.gd` has the nested loop and
+- As Case 1: budgets committed, `EnemyManager.cs` has the nested loop and
   per-frame raycast, and the nested-loop hotspot is rated Fix Effort M or L
 - `modes.rigor: minimal`, so `modes.workflow` resolves to `minimal` (no sprints)
 - The user picks A for the nested-loop hotspot
@@ -225,11 +225,11 @@ Fixture defaults.
 ### Case 7: Session Started in a Subfolder — budgets are still read from the project root
 
 **Fixture:**
-- `project.yaml` at the project root: `engine.name: godot`,
+- `project.yaml` at the project root: `engine.name: Unity`,
   `performance.target_framerate: 60`, `performance.frame_budget_ms: 16.6`,
   `performance.draw_call_limit: 200`, `performance.memory_ceiling_mb: 2048`
-- The session's working directory is `src/gameplay/` (a subfolder), not the root
-- `src/gameplay/combat/enemy_manager.gd` has a `_process()` with a nested loop
+- The session's working directory is `Assets/Scripts/Gameplay/` (a subfolder), not the root
+- `Assets/Scripts/Gameplay/Combat/EnemyManager.cs` has an `Update()` with a nested loop
 
 **Input:** `/perf-profile combat`
 

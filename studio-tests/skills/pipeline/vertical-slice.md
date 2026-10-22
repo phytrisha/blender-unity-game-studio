@@ -79,7 +79,7 @@ Fixture defaults.
 ### Case 1: Happy Path — slice built, played unaided, PROCEED
 
 **Fixture:**
-- `project.yaml`: `engine.name: Godot`, `engine.language: GDScript`,
+- `project.yaml`: `engine.name: Unity`, `engine.language: C#`,
   `modes.review_mode: solo`, `modes.workflow: standard` (pinned: unset resolves
   to minimal, which routes PROCEED to `/create-stories` and `/dev-story` instead
   of the step 7 list)
@@ -99,7 +99,7 @@ Fixture defaults.
    `production/session-state/active.md`, and the checkpoint is written there
 3. Asks "May I create the vertical slice directory at
    `prototypes/ember-trail-vertical-slice/` and begin implementation?"; every
-   GDScript file it writes starts with `# VERTICAL SLICE - NOT FOR PRODUCTION`
+   C# file it writes starts with `// VERTICAL SLICE - NOT FOR PRODUCTION`
 4. Iterates with the user until the loop is playable, then asks for the
    from-scratch playthrough and puts the six debrief questions one at a time
 5. Drafts the report from `.claude/docs/templates/vertical-slice-report.md` with a
@@ -113,7 +113,7 @@ Fixture defaults.
 **Assertions:**
 - [ ] The validation question has both a player-experience and a build-feasibility part
 - [ ] Scope is confirmed, and the checkpoint ask names `active.md`, before any slice file is written
-- [ ] The directory ask comes before any slice file; each GDScript file's header is a `#` comment, never `//`
+- [ ] The directory ask comes before any slice file; each C# file's header is a `//` comment, never `#`
 - [ ] The debrief questions are asked one at a time, after the from-scratch playthrough
 - [ ] REPORT.md and the `prototypes/index.md` row are written only after one ask naming both; the row records PROCEED
 - [ ] The formal stage step is `/gate-check production` (Pre-Production → Production), not `/gate-check pre-production`
@@ -241,7 +241,7 @@ Fixture defaults.
 ### Case 6: Minimal workflow — PROCEED routes to stories and the velocity feeds the brief
 
 **Fixture:**
-- `project.yaml`: `engine.name: Godot`, `engine.language: GDScript`,
+- `project.yaml`: `engine.name: Unity`, `engine.language: C#`,
   `modes.workflow: minimal`, `modes.review_mode: solo` (pinned: this case tests the
   `minimal` PROCEED route, the opposite of Case 1)
 - `design/game-brief.md` holds the pitch, a "what they feel" line and a build order

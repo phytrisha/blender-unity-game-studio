@@ -9,8 +9,8 @@ takes a scope: a single story path, `sprint` (the most recent plan in
 with no argument it asks which. If the resolved scope holds zero stories it stops
 with `NOT ASSESSED — no stories in scope` and routes to the skill that creates
 them. For each story it collects Story Type, evidence path and acceptance
-criteria with targeted greps, locates the evidence (`tests/unit/[system]/`,
-`tests/integration/[system]/`, `production/qa/evidence/`,
+criteria with targeted greps, locates the evidence (the story's stated path first, then
+`Assets/Tests/EditMode/`, `Assets/Tests/PlayMode/`, `production/qa/evidence/`,
 `production/qa/smoke-*.md`), and reviews automated tests for assertion count,
 edge cases, naming and formula traceability, and manual evidence for criterion
 linkage, sign-offs, retained screenshots and freshness. It resolves `qa.level`
@@ -63,22 +63,22 @@ Fixture defaults.
 ### Case 1: Happy Path — Single Logic story with a strong test
 
 **Fixture:**
-- `project.yaml`: `engine.name: godot`, so the unit-test root is `tests/unit/`; `modes.automation` unset (collaborative)
-- `production/epics/combat/story-001-damage-calc.md` (slug `damage-calc`): `## Test Evidence` gives Story Type Logic and the path `tests/unit/combat/damage-calc_test.gd`; `## Acceptance Criteria` includes "damage is never below 1" and "critical hits multiply damage by 2.0"
-- `tests/unit/combat/damage-calc_test.gd` opens with `# Story: production/epics/combat/story-001-damage-calc.md`, has 4 test functions with 3+ assertions each, named like `test_damage_calc_zero_armor_returns_base_damage` and `test_damage_calc_max_crit_doubles_damage`, and names the GDD's `damage_formula` in a comment
+- `project.yaml`: `engine.name: Unity`, so the unit-test root is `Assets/Tests/EditMode/`; `modes.automation` unset (collaborative)
+- `production/epics/combat/story-001-damage-calc.md` (slug `damage-calc`): `## Test Evidence` gives Story Type Logic and the path `Assets/Tests/EditMode/DamageCalcTests.cs`; `## Acceptance Criteria` includes "damage is never below 1" and "critical hits multiply damage by 2.0"
+- `Assets/Tests/EditMode/DamageCalcTests.cs` opens with `// Story: production/epics/combat/story-001-damage-calc.md`, has 4 `[Test]` methods with 3+ assertions each, named like `ZeroArmor_ReturnsBaseDamage` and `MaxCrit_DoublesDamage`, and names the GDD's `damage_formula` in a comment
 
 **Input:** `/test-evidence-review production/epics/combat/story-001-damage-calc.md`
 
 **Expected behavior:**
 1. Single-story mode: skill reads the story's Test Evidence and Acceptance Criteria
-2. Section 3 finds the test file under `tests/unit/combat/`
-3. Section 4: assertion coverage is normal (3+ per function); "zero" and "max" cases cover the numeric criteria; names follow `test_[scenario]_[expected]`; the formula is referenced
+2. Section 3 finds the test file at the stated path under `Assets/Tests/EditMode/`
+3. Section 4: assertion coverage is normal (3+ per method); "zero" and "max" cases cover the numeric criteria; names follow `[Scenario]_[Expected]`; the formula is referenced
 4. Story verdict: **ADEQUATE**; overall verdict ADEQUATE; 0 BLOCKING items
 5. Report is presented in conversation, then the skill asks "May I write this test evidence review to `production/qa/evidence-review-[date].md`?" as optional
 6. Verdict: **COMPLETE**
 
 **Assertions:**
-- [ ] The test file is located under `tests/unit/combat/` for the Logic story
+- [ ] The test file is located under `Assets/Tests/EditMode/` for the Logic story
 - [ ] Assertion coverage, edge cases, naming and formula traceability are each reported
 - [ ] Story verdict is ADEQUATE
 - [ ] The report is shown before the optional "May I write" prompt
@@ -89,15 +89,15 @@ Fixture defaults.
 ### Case 2: Vacuous and Thin Tests — INCOMPLETE with a BLOCKING item
 
 **Fixture:**
-- `project.yaml`: `engine.name: godot`, `modes.rigor: standard` (so `qa.level: standard` — tests are required); no `testing.strict` block
+- `project.yaml`: `engine.name: Unity`, `modes.rigor: standard` (so `qa.level: standard` — tests are required); no `testing.strict` block
 - `production/epics/combat/story-002-crit-roll.md` (slug `crit-roll`): Story Type Logic
-- `tests/unit/combat/crit-roll_test.gd` has `func test_1()` with no assertions and `func test_crit_roll_applies_multiplier()` with one assertion
+- `Assets/Tests/EditMode/CritRollTests.cs` has `[Test] public void Test1()` with no assertions and `[Test] public void CritRoll_AppliesMultiplier()` with one assertion
 
 **Input:** `/test-evidence-review production/epics/combat/story-002-crit-roll.md`
 
 **Expected behavior:**
 1. Skill finds the test file and counts assertions per function
-2. `test_1` has 0 assertions → flagged BLOCKING (passes vacuously, proves nothing); `test_1` is also flagged as a generic name
+2. `Test1` has 0 assertions → flagged BLOCKING (passes vacuously, proves nothing); `Test1` is also flagged as a generic name
 3. The one-assertion function is noted as potentially thin
 4. Story verdict: **INCOMPLETE**
 5. Follow-ups: "These must be resolved before `/story-done` can mark the story Complete…" and "Consider running `/test-helpers [system]`…"
@@ -105,7 +105,7 @@ Fixture defaults.
 
 **Assertions:**
 - [ ] A test function with zero assertions is flagged BLOCKING
-- [ ] `test_1` is flagged as a naming issue
+- [ ] `Test1` is flagged as a naming issue
 - [ ] Story verdict is INCOMPLETE, not ADEQUATE
 - [ ] Output states BLOCKING items must be resolved before `/story-done` and suggests `/test-helpers`
 - [ ] Run ends with CONCERNS
@@ -139,7 +139,7 @@ Fixture defaults.
 ### Case 4: Story Type Unknown — Per-story NOT ASSESSED lifts the overall verdict
 
 **Fixture:**
-- `project.yaml`: `engine.name: godot`
+- `project.yaml`: `engine.name: Unity`
 - `production/epics/combat/` contains `story-001-damage-calc.md` (Logic, test as in Case 1) and `story-003-hit-feedback.md`, whose `## Test Evidence` section states no Story Type and no evidence path
 - Full-reading `story-003-hit-feedback.md` does not reveal a type either
 
@@ -163,7 +163,7 @@ Fixture defaults.
 ### Case 5: Visual/Feel Evidence Without a Retained Screenshot, Full Review Mode — No gates
 
 **Fixture:**
-- `project.yaml`: `engine.name: godot`, `modes.review_mode: full`
+- `project.yaml`: `engine.name: Unity`, `modes.review_mode: full`
 - `production/epics/combat/story-004-hit-flash.md` (slug `hit-flash`): Story Type Visual/Feel
 - `production/qa/evidence/hit-flash-evidence.md` references every acceptance criterion, has every sign-off filled, and is dated after the sprint start
 - No `*.png`, `*.jpg` or `*.gif` for this story exists in `production/qa/evidence/`
@@ -189,7 +189,7 @@ Fixture defaults.
 ### Case 6: UI Story Closed by Its Screenshots — No Sign-Off Required
 
 **Fixture:**
-- `project.yaml`: `engine.name: godot`
+- `project.yaml`: `engine.name: Unity`
 - `production/epics/ui/story-007-inventory-screen.md` (slug `inventory-screen`): Story Type UI; its
   `## Test Evidence` names `production/qa/evidence/inventory-screen-populated.png` and
   `production/qa/evidence/inventory-screen-empty.png` — one per screen state it touches
@@ -214,12 +214,12 @@ Fixture defaults.
 ### Case 7: Unity Logic Story — Evidence at the Stated Engine Path
 
 **Fixture:**
-- `project.yaml`: `engine.name: unity`
+- `project.yaml`: `engine.name: Unity`
 - `production/epics/inventory/story-003-stack-merge.md`: Story Type Logic; its
   `## Test Evidence` names `Assets/Tests/EditMode/InventoryTests.cs`
 - That file exists and holds one `[Test]` per acceptance criterion (4 in all), each with 3 or more `Assert.That` calls, named in the `[Scenario]_[Expected]` form (`MergeStacks_FullStack_SpillsToNewSlot`), with the empty-stack and max-stack cases covered
 - The inventory GDD has no Formulas section, so formula traceability does not apply
-- Nothing named `stack-merge_test.*` exists anywhere, and `tests/unit/` does not exist
+- Nothing named after the slug `stack-merge` exists anywhere
 
 **Input:** `/test-evidence-review production/epics/inventory/story-003-stack-merge.md`
 
@@ -229,16 +229,16 @@ Fixture defaults.
 
 **Assertions:**
 - [ ] The test is found at the stated Unity path — the story is not reported MISSING
-- [ ] The review does not require a `[story-slug]_test.*` name or a `tests/unit/` location
+- [ ] The review does not require a file named after the story slug
 
 ---
 
 ### Case 8: No Test for a Logic Story — MISSING, and it outranks NOT ASSESSED
 
 **Fixture:**
-- `project.yaml`: `engine.name: godot`, `modes.rigor: standard` (so `qa.level: standard` — a Logic story's test is required)
+- `project.yaml`: `engine.name: Unity`, `modes.rigor: standard` (so `qa.level: standard` — a Logic story's test is required)
 - `production/epics/combat/` contains `story-003-hit-feedback.md` (no Story Type, as in Case 4) and `story-005-knockback.md`: Story Type Logic, no evidence path stated
-- No test exists for it: `tests/unit/combat/` does not exist, and no other test file names the slug `knockback` or references the story
+- No test exists for it: no file under `Assets/Tests/` names the slug `knockback`, its system, or references the story
 
 **Input:** `/test-evidence-review combat`
 
@@ -260,7 +260,7 @@ Fixture defaults.
 ### Case 9: `qa.level: minimal` — a Logic Story With No Test Is WAIVED; a UI Screenshot Is Not
 
 **Fixture:**
-- `project.yaml`: `engine.name: godot`, no `modes` block (so `qa.level: minimal` — tests are waived)
+- `project.yaml`: `engine.name: Unity`, no `modes` block (so `qa.level: minimal` — tests are waived)
 - `production/epics/combat/` contains `story-005-knockback.md` (Logic, no test anywhere, as in Case 8) and `story-008-pause-menu.md` (UI, no retained image for it in `production/qa/evidence/`)
 
 **Input:** `/test-evidence-review combat`

@@ -36,11 +36,11 @@ not the primary intent of the screen.
 - Minimum touch target: 44x44pt (iOS HIG) / 48x48dp (Android). Apply even on PC if touch support is possible.
 
 **Implementation Notes**:
-[Godot: Extend `Button` control. Override `_draw()` for custom states rather than
-modifying themes mid-state. Use `focus_mode = FOCUS_ALL` to ensure keyboard
-focusability. Set `mouse_default_cursor_shape = CURSOR_POINTING_HAND`. For the
-scale animation, use a Tween on the `scale` property of the button's parent
-Control — scaling the Button itself can clip children.]
+[Unity (uGUI): a `Button` with a custom transition (sprite swap or animation) for
+the states, rather than changing shared styles mid-state. Keep it a `Selectable` in
+the navigation graph so keyboard and gamepad can focus it. For the scale animation,
+animate a parent `RectTransform` — scaling the Button itself can clip children. In
+UI Toolkit, use USS `:hover`, `:active` and `:focus` pseudo-classes.]
 
 ---
 
@@ -136,11 +136,11 @@ a description field alongside).
 - Screen reader: Role: "switch." State: "on" or "off" — the accessible name should NOT include the state (the screen reader announces state separately). Correct: accessible name "Subtitles," state "on." Incorrect: accessible name "Subtitles On."
 - The toggle label (not just the visual thumb position) must change to show current state for players who cannot reliably distinguish left from right positions.
 
-**Implementation Notes**: [Godot: Use a custom Control or a CheckButton. The
-built-in CheckButton provides accessibility role but uses a checkbox-style visual;
-a custom slide-toggle animation may be needed for the target art style. Ensure
-the slide animation is skipped when motion reduction mode is active — in that
-case, snap to final state instantly.]
+**Implementation Notes**: [Unity: use a custom `Toggle` prefab. The built-in
+`Toggle` provides the selection behaviour but a checkbox-style visual; a custom
+slide-toggle animation may be needed for the target art style. Ensure the slide
+animation is skipped when motion reduction mode is active — in that case, snap to
+the final state instantly.]
 
 ---
 
@@ -172,12 +172,12 @@ discrete list (use Dropdown). Binary state (use Toggle).
 - Screen reader: Role: "slider." Accessible name: the label (e.g., "Music Volume"). Current value announced on every change: "Music Volume, 80 percent." Min/max values announced on first focus.
 - All sliders must show a numeric value alongside the visual position. Relying only on track fill position excludes players who cannot perceive relative position.
 
-**Implementation Notes**: [Godot `HSlider`: set `step` to appropriate increment.
-Override keyboard input to add Page Up/Down support via `_input()`. Bind the
-`value_changed` signal to update the displayed numeric label. When motion reduction
-mode is enabled, ensure value label updates are the sole feedback — do not suppress
-them. Rumble feedback on gamepad slider adjustment is a nice enhancement for
-accessibility.]
+**Implementation Notes**: [Unity `Slider`: set whole numbers or the step in code to the
+appropriate increment. Add Page Up/Down support by handling those keys while the
+slider is selected. Bind `onValueChanged` to update the displayed numeric label. When
+motion reduction mode is enabled, ensure value label updates are the sole feedback —
+do not suppress them. Rumble feedback on gamepad slider adjustment is a nice
+enhancement for accessibility.]
 
 ---
 
@@ -210,11 +210,10 @@ as selecting one (show options visibly, e.g., as a horizontal selector or list).
 - Screen reader: Role: "combobox." Accessible name: the field label. Expanded/collapsed state announced. Current value announced when focused. Each list item announces its value and position: "English, 1 of 12."
 - The dropdown list must never obscure the current item or the control that opened it — this is a common failure on small screens.
 
-**Implementation Notes**: [Godot: Custom implementation using a `Button` (the
-closed state) and a `PopupMenu` or a `VBoxContainer` revealed by animation. Native
-`OptionButton` provides accessibility but limited visual customization. Ensure
-the popup positions itself above the control if it would be clipped by the screen
-bottom. Close the popup on `_input` detecting click outside its rect.]
+**Implementation Notes**: [Unity: the TextMeshPro `TMP_Dropdown` covers the common
+case; for custom visuals, a `Button` (the closed state) that reveals a list panel by
+animation. Ensure the list positions itself above the control if it would be clipped
+by the screen bottom. Close it on a click outside its rect.]
 
 ---
 
@@ -244,11 +243,10 @@ Non-selectable content rows (remove hover/focus states and the pressed state).
 - Screen reader: Role: "listitem." Parent list role: "list." Accessible name: primary label content. Metadata (secondary label) is optionally included in the description. Position announced: "Quest Log, 3 of 12."
 - Minimum row height: 44pt / 48dp for touch. For controller-primary platforms, 56px rows are more comfortable.
 
-**Implementation Notes**: [Godot: Use a `VBoxContainer` inside a `ScrollContainer`.
-Each row is a custom `Control` or `PanelContainer` with a `_gui_input` override.
-For keyboard navigation inside the scroll container, implement custom focus
-traversal — Godot's default Tab navigation does not scroll the container to keep
-focused items in view. Use `ensure_control_visible()` on the scroll container.]
+**Implementation Notes**: [Unity: a `ScrollRect` with a vertical layout group as its
+content. Each row is a prefab with its own `Selectable`. Keyboard and gamepad
+navigation moves selection between rows, but the `ScrollRect` does not scroll to
+keep the selected row in view on its own — scroll it when selection changes.]
 
 ---
 
@@ -282,10 +280,10 @@ cells (remove interactive states).
 - Screen reader: Role: "gridcell." Parent role: "grid." Accessible name: item name (or "empty slot" for empty cells). State: "selected" when selected, "dimmed" when locked. Position: "row 2, column 3."
 - Tooltips must be reachable by keyboard — they must appear when the cell is focused, not only when hovered.
 
-**Implementation Notes**: [Godot: `GridContainer` with fixed column count. Each
-cell is a custom `Control`. Implement custom D-pad navigation by overriding
-`_gui_input` and calculating the cell to the left/right/above/below based on
-index and column count. `GridContainer` does not provide this natively.]
+**Implementation Notes**: [Unity: a `GridLayoutGroup` with a fixed column count.
+Each cell is a `Selectable` prefab. Set explicit navigation (left/right/up/down)
+from each cell's index and the column count when the automatic navigation picks the
+wrong neighbour.]
 
 ---
 
@@ -322,12 +320,11 @@ Dialogs that should allow the player to continue playing behind them.
 - Keyboard: Escape key always maps to the cancel/dismiss action (same as Secondary button or close button). Enter always maps to the primary/confirm action.
 - Motion reduction: Scale animation replaced with instant appear/disappear. Overlay fade retained at 100ms (faster).
 
-**Implementation Notes**: [Godot: Implement as a `CanvasLayer` with a high layer
-value (100+) to ensure it renders above all game content. The background overlay
-is a full-screen `ColorRect` at 60% black opacity. Use `grab_focus()` on the
-dialog's primary button after the open animation completes. Override `_input()` to
-implement the focus trap — intercept Tab navigation and reroute to the dialog's
-focusable elements.]
+**Implementation Notes**: [Unity: a dedicated `Canvas` with a high sorting order
+(100+) so it renders above all game content. The background overlay is a full-screen
+`Image` at 60% black opacity. Select the dialog's primary button
+(`EventSystem.SetSelectedGameObject`) after the open animation completes. Implement
+the focus trap by keeping navigation inside the dialog's selectables while it is open.]
 
 ---
 
@@ -392,12 +389,11 @@ must not miss.
 - Toasts must never be the sole communication channel for information the player needs to act on. If the information requires action, use a persistent UI element in addition to the toast.
 - Auto-dismiss timer: 5 seconds is the minimum. Players with cognitive processing differences may need more time. Consider a setting to extend to 10 or 15 seconds.
 
-**Implementation Notes**: [Godot: Manage a queue of `PanelContainer` scenes in a
-`VBoxContainer` anchored to a screen corner. Each toast is instantiated, added to
-the container, then auto-removed after a timer. The container should be on a high
-`CanvasLayer` (50+) but below modal dialogs (100+). Animate using a `Tween` on
-`modulate.a` and `position.x`. When motion reduction is active, skip the position
-animation.]
+**Implementation Notes**: [Unity: manage a queue of toast prefabs in a vertical layout
+group anchored to a screen corner. Each toast is instantiated, added to the
+container, then auto-removed after a timer. The container's `Canvas` sorts high
+(50+) but below modal dialogs (100+). Animate a `CanvasGroup` alpha and the x
+position; when motion reduction is active, skip the position animation.]
 
 ---
 
@@ -430,11 +426,10 @@ that opens a description modal instead.
 - The delay (300-400ms) prevents accidental tooltip display and is required — instant tooltips are disruptive in gamepad navigation.
 - Tooltip text must meet the same contrast requirements as body text (4.5:1 minimum).
 
-**Implementation Notes**: [Godot: Attach a custom `TooltipControl` scene as a
-child of the trigger element. Show/hide with a `Timer` node. Position the tooltip
-using a `CanvasLayer` to ensure it appears above all other UI. For screen edges,
-detect if the tooltip rect extends beyond `get_viewport_rect()` and flip the
-position to the opposite side.]
+**Implementation Notes**: [Unity: a tooltip prefab shown and hidden after a delay
+(coroutine or timer). Place it on a high-sorting `Canvas` so it appears above all
+other UI. For screen edges, check whether its rect extends beyond the screen and flip
+it to the opposite side.]
 
 ---
 
@@ -465,11 +460,10 @@ Bar pattern). Values with no defined endpoint.
 - Indeterminate progress bars: announce "Loading, in progress" — do not announce changes since the value is unknown.
 - Motion reduction: Indeterminate animation is replaced with a static "loading" indicator. Smooth fill animation is replaced with instant jump to new value.
 
-**Implementation Notes**: [Godot: `ProgressBar` built-in with custom theming.
-For indeterminate mode, `ProgressBar` does not have a native indeterminate state
-in Godot 4.x — implement using a looping `Tween` on a fill element's position.
-Ensure the Tween is paused when motion reduction mode is active and a static
-indicator is shown instead.]
+**Implementation Notes**: [Unity: a filled `Image` (or a `Slider` without
+interaction) with custom styling. For indeterminate mode there is no built-in
+state — animate a looping fill element's position. Ensure the loop is paused when
+motion reduction mode is active and a static indicator is shown instead.]
 
 ---
 
@@ -504,12 +498,11 @@ which is high friction.
 - Screen reader: Role: "textbox." Accessible name: field label (not placeholder text). Current value announced. Character limit announced when reached. Validation errors announced immediately on occurrence.
 - Placeholder text must not be used as the only label — a visible label above or beside the field is required. Placeholder text disappears when the player types, causing confusion for players with cognitive or memory impairments.
 
-**Implementation Notes**: [Godot `LineEdit`: set `placeholder_text` for the hint
-but always include a visible `Label` node as the field's accessible name. Bind
-`text_changed` signal for real-time validation. Bind `text_submitted` for form
-submission on Enter. On console, `LineEdit.call("_popup_keyboard")` or use the OS
-virtual keyboard API — verify against engine-reference/godot/ for Godot 4.7
-console keyboard API specifics.]
+**Implementation Notes**: [Unity `TMP_InputField`: set the placeholder for the hint
+but always include a visible label as the field's accessible name. Bind
+`onValueChanged` for real-time validation and `onSubmit` for form submission on
+Enter. On console, use the platform's virtual keyboard — verify against
+docs/engine-reference/unity/ for the pinned version's API specifics.]
 
 ---
 
@@ -542,11 +535,10 @@ visibility (use a layout pattern instead). Navigation between different screens
 - Screen reader: Role: "tab" for individual tabs. Role: "tablist" for the container. Role: "tabpanel" for the content area. Active tab state: "selected." Accessible name: tab label. Tabpanel is labeled by its corresponding tab.
 - The active tab must be visually distinguishable by more than color alone (underline, fill pattern, or weight change in addition to color).
 
-**Implementation Notes**: [Godot: `TabContainer` built-in. For custom visual
-styling, implement manually with a `HBoxContainer` of tab buttons and a
-`MarginContainer` for content. The shoulder button shortcut (LB/RB) must be
-implemented in the screen's `_input()` override — it is not built into Godot's
-tab system. Check platform conventions: Xbox uses LB/RB; PlayStation uses L1/R1;
+**Implementation Notes**: [Unity: implement manually with a horizontal layout group
+of tab buttons and a content panel per tab. The shoulder button shortcut (LB/RB) is
+an Input System action handled by the screen — there is no built-in tab control
+for it. Check platform conventions: Xbox uses LB/RB; PlayStation uses L1/R1;
 both are the same physical button, so a single binding works.]
 
 ---
@@ -577,13 +569,12 @@ state and an end state).
 
 **Accessibility**:
 - Keyboard/Gamepad: The scroll container itself should not require explicit scrollbar interaction — navigating list items inside it should auto-scroll to keep focused items in view.
-- Screen reader: The scroll container announces "scrollable" and the scroll position ("showing items 5 through 15 of 30"). This requires engine accessibility support — verify in engine-reference/godot/.
+- Screen reader: The scroll container announces "scrollable" and the scroll position ("showing items 5 through 15 of 30"). This requires engine accessibility support — verify in docs/engine-reference/unity/.
 - Fade edges (content fading at scroll boundaries to indicate more content exists) are a helpful visual affordance but must not be the only indicator that content exists beyond the visible area. Include a scrollbar.
 
-**Implementation Notes**: [Godot `ScrollContainer`: call `ensure_control_visible()`
-on the focused child whenever `gui_focus_changed` fires inside the container.
-Bind this via a recursive `connect` on the container's `gui_focus_changed` signal.
-For smooth scroll animation, use a `Tween` on `scroll_vertical` rather than
-setting it directly.]
+**Implementation Notes**: [Unity `ScrollRect`: when selection changes to a child
+inside it, scroll so the selected child is fully visible. For smooth scroll
+animation, interpolate `normalizedPosition` rather than setting it directly. In UI
+Toolkit, `ScrollView.ScrollTo` brings an element into view.]
 
 ---

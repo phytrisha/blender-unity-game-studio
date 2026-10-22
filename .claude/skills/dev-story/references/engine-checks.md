@@ -1,6 +1,6 @@
-# Phase 6: Parse check and capture on Unity and Unreal
+# Phase 6: Parse check and capture on Unity
 
-Read only when the engine is Unity or Unreal. Report the command, its exit code
+Read when the engine is Unity (the only engine this studio supports). Report the command, its exit code
 and any error lines. No executable: `parse NOT VERIFIED — engine binary not
 available`.
 
@@ -15,18 +15,3 @@ available`.
 `Assets/Scripts/ScreenshotOnArg.cs`?" and write it exactly as given before
 launching. Declined: nothing can capture, so report
 `Run result: NOT VERIFIED — ScreenshotOnArg.cs not written`.
-
-## Unreal
-
-**Parse check:** build the editor target. A compile error fails it (`Result:
-Failed`, non-zero exit).
-
-- Windows: `"<UE root>/Engine/Binaries/DotNET/UnrealBuildTool/UnrealBuildTool.exe" <Project>Editor Win64 Development -Project="<absolute path>/<Project>.uproject"`
-- Linux: `"<UE root>/Engine/Build/BatchFiles/Linux/Build.sh" <Project>Editor Linux Development -Project=…`
-- macOS: `"<UE root>/Engine/Build/BatchFiles/Mac/Build.sh" <Project>Editor Mac Development -Project=…`
-
-The commands are from Epic's documentation, as recorded in
-`docs/engine-reference/unreal/current-best-practices.md` ("Command Line").
-
-**Capture:** launch straight into the map the story touched, as
-`run-and-observe.md` gives it.

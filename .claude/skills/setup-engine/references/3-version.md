@@ -5,12 +5,12 @@
 
 ## 3. Look Up Current Version
 
-Once the engine is chosen:
+The engine is Unity (the only engine this studio supports):
 
 - If version was provided, use it
 - If no version provided, use WebSearch to find the latest stable release:
-  - Search: `"[engine] latest stable version [current year]"`
-  - Confirm with the user: "The latest stable [engine] is [version]. Use this?"
+  - Search: `"Unity 6 latest LTS version [current year]"`
+  - Confirm with the user: "The latest stable Unity is [version]. Use this?"
 
 ### Check the chosen version against what is actually installed
 
@@ -22,13 +22,10 @@ Probe for the binary (Bash), and treat failure as unknown, never as absent:
 
 | Engine | Probe |
 |--------|-------|
-| Godot | `godot --version`, else look for `godot`/`Godot_v*` on PATH or in the platform's usual install location (macOS: the binary inside the bundle, `Godot.app/Contents/MacOS/Godot`) |
 | Unity | The Hub's editor directory, then that editor's `-version` — `C:/Program Files/Unity/Hub/Editor/<version>/Editor/Unity.exe` on Windows, `/Applications/Unity/Hub/Editor/<version>/Unity.app/Contents/MacOS/Unity` on macOS, `/home/<user>/Unity/Hub/Editor/<version>/Editor/Unity` on Linux. Not bare `Unity`: on `PATH` it may be Unity's separate CLI, which rejects `-version` |
-| Unreal | The launcher's install directory (`UE_<version>` folders under `C:/Program Files/Epic Games/` on Windows); elsewhere, ask where the engine was built or installed. The editor is not on `PATH` by default |
 
-Keep the executable the probe found (for Godot, whether bare `godot --version`
-ran — that is, `godot` is on `PATH`): Section 5.5.1 writes it into `commands.*`
-and `engine.path`.
+Keep the editor executable the probe found: Section 5.5.1 writes it into
+`commands.*` and `engine.path`.
 
 Then:
 - **Match** — say so in one line and continue.

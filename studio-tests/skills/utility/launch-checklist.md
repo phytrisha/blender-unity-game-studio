@@ -75,9 +75,9 @@ Fixture defaults.
 
 **Fixture:**
 - `project.yaml`: `project.stage: Release`, `modes.rigor: standard`, `platform.cert_tier: steam`,
-  engine Godot (code root `src/`); a single-player game with no servers
-- `src/` has 40 source files with no TODO/FIXME/HACK, no debug output, no placeholder or hardcoded dev values
-- `assets/` exists with final assets
+  engine Unity (code root `Assets/`); a single-player game with no servers
+- `Assets/` has 40 source files with no TODO/FIXME/HACK, no debug output, no placeholder or hardcoded dev values,
+  and holds the final assets
 - `production/releases/` does not exist yet
 - In Phase 4b the user answers `Yes — all of them` for every section, except the
   Infrastructure question, where `Some differ` gives each Servers item N/A and
@@ -120,8 +120,8 @@ Fixture defaults.
 ### Case 2: Blocking Findings — FIXMEs and debug output
 
 **Fixture:**
-- As Case 1, but `src/` contains 3 `FIXME` comments and one `print()` debug call in production code
-- `src/` also has one `HACK` comment whose justification is documented beside it
+- As Case 1, but `Assets/` contains 3 `FIXME` comments and one `Debug.Log` debug call in production code
+- `Assets/` also has one `HACK` comment whose justification is documented beside it
 
 **Input:** `/launch-checklist 2026-11-01`
 
@@ -135,7 +135,7 @@ Fixture defaults.
 
 **Assertions:**
 - [ ] FIXME count is 3, with file locations
-- [ ] The debug `print()` is reported and its item is not ticked
+- [ ] The `Debug.Log` debug call is reported and its item is not ticked
 - [ ] Blocking Items lists the FIXMEs and the debug output
 - [ ] The documented HACK is under Conditional Items, not Blocking Items
 - [ ] Overall Status is NOT READY (not READY, CONDITIONAL or NOT ASSESSED)
@@ -167,15 +167,15 @@ Fixture defaults.
 ### Case 4: Nothing to Scan — `[?]` items, not green ticks
 
 **Fixture:**
-- `project.yaml`: `project.stage: Release`, `platform.cert_tier: itch`, engine Godot
-- `src/` exists but is empty; no `assets/` directory
+- `project.yaml`: `project.stage: Release`, `platform.cert_tier: itch`, engine Unity
+- `Assets/` exists but is empty
 
 **Input:** `/launch-checklist 2026-11-01`
 
 **Expected behavior:**
 1. Phase 3 reports the code scans as `NOT ASSESSED — no source files` (or
    `directory empty`) and the placeholder-asset scan as
-   `NOT ASSESSED — no asset folder`, instead of zero hits
+   `NOT ASSESSED — directory empty`, instead of zero hits
 2. The affected items (e.g. "All placeholder art replaced with final assets",
    "No debug output in production code") are written `- [?]`
 3. The legend `[?] = not assessed — the input to this check was absent` is included

@@ -110,21 +110,10 @@ Engine-specific monitoring guidance.
 > T+0 exactly as displayed and use it consistently for the rest of the run.
 
 > **NOT SOURCEABLE — the tool, panel and counter names below are not covered by
-> `docs/engine-reference/`**: Godot's Debugger → Monitors and its memory
-> counters, Unity's Memory Profiler and its fields, Unreal's `stat memory`. Mark
+> `docs/engine-reference/`**: Unity's Memory Profiler and its fields. Mark
 > them so in the protocol: they are pointers for the tester to confirm in their
 > own editor at T+0, not verified paths. If no memory tool can be found, nothing
 > was measured, and the Verdict section's NOT ASSESSED applies.
-
-**Godot 4:**
-- Open Debugger → Monitors tab; track `Memory → Static Memory` and
-  `Object Count → Objects` across checkpoints
-- Record: Static Memory (**unit as displayed**), Object Count, Orphan Nodes count
-- Alert threshold: Memory growth > 20% from T+0 after the first 15 minutes
-  (some growth on load is expected; sustained growth indicates a leak)
-- **Orphan Nodes is the one absolute number worth watching**: it should return to
-  its T+0 value after a scene unload. A ratio hides that; a non-zero floor that
-  keeps rising is a leak regardless of units
 
 **Unity:**
 - Open Memory Profiler (Window → Analysis → Memory Profiler)
@@ -133,13 +122,6 @@ Engine-specific monitoring guidance.
 - Alert threshold: GC Allocated growing monotonically across 3+ checkpoints —
   a monotonicity check, deliberately unit-free
 
-**Unreal Engine:**
-- Use `stat memory` console command at each checkpoint
-- Record: Physical Memory Used, Physical Memory Available (**units as displayed**)
-- Alert threshold: Physical Memory Used growth **> 20% over the full soak**,
-  measured against this run's T+0. An absolute threshold such as "> 50MB"
-  silently assumes both the unit *and* a project scale — 50MB is a rounding
-  error for one game and a catastrophe for another
 
 ### Stability observation items (if focus = stability or all)
 
@@ -181,9 +163,7 @@ Before starting the soak:
 - [ ] Game is running from a **fresh launch** (not resumed from a prior session)
 - [ ] All background applications closed (minimise OS memory interference)
 - [ ] Performance monitoring tool open and recording:
-  - **Godot**: Debugger → Monitors tab → Memory section visible
   - **Unity**: Memory Profiler window open
-  - **Unreal**: `stat memory` ready in console
   - Tool actually used, as named in this editor: [record it — the names above
     are NOT SOURCEABLE from `docs/engine-reference/`; none found → NOT ASSESSED]
 - [ ] Soak target confirmed: [session design intent from game concept]

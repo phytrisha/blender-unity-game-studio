@@ -75,8 +75,8 @@ Fixture defaults.
 ### Case 1: Happy Path — New rendering ADR, full mode, TD-ADR approves
 
 **Fixture:**
-- `project.yaml` has `engine.name: Godot` and `modes.review_mode: full`
-- `docs/engine-reference/godot/VERSION.md` exists and marks the pinned version HIGH risk; `breaking-changes.md` lists a Rendering change
+- `project.yaml` has `engine.name: Unity` and `modes.review_mode: full`
+- `docs/engine-reference/unity/VERSION.md` exists and marks the pinned version HIGH risk; `breaking-changes.md` lists a Rendering change (the RenderGraph renderer-feature API)
 - `docs/architecture/` contains `adr-0001-*.md` and `adr-0002-*.md`; none covers rendering
 - `docs/registry/architecture.yaml` exists with no stance touching rendering
 - `design/gdd/visual-effects.md` exists; the user confirms it as the GDD driving the decision, and its names match the ADR's Key Interfaces
@@ -90,7 +90,7 @@ Fixture defaults.
 3. Step 3a reads the registry before any existing ADR
 4. Step 4 presents assumptions (problem, 2–3 alternatives, GDD linkage, dependencies, `Status: Proposed`) as a confirm/adjust `AskUserQuestion`; no ADR is generated until the user confirms
 5. Step 5 drafts the full template, including the Engine Compatibility table (engine, domain, knowledge risk, references consulted)
-6. `godot-specialist` validates the draft; minor notes go into the Risks section
+6. `unity-specialist` validates the draft; minor notes go into the Risks section
 7. `technical-director` then spawns with gate TD-ADR and returns APPROVE
 8. GDD sync check prints `GDD sync: checked 1 referenced GDD(s), no naming inconsistencies.` — never silent
 9. "ADR draft is complete. May I write it?" — on yes, writes `docs/architecture/adr-0003-rendering-approach.md` with `Status: Proposed`
@@ -136,7 +136,7 @@ Fixture defaults.
 ### Case 3: Lean and Solo Modes — TD-ADR skipped; checks that cannot run say so
 
 **Fixture:**
-- Scenario (a): `project.yaml` has `modes.review_mode: lean` and `engine.name: Godot`
+- Scenario (a): `project.yaml` has `modes.review_mode: lean` and `engine.name: Unity`
 - Scenario (b): same project, invoked with `--review solo`
 - Scenario (c): invoked with `--review solo` on a project with no engine configured — `engine.name` unset and `.claude/docs/technical-preferences.md` still `[TO BE CONFIGURED]`; at Step 1's prompt the user carries on without running `/setup-engine`
 - `design/gdd/` holds no GDD, so the ADR's GDD Requirements Addressed names none
@@ -166,7 +166,7 @@ Fixture defaults.
 ### Case 4: Edge Case — Proposed decision contradicts a registered stance
 
 **Fixture:**
-- `docs/registry/architecture.yaml` records an interface contract: `damage_delivery → signal pattern (ADR-0003)`
+- `docs/registry/architecture.yaml` records an interface contract: `damage_delivery → event pattern (ADR-0003)`
 - ADR-0003 is Accepted
 - The user states the proposal when invoking the skill, before Step 1: the decision is to deliver damage by direct method calls
 

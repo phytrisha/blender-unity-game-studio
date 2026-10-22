@@ -60,7 +60,7 @@ Fixture defaults.
 - `production/sprints/sprint-003.md` is the most recent sprint and references 4
   story files, each with acceptance criteria and a declared Type: Logic,
   Integration, Visual/Feel, UI
-- The stories reference GDDs in `design/gdd/`; `engine.name: Godot`
+- The stories reference GDDs in `design/gdd/`; `engine.name: Unity`
 - `qa.level: standard`; `modes.automation: collaborative`
 
 **Input:** `/qa-plan sprint`
@@ -71,8 +71,8 @@ Fixture defaults.
 2. Story fields are collected with section greps; each declared Type is accepted
    without re-classification
 3. A classification summary table is shown before the plan is generated
-4. The plan's Test Summary maps Logic → unit test under `tests/unit/[system]/`,
-   Integration → integration test under `tests/integration/[system]/`,
+4. The plan's Test Summary maps Logic → unit test under `Assets/Tests/EditMode/`,
+   Integration → integration test under `Assets/Tests/PlayMode/`,
    Visual/Feel → screenshot + lead sign-off, UI → retained screenshot of each
    screen touched
 5. The plan is shown, then one multiSelect `AskUserQuestion` offers "Write QA
@@ -84,7 +84,7 @@ Fixture defaults.
 **Assertions:**
 - [ ] All 4 stories appear in the plan, each with its declared Type unchanged
 - [ ] The classification summary table appears before the plan
-- [ ] Logic and Integration rows name test paths under `tests/unit/` and `tests/integration/`
+- [ ] Logic and Integration rows name test paths under `Assets/Tests/EditMode/` and `Assets/Tests/PlayMode/` (Unity compiles nothing under `tests/`)
 - [ ] The UI row's manual verification is the retained screenshot of each screen touched, not a step-through
 - [ ] Nothing is written before the multiSelect approval, and the written path is `production/qa/qa-plan-[sprint-slug]-[date].md`
 - [ ] Next steps name `/smoke-check sprint` and `/story-done`

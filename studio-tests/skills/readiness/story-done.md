@@ -49,8 +49,8 @@ Fixture defaults.
 
 **Fixture:**
 - `project.yaml` sets `modes.rigor: standard` (→ `workflow: standard`,
-  `qa.level: standard`, `review_mode: lean`) and `engine.name: Godot`, so
-  `tests/unit/` is the test root
+  `qa.level: standard`, `review_mode: lean`) and `engine.name: Unity`, so
+  `Assets/Tests/EditMode/` is the test root
 - Story file at `production/epics/core/story-light-pickup.md` with:
   - `Type: Logic` and 3 acceptance criteria, all implemented as described:
     AC-1 "Picking up a light adds it to the inventory", AC-2 "A pickup at the
@@ -58,9 +58,9 @@ Fixture defaults.
   - `TR-light-001`; the story quotes an older wording of the requirement, while
     `tr-registry.yaml` holds the current text, which the implementation matches
   - `ADR: ADR-0003` (Accepted), whose guidance was followed
-  - A `## Test Evidence` section naming `tests/unit/light/pickup_test.gd`, which
-    exists with one test per criterion — `test_pickup_adds_to_inventory`,
-    `test_pickup_refused_at_limit`, `test_pickup_removes_world_light` — so every
+  - A `## Test Evidence` section naming `Assets/Tests/EditMode/LightPickupTests.cs`, which
+    exists with one test per criterion — `Pickup_AddsToInventory`,
+    `Pickup_RefusedAtLimit`, `Pickup_RemovesWorldLight` — so every
     criterion maps to a test
   - `Status: In Progress`
 - The `/dev-story` checkpoint in `production/session-state/active.md` names this
@@ -297,7 +297,7 @@ Fixture defaults.
 ### Case 8: Reference files are read only on the branch that needs them
 
 **Fixture:**
-- As Case 1 (`modes.rigor: standard`, so `review_mode: lean`; `engine.name: Godot`; the Logic story with three covered criteria and its retained run evidence), with no sprint plan and no `production/sprint-status.yaml`
+- As Case 1 (`modes.rigor: standard`, so `review_mode: lean`; `engine.name: Unity`; the Logic story with three covered criteria and its retained run evidence), with no sprint plan and no `production/sprint-status.yaml`
 - The skill folder holds `references/review-gates.md`, `references/sprint-next.md` and `references/tech-debt-row.md`
 - Variant: `modes.review_mode: full`, a sprint plan listing one more story after this one, and one advisory deviation (Case 3's fixture, downgraded to advisory)
 
