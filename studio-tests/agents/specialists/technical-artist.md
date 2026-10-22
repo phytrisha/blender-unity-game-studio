@@ -1,7 +1,7 @@
 # Agent Test Spec: technical-artist
 
 ## Agent Summary
-Domain: Shaders, VFX, rendering optimization, art pipeline tools, and visual performance; the Blender → Unity pipeline (UV stage, LODs, collision, export, import rules, prefabs) and its code (`blender/lib/`, `blender/scripts/`, `tools/`, `unity/`, `Assets/Scripts/Editor/`).
+Domain: Shaders, VFX, rendering optimization, art pipeline tools, and visual performance; the Blender → Unity pipeline (UV stage, LODs, collision, export, import rules, prefabs) and its code (`blender/lib/`, `blender/scripts/`, `tools/`, `unity/`, `Packages/com.phytrisha.studio-pipeline/Editor/`).
 Does NOT own: art style decisions or color palette (art-director), gameplay code (gameplay-programmer).
 No gate IDs assigned.
 
@@ -81,7 +81,7 @@ No gate IDs assigned.
 ### Case 8: Shared pipeline change
 **Input:** "Change AssetImportRules so SK_ files import as Generic."
 **Assertions:**
-- [ ] Proposes the change and asks before editing `Assets/Scripts/Editor/` (the exception does not cover shared pipeline code)
+- [ ] Proposes the change and asks before editing `Packages/com.phytrisha.studio-pipeline/Editor/` (the exception does not cover shared pipeline code)
 
 ## Protocol Compliance
 

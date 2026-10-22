@@ -116,7 +116,7 @@ Before writing any code:
 - This studio's Unity project is the repo root. Editor-side code runs through
   `tools/unity_run.sh unity/<script>.cs` (C# eval scripts in `unity/`, never in
   `Assets/`; `COMPILE_ONLY=1` checks compilation first). Reusable editor logic
-  lives in `Assets/Scripts/Editor/` (`ProjectPaths`, `AssetImportRules`,
+  lives in the package `Packages/com.phytrisha.studio-pipeline/` (`ProjectPaths`, `AssetImportRules`,
   `AssetPipeline`, `ProjectSetup`) so menu, CLI and scripts share it.
 - Art arrives from Blender by `tools/sync_to_unity.sh` and is imported by
   `unity/import_assets.cs`: import settings by name prefix (`SM_`, `SK_`, `T_*_{BC,N,MS,AO,E}`),

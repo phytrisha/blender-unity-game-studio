@@ -1,5 +1,5 @@
 #!/bin/bash
-# Start a new game from this studio: a clean copy with its own git history.
+# Start a new game from this studio: a clean copy with its own git history (tools/link_project.sh links instead).
 #
 #   tools/new_project.sh ~/Dev/my-game "My Game"
 #

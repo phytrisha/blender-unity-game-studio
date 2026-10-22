@@ -94,7 +94,7 @@ scanned files — Naming, Size, Format, Orphaned — are
 states (§8 Asset Standards, 8.2). With none, check `Assets/Art/**` against the
 art pipeline's naming contract (`.claude/docs/art-pipeline/pipeline.md`
 "Naming contract": `SM_ SK_ PF_ MI_ M_ T_<Stem>_{BC,N,MS,AO,E,H,Mask} AC_ AM_ TL_`),
-which `Assets/Scripts/Editor/AssetImportRules.cs` and `ProjectPaths.cs` enforce on
+which the studio package's `AssetImportRules.cs` and `ProjectPaths.cs` enforce on
 import — and say in the report which rule was used. Files outside `Assets/Art/`
 with no bible rule: Naming is `NOT ASSESSED — no naming rule for <folder>`
 (name `/art-bible`). A model or texture in `Assets/Art/` without its prefix is a

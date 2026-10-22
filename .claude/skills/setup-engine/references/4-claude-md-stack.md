@@ -19,7 +19,7 @@ Update the Technology Stack section, replacing the `[CHOOSE]` placeholders with 
 - **Engine**: Unity [version]
 - **Language**: C#
 - **Build System**: Unity Build Pipeline
-- **Asset Pipeline**: Blender → Unity art pipeline (`.claude/docs/art-pipeline/`, `tools/`, `Assets/Scripts/Editor/AssetImportRules.cs`) + Addressables
+- **Asset Pipeline**: Blender → Unity art pipeline (`.claude/docs/art-pipeline/`, `tools/`, `Packages/com.phytrisha.studio-pipeline/`) + Addressables
 ```
 
 ### Engine reference import

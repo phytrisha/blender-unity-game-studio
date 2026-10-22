@@ -7,7 +7,8 @@ Blender 5.x (tested 5.1.2), path in `.env` (`BLENDER`). Everything goes through 
 ```bash
 tools/blender_run.sh <script.py> [file.blend] [-- args...]     # headless, private Blender (safe in parallel)
 tools/blender_run.sh --live <step.py>                           # the Blender the user has open (MCP socket)
-ASSET=Crate tools/blender_run.sh blender/assets/Crate/build.py blender/assets/Crate/Crate.blend
+ASSET=Crate tools/blender_run.sh blender/assets/Crate/build.py                                 # first build: creates Crate.blend
+ASSET=Crate tools/blender_run.sh blender/assets/Crate/build.py blender/assets/Crate/Crate.blend # later runs open it
 ASSET=Crate tools/blender_run.sh blender/scripts/qa_check.py blender/assets/Crate/Crate.blend -- --stage model
 ```
 - Headless runs use `--factory-startup` (no user add-ons: reproducible) and print only result lines: `RESULT_JSON`,

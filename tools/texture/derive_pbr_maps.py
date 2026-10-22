@@ -16,7 +16,7 @@ Image generators only produce a color image. This script turns it into:
   <name>_orm.png         (Non-Color) only with --orm: R=AO, G=Roughness, B=Metallic
 
 With --unity the set is written under the names and packing Unity's pipeline wires up automatically
-(Assets/Scripts/Editor/AssetPipeline.EnsureMaterials, AssetImportRules):
+(Packages/com.phytrisha.studio-pipeline/Editor/AssetPipeline.EnsureMaterials, AssetImportRules):
   T_<Name>_BC.png  base colour (sRGB)        T_<Name>_N.png   normal, OpenGL
   T_<Name>_MS.png  R = metallic, A = smoothness (1 - roughness), URP Lit's Metallic map
   T_<Name>_AO.png  occlusion                 T_<Name>_H.png   height (16-bit)

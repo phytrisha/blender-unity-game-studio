@@ -2,7 +2,7 @@
 
 The Unity project is the studio repo root. All first-party content lives directly in `Assets/` in five top-level folders (`Art`, `Shaders`, `Scripts`, `Scenes`,
 `Settings`). Group assets by **what they are**, never by the phase or milestone that produced them. The rules are encoded
-in `Assets/Scripts/Editor/ProjectPaths.cs`, the single source of truth: change it in the same commit as this file
+in `Packages/com.phytrisha.studio-pipeline/Editor/ProjectPaths.cs` (the studio's Unity package), the single source of truth: change it in the same commit as this file
 (and `.claude/docs/art-pipeline/pipeline.md` "Naming contract").
 
 ## Layout

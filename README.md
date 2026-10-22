@@ -70,7 +70,7 @@ Lessons and checklists that grow with the game: `docs/art-pipeline/LESSONS.md`, 
 ```
 .claude/            agents, skills, hooks, rules, docs (CCGS + art department)
 Assets/ Packages/   the Unity project IS the repo root (ProjectSettings/ appears on first open)
-  Assets/Scripts/Editor/  ProjectPaths, AssetImportRules, AssetPipeline, ProjectSetup (pipeline editor code)
+  Packages/com.phytrisha.studio-pipeline/  Unity package: ProjectPaths, AssetImportRules, AssetPipeline, ProjectSetup, PerfBench
 blender/lib/        kit.py, export.py, audit.py, review.py (step libs) + gamelib.py (tool lib)
 blender/scripts/    stages, ingest_mesh, lod_regen, uv_audit, render_views, project_paint, bake_maps, build_material,
                     uv_tools, qa_check, game_skeleton, weights, anim_tools, export_skinned
@@ -97,6 +97,22 @@ cd ~/Dev/my-game
 claude                                            # then: /start
 tools/tests/art_pipeline_smoke.sh                 # Blender side of the pipeline, ~15 s
 ```
+**Two ways to start a game.** `new_project.sh` makes a self-contained copy: the game owns every file and never sees
+later studio changes. `link_project.sh` keeps one studio checkout for all your games: the game owns its design,
+production, `Assets/` and art sources, and links to the studio for agents, skills, hooks, docs, `tools/`, the Blender
+libraries and base bodies, the eval scripts, and the Unity package `com.phytrisha.studio-pipeline` (a relative `file:`
+dependency). A studio fix then reaches every linked game at once.
+
+```bash
+tools/link_project.sh ~/Dev/my-game "My Game"    # linked game next to the studio, own git + LFS, first commit
+cd ~/Dev/my-game && claude                        # once interactively: accept the trust prompt, then /start
+<studio>/tools/link_project.sh --relink .         # after studio updates, a moved studio, or broken links
+```
+Linked games keep the studio path and commit in `.studio`, and add the studio to
+`permissions.additionalDirectories` in `.claude/settings.local.json` (per machine, gitignored): without it Claude Code
+won't read files through the links. Links are relative, so keep games and the studio side by side on every machine.
+A game that needs stability pins the studio to a tag or commit.
+
 Machine paths live in `.env` (from `.env.example`): `BLENDER`, `UNITY_CLI`, `UNITY_PROJECT=$ROOT`.
 Unity steps need an open editor (GUI, or headless: `Unity -batchmode -projectPath . -logFile editor.log` without
 `-quit`); without one the pipeline copies files and reports "import pending" instead of claiming an import.

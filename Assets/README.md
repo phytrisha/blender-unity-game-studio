@@ -11,9 +11,12 @@ First-party content lives in five folders, grouped by what an asset is, not by w
 | `Art/Materials/{Surfaces,Foliage,Cloth,Emissive}/` | shared material library (`MI_*`; same names as in Blender) |
 | `Art/Textures/{Surfaces,Foliage,Utility}/`, `Art/VFX/` | texture sets, effects |
 | `Shaders/` | custom shaders and their includes |
-| `Scripts/{Runtime,Rendering,Editor}/` | game code, URP renderer features, editor tools (`ProjectPaths`, `AssetImportRules`, `AssetPipeline`, `ProjectSetup`) |
+| `Scripts/{Runtime,Rendering,Editor}/` | game code, URP renderer features, the game's own editor tools |
+| `Tests/{EditMode,PlayMode}/` | NUnit tests (`/test-setup`) |
 | `Scenes/` | scenes; `Sandbox/` for experiments |
 | `Settings/{Rendering,PostProcessing,Lighting,Input,Data}/` | pipeline assets, volume profiles, lighting settings, input actions, data assets |
 
 Rules: scripts find assets through `ProjectPaths`, never hard-coded folders; move/rename/delete only inside Unity; no
-screenshots or scratch files in Assets. Full rules: `.claude/skills/unity-project-structure/SKILL.md`.
+screenshots or scratch files in Assets. The pipeline's editor code (`ProjectPaths`, `AssetImportRules`, `AssetPipeline`,
+`ProjectSetup`, `PerfBench`) is the package `com.phytrisha.studio-pipeline`, not part of `Assets/`.
+Full rules: `.claude/docs/art-pipeline/unity-project-structure.md`.

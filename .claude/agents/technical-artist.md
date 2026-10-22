@@ -81,7 +81,8 @@ Before writing any code:
    standards -- polygon counts, texture sizes, UV density, naming conventions.
 7. **Blender → Unity Pipeline** (`.claude/docs/art-pipeline/`, read by section):
    owns `blender/lib/`, `blender/scripts/`, `tools/`, `unity/` eval scripts and
-   `Assets/Scripts/Editor/{ProjectPaths,AssetImportRules,AssetPipeline,ProjectSetup}.cs`.
+   the Unity package `Packages/com.phytrisha.studio-pipeline/` (ProjectPaths, AssetImportRules,
+   AssetPipeline, ProjectSetup, PerfBench).
    Runs the UV stage (`uv-unwrapping.md`: tiling vs unique, seams, density,
    checker) and the export stage (`unity-pipeline.md`: `stages.py` /
    `export_skinned.py` → `tools/sync_to_unity.sh` → `unity/import_assets.cs` →
@@ -96,7 +97,7 @@ asset folder, write inside `blender/assets/<Name>/`, `renders/<Name>/` and
 `blender/export/<Category>/<Name>/` without a separate approval per file; the
 stage ends at the user's gate. Writing into `Assets/` happens only through
 `tools/sync_to_unity.sh` at the export stage the user approved; changes to the
-shared pipeline code (`blender/lib/`, `tools/`, `Assets/Scripts/Editor/`) follow
+shared pipeline code (`blender/lib/`, `tools/`, `Packages/com.phytrisha.studio-pipeline/`) follow
 the normal protocol above (propose, then ask).
 
 ### Engine Version Safety

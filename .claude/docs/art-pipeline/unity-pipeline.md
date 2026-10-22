@@ -26,7 +26,7 @@ version is pinned in `docs/engine-reference/unity/VERSION.md` and probed by `/se
 - Eval scripts: top-level statements, fully qualified `UnityEngine.`/`UnityEditor.` names, end with `return "<text>";`.
   They live in `unity/`, never in `Assets/` (they would compile into the game).
 - Compile-check first: `COMPILE_ONLY=1 tools/unity_run.sh unity/x.cs`.
-- Reusable logic belongs in `Assets/Scripts/Editor/` (`AssetPipeline`, `AssetImportRules`, `ProjectPaths`,
+- Reusable logic belongs in the package `Packages/com.phytrisha.studio-pipeline/` (`AssetPipeline`, `AssetImportRules`, `ProjectPaths`,
   `ProjectSetup`) so the menu, the CLI and other scripts share it. Eval scripts stay thin.
 - Never hard-code folders: `ProjectPaths.Model/Prefab/Mat/Tex/AssetFolder`. Select assets by name or explicit list.
 - The editor must be open with Run In Background on, or CLI-driven Play Mode hangs. If it isn't open, say so and

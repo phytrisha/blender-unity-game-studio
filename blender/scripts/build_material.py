@@ -4,7 +4,7 @@
 #   tools/blender_run.sh blender/scripts/build_material.py blender/assets/Crate/Crate.blend -- --mat M_Crate \
 #         --obj SM_Crate_Body[,SM_Crate_Lid] --bc T_Crate_BC.png [--n T_Crate_N.png] [--ms T_Crate_MS.png]
 #         [--ao T_Crate_AO.png] [--e T_Crate_E.png] [--alpha clip|blend] [--save]
-# Unity contract (Assets/Scripts/Editor/AssetPipeline.EnsureMaterials): the Unity material gets the same name and
+# Unity contract (Packages/com.phytrisha.studio-pipeline/Editor/AssetPipeline.EnsureMaterials): the Unity material gets the same name and
 # finds T_<Stem>_{BC,N,MS,AO,E}.png by the stem of the material name (M_Crate -> Crate, MI_Wood -> Wood).
 # _MS = URP Lit Metallic map: R metallic, A smoothness. Normal maps are OpenGL (+Y) for Blender and Unity alike.
 import bpy, os, sys

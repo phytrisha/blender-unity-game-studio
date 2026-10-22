@@ -38,7 +38,8 @@ Unity's generated folders (`Library/`, `Temp/`, `Logs/`, `UserSettings/`,
 
 Inside `Assets/`, first-party content follows `.claude/docs/art-pipeline/unity-project-structure.md`
 (`Art/`, `Shaders/`, `Scripts/`, `Scenes/`, `Settings/`, `Tests/`), with paths resolved through
-`Assets/Scripts/Editor/ProjectPaths.cs`. Art pipeline layout and contracts: `.claude/docs/art-pipeline/pipeline.md`.
+`ProjectPaths.cs` in the Unity package `Packages/com.phytrisha.studio-pipeline/` (embedded in the studio and in
+copied games; a relative `file:` dependency in games made with `tools/link_project.sh`). Art pipeline layout and contracts: `.claude/docs/art-pipeline/pipeline.md`.
 
 ## The code root is `Assets/`
 

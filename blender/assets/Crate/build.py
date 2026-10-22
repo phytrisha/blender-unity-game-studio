@@ -1,6 +1,7 @@
 # Example asset: a reinforced wooden crate. Copy this folder to start a new asset.
 #
-#   ASSET=Crate tools/blender_run.sh blender/assets/Crate/build.py blender/assets/Crate/Crate.blend
+#   ASSET=Crate tools/blender_run.sh blender/assets/Crate/build.py              first build (creates Crate.blend)
+#   ASSET=Crate tools/blender_run.sh blender/assets/Crate/build.py blender/assets/Crate/Crate.blend   later runs
 #   ASSET=Crate STAGES=build,audit,review,export tools/blender_run.sh blender/assets/Crate/build.py ...
 #
 # Spec (fill this in first, see PROJECT.md for budgets):

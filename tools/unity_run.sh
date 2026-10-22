@@ -23,8 +23,32 @@ RUN="$ROOT/unity/.run_$NAME.cs"; trap 'rm -f "$RUN"' EXIT
   cat "$SCRIPT"
 } > "$RUN"
 COMMON=(--project-path "$UNITY_PROJECT" --no-banner --format json)
-JOB=$("$UNITY_CLI" command eval_file --file "$RUN" --detach "${COMMON[@]}" 2>&1 \
-      | python3 -c "import json,sys; print(json.load(sys.stdin)['data']['jobId'])")
+# Submit; an editor that is still importing or compiling answers without a job: retry a few times, then report the
+# CLI's own error (and exit 1) instead of pretending the script ran.
+JOB=""
+for attempt in 1 2 3 4 5 6; do
+  OUT=$("$UNITY_CLI" command eval_file --file "$RUN" --detach "${COMMON[@]}" 2>&1 || true)
+  JOB=$(printf '%s' "$OUT" | python3 -c "
+import json, sys
+try:
+    d = json.loads(sys.stdin.read()); print((d.get('data') or {}).get('jobId') or '')
+except Exception:
+    print('')")
+  [ -n "$JOB" ] && break
+  sleep 5
+done
+if [ -z "$JOB" ]; then
+  echo "FAIL unity_run: the editor did not accept $SCRIPT (is a Unity editor open on $UNITY_PROJECT with com.unity.pipeline,"
+  echo "     and not stuck in Safe Mode?). CLI said:"
+  printf '%s\n' "$OUT" | python3 -c "
+import json, sys
+raw = sys.stdin.read()
+try:
+    d = json.loads(raw); print('     ' + '; '.join(e.get('code', '') + ': ' + e.get('message', '') for e in d.get('errors', [])) or raw[:800])
+except Exception:
+    print('     ' + raw[:800])"
+  exit 1
+fi
 "$UNITY_CLI" job wait "$JOB" "${COMMON[@]}" 2>&1 | python3 -c "
 import json, sys
 raw = sys.stdin.read()

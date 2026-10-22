@@ -1,0 +1,11 @@
+{
+  "name": "com.phytrisha.studio-pipeline",
+  "version": "0.1.0",
+  "displayName": "Studio Pipeline (Blender -> Unity)",
+  "description": "Editor side of the blender-unity-game-studio art pipeline: ProjectPaths (where assets live), AssetImportRules (import settings for SM_/SK_/T_ files from Blender), AssetPipeline (materials, LOD prefabs, UCX colliders, animator controllers, scene problems), ProjectSetup (URP, linear, Force Text) and the PerfBench runtime benchmark.",
+  "unity": "6000.0",
+  "dependencies": {
+    "com.unity.render-pipelines.universal": "17.0.0"
+  },
+  "author": { "name": "blender-unity-game-studio" }
+}
