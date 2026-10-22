@@ -31,6 +31,12 @@
 | `/art-bible` | Guided, section-by-section Art Bible authoring — creates visual identity spec before asset production begins |
 | `/asset-spec` | Generate per-asset visual specifications and AI generation prompts from GDDs, level docs, or character profiles |
 | `/asset-audit` | Audit assets for naming conventions, file size budgets, and pipeline compliance |
+| `/produce-asset` | Produce one 3D asset end to end (spec → brief → model → UV → texture → rig → anim → Unity prefab) with the art department, an AD-ASSET review and a gate per stage |
+| `/art-stage` | Run one art stage (model, uv, texture, rig, anim, unity) for an asset that has a brief |
+| `/paint-asset` | AI-paint a UV-locked asset: control renders → Figma Weave / AI Hub repaint → projection onto UVs → Unity PBR maps; every paid run approved |
+| `/texture-set` | Tileable PBR material set for the shared `MI_` library (Weave or AI Hub → Unity maps) |
+| `/generate-model` | Tripo or Hunyuan 3D (Weave) model from a prompt or image, ingested into the Blender pipeline; dry run / quote first |
+| `/art-review` | Independent AD-ASSET review of one asset stage by `asset-critic` (read-only) |
 
 ## UX & Interface Design
 

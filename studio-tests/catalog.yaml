@@ -301,6 +301,29 @@ skills:
     priority: medium
     category: team
 
+  # Art department (Blender → Unity)
+  - name: produce-asset
+    spec: studio-tests/skills/team/produce-asset.md
+    last_static: ""
+    last_static_result: ""
+    last_spec: ""
+    last_spec_result: ""
+    last_category: ""
+    last_category_result: ""
+    priority: high
+    category: team
+
+  - name: art-stage
+    spec: studio-tests/skills/team/art-stage.md
+    last_static: ""
+    last_static_result: ""
+    last_spec: ""
+    last_spec_result: ""
+    last_category: ""
+    last_category_result: ""
+    priority: medium
+    category: team
+
   # Low — analysis, reporting, utility skills
   - name: skill-test
     spec: studio-tests/skills/utility/skill-test.md
@@ -819,6 +842,51 @@ skills:
     priority: low
     category: utility
 
+  # Art department utilities
+  - name: paint-asset
+    spec: studio-tests/skills/utility/paint-asset.md
+    last_static: ""
+    last_static_result: ""
+    last_spec: ""
+    last_spec_result: ""
+    last_category: ""
+    last_category_result: ""
+    priority: medium
+    category: utility
+
+  - name: texture-set
+    spec: studio-tests/skills/utility/texture-set.md
+    last_static: ""
+    last_static_result: ""
+    last_spec: ""
+    last_spec_result: ""
+    last_category: ""
+    last_category_result: ""
+    priority: low
+    category: utility
+
+  - name: generate-model
+    spec: studio-tests/skills/utility/generate-model.md
+    last_static: ""
+    last_static_result: ""
+    last_spec: ""
+    last_spec_result: ""
+    last_category: ""
+    last_category_result: ""
+    priority: low
+    category: utility
+
+  - name: art-review
+    spec: studio-tests/skills/utility/art-review.md
+    last_static: ""
+    last_static_result: ""
+    last_spec: ""
+    last_spec_result: ""
+    last_category: ""
+    last_category_result: ""
+    priority: medium
+    category: utility
+
 agents:
   # Tier 1 Directors
   - name: creative-director
@@ -1007,46 +1075,46 @@ agents:
     last_category_result: ""
     category: specialist
 
-  # Engine Specialists — Godot
-  - name: godot-specialist
-    spec: studio-tests/agents/engine/godot/godot-specialist.md
+  # Art Department Specialists
+  - name: 3d-artist
+    spec: studio-tests/agents/specialists/3d-artist.md
     last_spec: ""
     last_spec_result: ""
     last_category: ""
     last_category_result: ""
-    category: engine
+    category: specialist
 
-  - name: godot-gdscript-specialist
-    spec: studio-tests/agents/engine/godot/godot-gdscript-specialist.md
+  - name: texture-artist
+    spec: studio-tests/agents/specialists/texture-artist.md
     last_spec: ""
     last_spec_result: ""
     last_category: ""
     last_category_result: ""
-    category: engine
+    category: specialist
 
-  - name: godot-csharp-specialist
-    spec: studio-tests/agents/engine/godot/godot-csharp-specialist.md
+  - name: rigger
+    spec: studio-tests/agents/specialists/rigger.md
     last_spec: ""
     last_spec_result: ""
     last_category: ""
     last_category_result: ""
-    category: engine
+    category: specialist
 
-  - name: godot-shader-specialist
-    spec: studio-tests/agents/engine/godot/godot-shader-specialist.md
+  - name: animator
+    spec: studio-tests/agents/specialists/animator.md
     last_spec: ""
     last_spec_result: ""
     last_category: ""
     last_category_result: ""
-    category: engine
+    category: specialist
 
-  - name: godot-gdextension-specialist
-    spec: studio-tests/agents/engine/godot/godot-gdextension-specialist.md
+  - name: asset-critic
+    spec: studio-tests/agents/specialists/asset-critic.md
     last_spec: ""
     last_spec_result: ""
     last_category: ""
     last_category_result: ""
-    category: engine
+    category: specialist
 
   # Engine Specialists — Unity
   - name: unity-specialist
@@ -1083,47 +1151,6 @@ agents:
 
   - name: unity-addressables-specialist
     spec: studio-tests/agents/engine/unity/unity-addressables-specialist.md
-    last_spec: ""
-    last_spec_result: ""
-    last_category: ""
-    last_category_result: ""
-    category: engine
-
-  # Engine Specialists — Unreal
-  - name: unreal-specialist
-    spec: studio-tests/agents/engine/unreal/unreal-specialist.md
-    last_spec: ""
-    last_spec_result: ""
-    last_category: ""
-    last_category_result: ""
-    category: engine
-
-  - name: ue-blueprint-specialist
-    spec: studio-tests/agents/engine/unreal/ue-blueprint-specialist.md
-    last_spec: ""
-    last_spec_result: ""
-    last_category: ""
-    last_category_result: ""
-    category: engine
-
-  - name: ue-gas-specialist
-    spec: studio-tests/agents/engine/unreal/ue-gas-specialist.md
-    last_spec: ""
-    last_spec_result: ""
-    last_category: ""
-    last_category_result: ""
-    category: engine
-
-  - name: ue-umg-specialist
-    spec: studio-tests/agents/engine/unreal/ue-umg-specialist.md
-    last_spec: ""
-    last_spec_result: ""
-    last_category: ""
-    last_category_result: ""
-    category: engine
-
-  - name: ue-replication-specialist
-    spec: studio-tests/agents/engine/unreal/ue-replication-specialist.md
     last_spec: ""
     last_spec_result: ""
     last_category: ""

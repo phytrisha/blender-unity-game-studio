@@ -117,9 +117,9 @@ it is not for, and successful games that serve the same player.
   Android)` / `Console` / `Web / Browser` / `Multiple platforms`. Record it for `/setup-engine`.
   Note what the platform implies, without recommending an engine: `/setup-engine` makes that call
   against the pinned engine reference.
-- **Engine.** Ask in every automation mode, `autonomous` included: "Do you already have an engine
-  you work in?" `Godot` / `Unity` / `Unreal Engine 5` / `No preference — help me decide`. Never
-  pick an engine for the user. A named engine is recorded as their preference without second
+- **Engine.** This studio is built for Unity only (with Blender as the DCC). Do not ask which
+  engine; record Unity. If the user names another engine, tell them this studio supports Unity
+  only and record their answer, so `/setup-engine` can raise it. Never pick an engine for the user. A named engine is recorded as their preference without second
   guessing. No preference: "Run `/setup-engine` after this session; it walks through the choice
   with your concept and platform." Make no recommendation here.
 - Art pipeline and how labour-heavy it is; content scope (levels, items, hours); the MVP (the

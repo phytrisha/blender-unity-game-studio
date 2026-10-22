@@ -283,6 +283,8 @@ Write the approved section to file.
 - **`art-director`**: File format preferences, naming convention direction, texture resolution tiers, LOD level expectations, export settings philosophy
 - **`technical-artist`**: Engine-specific hard constraints — poly count budgets per asset category, texture memory limits, material slot counts, importer constraints, anything from the performance budgets (`performance.*` in `project.yaml`, falling back to `.claude/docs/technical-preferences.md`)
 
+Section 8 is written under the template's four sub-headings (8.1 budgets per asset class, 8.2 naming and materials, 8.3 texturing route and prompt style, 8.4 rigs and animation): the 3D pipeline (`/produce-asset`) reads them by heading, so a value written elsewhere in the bible is a value it never sees. Start from the defaults in `.claude/docs/art-pipeline/pipeline.md` ("Default budgets", "Naming contract") and say in the section which values are still defaults.
+
 If any art preference conflicts with a technical constraint (e.g., art-director wants 4K textures but performance budget requires 2K for mobile), surface the conflict explicitly with both positions — the ideal and the constrained standard, and the tradeoff. Do NOT silently resolve it — use `AskUserQuestion` to let the user pick (options: the ideal standard, the constrained standard, or document both and let per-asset judgment apply). Ambiguity in asset standards is where production costs are born.
 
 Write the approved section to file.

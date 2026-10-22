@@ -1,7 +1,7 @@
 # Agent Test Spec: art-director
 
 ## Agent Summary
-**Domain owned:** Visual identity, art bible authorship and enforcement, asset quality standards, UI/UX visual design, visual phase gate, concept art evaluation.
+**Domain owned:** Visual identity, art bible authorship and enforcement, asset quality standards, UI/UX visual design, visual phase gate, concept art evaluation; lead of the 3D art department (per-asset briefs and stage plans for `/produce-asset`).
 **Does NOT own:** UX interaction flows and information architecture (ux-designer's domain), audio direction (audio-director), code implementation.
 **Gate IDs handled:** AD-CONCEPT-VISUAL, AD-ART-BIBLE, AD-VISUAL, AD-PHASE-GATE.
 
@@ -74,6 +74,16 @@ Verified by reading the agent's `.claude/agents/art-director.md` frontmatter:
 
 ---
 
+### Case 7: Per-asset brief for the 3D pipeline
+**Scenario:** `/produce-asset` passes the ASSET-012 spec block (StorageCrate, Props, library `MI_WoodPlanks`, no rig) and art bible §8.1–8.2 lines inline, and asks for the brief.
+**Expected:** Returns drafts of `asset.json` (category, budgets, texture size/density, LODs, rig null, clips []), `BRIEF.md` (piece list with construction, crops to make, stages skipped and why — rig and anim —, definition of done per stage, spend estimate 0) and `PROGRESS.md` in its reply, plus ≤5 decision bullets.
+**Assertions:**
+- [ ] Values come from the spec and the passed bible lines; any value taken from the pipeline defaults is marked as a default
+- [ ] Names follow the naming contract (`SM_StorageCrate`, `MI_WoodPlanks`)
+- [ ] Skipped stages are named with reasons
+- [ ] It drafts in its reply and does not write the files itself (no Bash; the skill writes after approval)
+- [ ] It plans which specialist runs each stage and does not model, texture or rig
+
 ## Protocol Compliance
 
 - [ ] Returns the verdict vocabulary the invoked gate's definition file lists — APPROVE / CONCERNS / REJECT for AD-ART-BIBLE and AD-VISUAL; CONCEPTS / STRONG / CONCERNS for AD-CONCEPT-VISUAL; READY / CONCERNS / NOT READY for AD-PHASE-GATE; `NOT ASSESSED`, naming the input, at any gate when an input the gate names is missing
@@ -81,6 +91,7 @@ Verified by reading the agent's `.claude/agents/art-director.md` frontmatter:
 - [ ] Escalates UX-vs-visual conflicts to creative-director
 - [ ] Uses gate IDs in output (e.g., `AD-ART-BIBLE: APPROVE`) not inline prose verdicts
 - [ ] Does not make binding UX interaction, audio, or code implementation decisions
+- [ ] Delegates 3D production to 3d-artist, texture-artist, rigger, animator and technical-artist; leaves the AD-ASSET verdict to asset-critic
 - [ ] At a phase gate, treats an artifact the target phase requires that the calling skill passes as "none" as a finding (NOT READY or CONCERNS), and one passed as "not expected before [phase]" or "not required at `workflow: [tier]`" as no finding — it judges readiness for the phase being entered, not a later one
 
 ---

@@ -68,6 +68,13 @@ No gate IDs assigned.
 
 ---
 
+### Case 6: Art import question — routes through the pipeline rules
+**Input:** "The new SK_Guard imported as Generic and the clips don't loop — just fix it in the Inspector."
+**Expected behavior:** explains that import settings come from `AssetImportRules.cs` (SK_ → Humanoid, clip flags from `SK_Guard.json`) and that the fix belongs there or in the manifest, coordinated with technical-artist; checks `unity/import_assets.cs` output; does not hand-tune the Inspector.
+**Assertions:**
+- [ ] Points at `AssetImportRules.cs` / the export manifest rather than a per-asset Inspector change
+- [ ] Moves or renames inside `Assets/` only via `AssetDatabase` (eval script through `tools/unity_run.sh`), never `mv`/`rm`
+
 ## Protocol Compliance
 
 - [ ] Stays within declared domain (Unity architecture decisions, pattern selection, subsystem routing)

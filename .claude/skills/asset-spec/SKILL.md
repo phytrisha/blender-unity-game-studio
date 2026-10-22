@@ -269,6 +269,21 @@ Combine the agent outputs into a draft spec per asset. Present all specs in conv
 | Polycount | [if 3D — e.g. <800 tris] |
 | Texture Res | [e.g. 512px — matches Art Bible §8 Tier 2] |
 
+**3D production** (3D assets only — `/produce-asset` turns this block into `blender/assets/<Name>/asset.json`):
+
+| Field | Value |
+|-------|-------|
+| Asset name | [PascalCase base name, e.g. `StorageCrate` → `SM_StorageCrate`, `PF_StorageCrate`] |
+| Pipeline category | [Props / Buildings / Nature / Characters] |
+| Real size | [key dimension in metres + where it comes from] |
+| Pivot / facing | [e.g. bottom centre, front −Y] |
+| Budget | [LOD0 tris, materials, LOD ratios — Art Bible §8.1] |
+| Materials | [library `MI_*` names, or a unique `M_<Name>` atlas] |
+| Texturing route | [library tiling / painted (`/paint-asset`) / baked from high-poly / AI-generated maps] |
+| Rig | [none / Humanoid / Generic — bones, influences] |
+| Clips | [Name: frames, loop, root motion, events — or none] |
+| Source route | [scripted model / Tripo / Hunyuan (Weave) / external — and the reference images] |
+
 **Visual Description:**
 [2–3 sentences. Specific enough for two artists to produce consistent results.]
 

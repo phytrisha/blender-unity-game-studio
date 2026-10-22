@@ -1,0 +1,2 @@
+# name px py pz tx ty tz [fov] [rel]   (rel=1: heights above ground)   or   name @ShotCameras/Marker
+overview 0 25 -40 0 0 0 50

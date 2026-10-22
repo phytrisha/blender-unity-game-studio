@@ -60,6 +60,32 @@ LOD levels, export settings, and the engine's hard limits (poly budgets per
 asset category, texture memory, material slots). Where an art preference and a
 technical limit disagree, record both and the trade-off chosen.
 
+The 3D pipeline (Blender → Unity) reads this section when it writes each asset's
+`asset.json`; a missing value falls back to the pipeline default and the brief
+says so. Use these sub-headings so `/produce-asset` can read them by section:
+
+### 8.1 Budgets per asset class
+[To be designed] — LOD0 tris, materials, texel density (px/m), texture size,
+LOD ratios per class (small/medium/large prop, building, character, creature,
+plant), bones and influences for rigged classes. Defaults:
+`.claude/docs/art-pipeline/pipeline.md` "Default budgets".
+
+### 8.2 Naming and materials
+[To be designed] — the naming contract (defaults: pipeline.md "Naming
+contract": `SM_ SK_ PF_ MI_ M_ T_<Stem>_{BC,N,MS,AO,E} AC_ UCX_`), the shared
+material library (`MI_*`: name, use, tiling size, texture set), when an asset
+gets its own `M_` material instead.
+
+### 8.3 Texturing route and prompt style
+[To be designed] — which assets use library tiling materials, which are painted
+(`/paint-asset`), which are baked; the **prompt style block** appended to every
+Weave / AI Hub texture prompt and the Tripo prompt suffix; colour-space and
+lighting rules for albedo (no baked light unless the style is painted).
+
+### 8.4 Rigs and animation
+[To be designed] — Humanoid vs Generic per character class, frame rate, clip
+naming, root motion or in place, events.
+
 ## 9. Reference Direction
 
 [To be designed] — 3–5 references (games, films, art styles or artists). For

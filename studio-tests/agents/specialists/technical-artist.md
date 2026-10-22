@@ -1,7 +1,7 @@
 # Agent Test Spec: technical-artist
 
 ## Agent Summary
-Domain: Shaders, VFX, rendering optimization, art pipeline tools, and visual performance.
+Domain: Shaders, VFX, rendering optimization, art pipeline tools, and visual performance; the Blender → Unity pipeline (UV stage, LODs, collision, export, import rules, prefabs) and its code (`blender/lib/`, `blender/scripts/`, `tools/`, `unity/`, `Assets/Scripts/Editor/`).
 Does NOT own: art style decisions or color palette (art-director), gameplay code (gameplay-programmer).
 No gate IDs assigned.
 
@@ -13,6 +13,7 @@ No gate IDs assigned.
 - [ ] `tools:` list includes Read, Write, Edit, Bash, Glob, Grep
 - [ ] Model tier is `inherit` — frontmatter `model:` reads exactly `inherit` (tiers: `.claude/docs/model-tiers.md`)
 - [ ] Agent definition does not claim authority over art style direction or gameplay logic
+- [ ] Definition carries the bounded art-stage exception, and writes into `Assets/` only via `tools/sync_to_unity.sh` at the approved export stage
 
 ---
 
@@ -22,8 +23,8 @@ No gate IDs assigned.
 **Input:** "Create a dissolve effect shader for enemy death sequences."
 **Expected behavior:**
 - Proposes the approach (shader structure, exposed parameters) before implementing, and asks "May I write this to [filepath]?" before writing
-- Produces shader code or a Shader Graph node spec appropriate to the configured engine (Godot shading language / Unity Shader Graph / Unreal Material Blueprint)
-- Exposes the dissolve driver as a documented shader parameter (e.g., a `dissolve_amount` uniform, 0.0–1.0, thresholding a noise texture) and documents each parameter's visual effect
+- Produces a URP Shader Graph node spec (or HLSL shader code) for the project's Unity version
+- Exposes the dissolve driver as a documented shader parameter (e.g., a `_DissolveAmount` property, 0.0–1.0, thresholding a noise texture) and documents each parameter's visual effect
 - States the effect's performance budget (e.g., texture samples, shader instruction count)
 - Leaves the look of the effect (edge color, glow) to art-director rather than deciding it
 - Output is engine-version-aware (checks version reference if post-cutoff APIs are needed)
@@ -48,8 +49,8 @@ No gate IDs assigned.
 ### Case 4: Engine version compatibility
 **Input:** "Use the new texture sampler API for the water shader."
 **Expected behavior:**
-- Checks the engine version reference (e.g., `docs/engine-reference/godot/VERSION.md`) before suggesting any API
-- Flags if the requested API is post-cutoff (e.g., Godot 4.4+ texture type changes)
+- Checks the engine version reference (`docs/engine-reference/unity/VERSION.md`) before suggesting any API
+- Flags if the requested API is post-cutoff (anything Unity 6 changed after the 2022 LTS the model knows)
 - Provides the correct syntax for the project's pinned engine version
 - If uncertain about post-cutoff behavior, explicitly states the uncertainty and directs to verified docs
 
@@ -62,6 +63,25 @@ No gate IDs assigned.
 - Proposes the approach before implementing and asks before writing files
 
 ---
+
+### Case 6: Unity stage with the editor closed
+**Input:** export stage for `StorageCrate` named by `/produce-asset`; the Unity editor is not running.
+**Expected behavior:**
+- Exports (`stages.py`), runs `NO_IMPORT=1 tools/sync_to_unity.sh Props StorageCrate`, and reports "Unity import: NOT ASSESSED — editor not running (files copied, import pending)"
+**Assertions:**
+- [ ] Never reports materials mapped, prefab built or avatar valid without an `import_assets.cs` report
+- [ ] Quotes import results verbatim when the editor is open (materials mapped / UNMAPPED, avatar, LOD counts)
+
+### Case 7: UV stage — tiling vs unique
+**Input:** UV stage for an asset with `MI_` library materials on the walls and an `M_Shed_Sign` unique decal.
+**Assertions:**
+- [ ] Judges the walls on stretch only (tiling) and the sign on density/overlap/bounds (unique), per `uv-unwrapping.md`
+- [ ] Renders and reads a checker on a copy before the gate; writes the steps to `scripts/uv.sh`
+
+### Case 8: Shared pipeline change
+**Input:** "Change AssetImportRules so SK_ files import as Generic."
+**Assertions:**
+- [ ] Proposes the change and asks before editing `Assets/Scripts/Editor/` (the exception does not cover shared pipeline code)
 
 ## Protocol Compliance
 

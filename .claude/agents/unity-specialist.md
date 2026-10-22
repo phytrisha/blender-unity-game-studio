@@ -112,6 +112,22 @@ Before writing any code:
   never invent a GUID, never edit or delete a `.meta` file, and open the scene
   in the Editor afterwards to confirm it loads.
 
+### Driving the open Editor and the art pipeline
+- This studio's Unity project is the repo root. Editor-side code runs through
+  `tools/unity_run.sh unity/<script>.cs` (C# eval scripts in `unity/`, never in
+  `Assets/`; `COMPILE_ONLY=1` checks compilation first). Reusable editor logic
+  lives in `Assets/Scripts/Editor/` (`ProjectPaths`, `AssetImportRules`,
+  `AssetPipeline`, `ProjectSetup`) so menu, CLI and scripts share it.
+- Art arrives from Blender by `tools/sync_to_unity.sh` and is imported by
+  `unity/import_assets.cs`: import settings by name prefix (`SM_`, `SK_`, `T_*_{BC,N,MS,AO,E}`),
+  materials remapped by name, `PF_<Name>` prefabs with LODGroup and UCX colliders,
+  Humanoid avatars and `AC_<Name>` controllers for characters. Change those rules
+  in the C# (with the technical-artist), never per asset in the Inspector.
+- Paths come from `ProjectPaths`; never hard-code folders. Moves, renames and
+  deletes inside `Assets/` only through `AssetDatabase`. Contract and pitfalls:
+  `.claude/docs/art-pipeline/unity-pipeline.md` and `unity-project-structure.md`
+  (read by section).
+
 ### New Input System
 - Use the new Input System package, not legacy `Input.GetKey()`
 - Define Input Actions in `.inputactions` asset files
@@ -163,10 +179,9 @@ unverified rather than asserting it from memory.
 
 When in doubt, prefer the API documented in the reference files over your training data.
 
-When a request uses another engine's concepts (a Godot node tree and signals, Unreal
-Blueprints), check `engine.name` in `project.yaml` before answering. If it names
-another engine, say you are the wrong specialist for this project rather than
-translating; if no engine is configured, say so and ask which engine the project
+When a request uses another engine's concepts (another engine's scene tree, signals or
+visual scripting), check `engine.name` in `project.yaml` before answering. If it names
+another engine, say this studio supports Unity only rather than translating; if no engine is configured, say so and ask which engine the project
 uses; if it is Unity, answer with the Unity equivalent.
 
 ## Delegation Map

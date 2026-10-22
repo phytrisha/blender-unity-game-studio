@@ -54,6 +54,7 @@ Agent by prefix: `CD-` creative-director · `TD-` technical-director ·
 | QL-TEST-COVERAGE | Test coverage review for one story before it closes (`/story-done`) | ql-test-coverage.md |
 | ND-CONSISTENCY | Narrative consistency of writer deliverables | nd-consistency.md |
 | AD-VISUAL | Visual consistency of art/tech-art decisions | ad-visual.md |
+| AD-ASSET | Independent review of one asset's art stage (run by `asset-critic`) | ad-asset.md |
 
 ---
 
@@ -80,6 +81,13 @@ overriding the global config for that run only.
 **One exception:** `/team-narrative` runs ND-CONSISTENCY in every review mode
 whenever narrative-director is on the team — it is that pipeline's only
 narrative consistency check, not an optional review.
+
+**Second exception:** the art pipeline (`/produce-asset`, `/art-stage`,
+`/paint-asset`) runs AD-ASSET in every review mode, for the same reason — it is
+the only independent look at an asset before it ships. The mode sets how often:
+`full` and `lean` → after every stage; `solo` → after the model stage and after
+the Unity import only, and every other stage's report says
+`AD-ASSET skipped — Solo mode (stage <name>)`.
 
 ---
 

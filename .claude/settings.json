@@ -12,7 +12,19 @@
     "allow": [
       "Bash(dir *)",
       "Bash(python -m pytest *)",
-      "Bash(py -m pytest *)"
+      "Bash(py -m pytest *)",
+      "Bash(tools/blender_run.sh:*)",
+      "Bash(tools/unity_run.sh:*)",
+      "Bash(tools/sync_to_unity.sh:*)",
+      "Bash(tools/tests/art_pipeline_smoke.sh:*)",
+      "Bash(python3 tools/sheet.py:*)",
+      "Bash(uv run tools/texture/texture_tools.py:*)",
+      "Bash(uv run tools/texture/derive_pbr_maps.py:*)",
+      "Bash(tripo doctor:*)",
+      "Bash(tripo balance:*)",
+      "Bash(tripo docs:*)",
+      "Bash(tripo task get:*)",
+      "Bash(tripo history:*)"
     ],
     "deny": [
       "Bash(rm -rf *)",
@@ -205,6 +217,26 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit|NotebookEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/validate-sources.py\"",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__.*weave_run_(model|tool)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/weave-guard.py\" pre",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -220,6 +252,16 @@
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/validate-skill-change.sh\"",
             "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__.*weave_run_(model|tool)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/weave-guard.py\" post",
+            "timeout": 10
           }
         ]
       }

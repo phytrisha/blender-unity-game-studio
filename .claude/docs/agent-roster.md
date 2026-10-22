@@ -21,7 +21,7 @@ session's model.
 |-------|--------|-------------|
 | `game-designer` | Game design | Mechanics, systems, progression, economy, balancing |
 | `lead-programmer` | Code architecture | System design, code review, API design, refactoring |
-| `art-director` | Visual direction | Style guides, art bible, asset standards, UI/UX direction |
+| `art-director` | Visual direction, 3D art department lead | Style guides, art bible, asset standards, UI/UX direction, per-asset briefs (`/produce-asset`) |
 | `audio-director` | Audio direction | Music direction, sound palette, audio implementation strategy |
 | `narrative-director` | Story and writing | Story arcs, world-building, character design, dialogue strategy |
 | `qa-lead` | Quality assurance | Test strategy, bug triage, release readiness, regression planning |
@@ -40,7 +40,7 @@ session's model.
 | `network-programmer` | Networking | Netcode, replication, lag compensation, matchmaking |
 | `tools-programmer` | Dev tools | Editor extensions, pipeline tools, debug utilities |
 | `ui-programmer` | UI implementation | UI framework, screens, widgets, data binding |
-| `technical-artist` | Tech art | Shaders, VFX, optimization, art pipeline tools |
+| `technical-artist` | Tech art | Shaders, VFX, optimization, Blender → Unity pipeline (UVs, LODs, export, import rules, prefabs) |
 | `sound-designer` | Sound design | SFX design docs, audio event lists, mixing notes |
 | `writer` | Dialogue/lore | Dialogue writing, lore entries, item descriptions |
 | `world-builder` | World/lore design | World rules, faction design, history, geography |
@@ -55,24 +55,26 @@ session's model.
 | `live-ops-designer` | Live operations | Seasons, events, battle passes, retention, live economy |
 | `community-manager` | Community | Patch notes, player feedback, crisis comms, community health |
 
-## Engine-Specific Agents (use the set matching your engine)
+## 3D Art Department (Blender → Unity)
+
+Specialists under `art-director`; their reference is `.claude/docs/art-pipeline/`. Orchestrated by `/produce-asset`
+and `/art-stage`; `technical-artist` (above) owns the UV and Unity stages.
+
+| Agent | Domain | When to Use |
+|-------|--------|-------------|
+| `3d-artist` | Modelling | Blockout and part-by-part modelling in Blender by script, budgets, deformation topology |
+| `texture-artist` | Texturing | Weave / AI Hub repaint + projection onto UVs, tiling sets, bakes, Unity PBR maps; quotes paid runs |
+| `rigger` | Rigging | Skeletons, Rigify → game skeleton with Unity Humanoid names, weights, sockets, pose tests |
+| `animator` | Animation | Clips, loops, root motion, speeds, events, contact sheets, bake to the game skeleton |
+| `asset-critic` | Independent review | AD-ASSET gate: renders vs reference, findings with confidence, never sees the builder's report |
+
+## Engine-Specific Agents (Unity)
 
 ### Engine Leads
 
 | Agent | Engine | When to Use |
 | ---- | ---- | ---- |
-| `unreal-specialist` | Unreal Engine 5 | Blueprint vs C++, GAS overview, UE subsystems, Unreal optimization |
 | `unity-specialist` | Unity | MonoBehaviour vs DOTS, Addressables, URP/HDRP, Unity optimization |
-| `godot-specialist` | Godot 4 | GDScript patterns, node/scene architecture, signals, Godot optimization |
-
-### Unreal Engine Sub-Specialists
-
-| Agent | Subsystem | When to Use |
-| ---- | ---- | ---- |
-| `ue-gas-specialist` | Gameplay Ability System | Abilities, gameplay effects, attribute sets, tags, prediction |
-| `ue-blueprint-specialist` | Blueprint Architecture | BP/C++ boundary, graph standards, naming, BP optimization |
-| `ue-replication-specialist` | Networking/Replication | Property replication, RPCs, prediction, relevancy, bandwidth |
-| `ue-umg-specialist` | UMG/CommonUI | Widget hierarchy, data binding, CommonUI input, UI performance |
 
 ### Unity Sub-Specialists
 
@@ -82,12 +84,3 @@ session's model.
 | `unity-shader-specialist` | Shaders/VFX | Shader Graph, VFX Graph, URP/HDRP customization, post-processing |
 | `unity-addressables-specialist` | Asset Management | Addressable groups, async loading, memory, content delivery |
 | `unity-ui-specialist` | UI Toolkit/UGUI | UI Toolkit, UXML/USS, UGUI Canvas, data binding, cross-platform input |
-
-### Godot Sub-Specialists
-
-| Agent | Subsystem | When to Use |
-| ---- | ---- | ---- |
-| `godot-gdscript-specialist` | GDScript | Static typing, design patterns, signals, coroutines, GDScript performance |
-| `godot-csharp-specialist` | C# / .NET | .NET patterns, [Signal] delegates, async, nullable types, type-safe node access |
-| `godot-shader-specialist` | Shaders/Rendering | Godot shading language, visual shaders, particles, post-processing |
-| `godot-gdextension-specialist` | GDExtension | C++/Rust bindings, native performance, custom nodes, build systems |

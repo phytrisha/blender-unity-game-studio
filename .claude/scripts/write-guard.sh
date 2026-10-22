@@ -33,11 +33,14 @@
 #                    a file under prototypes/ without its PROTOTYPE or
 #                    VERTICAL SLICE header, or reaching into the code root;
 #                    a file under the code root reaching into prototypes/
-#   freeze PATH      a string table under assets/data/strings/ while
+#   freeze PATH      a string table under Assets/Settings/Data/Strings/ (any case) while
 #                    production/localization/freeze-status.md says ACTIVE
 #   agent PATH --agent TYPE [--existed yes|no]
 #                    a subagent's write outside the exception: only a new file
-#                    under production/, docs/ or tests/
+#                    under production/, docs/ or tests/ -- or, for an agent whose
+#                    definition has a "Bounded art-stage exception" section, any
+#                    file under blender/assets/, renders/, blender/export/,
+#                    textures/ and a new file under sources/weave/
 #   artifact PATH... each path a return contract named: there or missing
 #   git              stdin: one shell command segment per line; each whose
 #                    command (after VAR=value words and sudo-like wrappers) is
@@ -157,7 +160,7 @@ rel() {
 }
 tsv() { printf '%s' "$1" | tr '\t\n' '  '; }
 
-# The engine names project.yaml may hold, and each engine's code root
+# The engine name project.yaml holds, and the code root
 # (directory-structure.md, "The code root is engine-specific").
 engine_name() {
   [ -f project.yaml ] || return 0
@@ -165,13 +168,9 @@ engine_name() {
   YG_PATH=engine.name awk -f "$HERE/yaml-get.awk" project.yaml
 }
 ENGINE=$(engine_name | tr 'A-Z' 'a-z')
-case "$ENGINE" in
-  godot) ROOTS="src" ;;
-  unity) ROOTS="Assets" ;;
-  unreal) ROOTS="Source" ;;
-  # Unset or unknown: the three roots, so no rule is skipped for want of one.
-  *) ROOTS="src Assets Source" ;;
-esac
+# Unity's code root is Assets/. Unset or another engine name: still Assets/, the
+# only root this studio has, so no rule is skipped for want of one.
+ROOTS="Assets"
 
 APPLIED=""
 applied() { APPLIED="${APPLIED:+$APPLIED,}$1"; }
@@ -181,7 +180,6 @@ applied() { APPLIED="${APPLIED:+$APPLIED,}$1"; }
 overwrite_why() {
   case "$1" in
     production/epics/*/EPIC.md) echo "/create-epics updates an existing EPIC.md in place and never rewrites it" ;;
-    project.godot) echo "/setup-engine never replaces an existing Godot project file" ;;
     tests/helpers/*) echo "/test-helpers never overwrites existing helpers, which may hold hand-written code" ;;
     docs/tech-debt-register.md) echo "/tech-debt appends to the register and never rewrites it" ;;
     docs/engine-reference/*) echo "/setup-engine never overwrites an engine reference doc without asking" ;;
@@ -192,9 +190,9 @@ rule_overwrite() {
   [ "$TOOL" = Write ] || return 0
   [ -f "$1" ] || return 0
   _w=$(overwrite_why "$1")
-  # Where /test-setup writes: the test roots of the three engines, CI and the
-  # QA evidence folder. Other paths never ask test-scaffold.sh.
-  case "$1" in tests/*|.github/*|production/qa/*|Assets/Tests/*|Source/*) ;; *) _w="${_w:--}" ;; esac
+  # Where /test-setup writes: tests/, Unity's test root, CI and the QA evidence
+  # folder. Other paths never ask test-scaffold.sh.
+  case "$1" in tests/*|.github/*|production/qa/*|Assets/Tests/*) ;; *) _w="${_w:--}" ;; esac
   [ "$_w" = "-" ] && return 0
   if [ -z "$_w" ]; then
     # The files /test-setup creates, as test-scaffold.sh lists them per engine.
@@ -203,7 +201,7 @@ rule_overwrite() {
       return 0
     fi
     _engines="$ENGINE"
-    case "$_engines" in godot|unity|unreal) ;; *) _engines="godot unity unreal" ;; esac
+    case "$_engines" in unity) ;; *) _engines="unity" ;; esac
     for _e in $_engines; do
       if bash "$HERE/test-scaffold.sh" --root . "$_e" --list 2>/dev/null | grep -qxF "$1"; then
         _w="/test-setup only creates the files that are missing"; break
@@ -337,15 +335,15 @@ rule_prototype() {
         fi ;;
     esac
   fi
-  # A reference that climbs out of prototypes/ into a code root (../src/,
-  # Godot's res://src/), or one from the code root into prototypes/.
+  # A reference that climbs out of prototypes/ into the code root (../Assets/),
+  # or one from the code root into prototypes/.
   ROOTS="$ROOTS" D="$_dir" P="$(tsv "$_path")" awk '
     BEGIN {
       BINMODE = 3
       n = split(ENVIRON["ROOTS"], r, " "); alt = ""
       for (i = 1; i <= n; i++) alt = alt (alt == "" ? "" : "|") r[i]
-      if (ENVIRON["D"] == "into-production") re = "(res://|\\.\\./)(\\.\\./)*(" alt ")/"
-      else re = "(res://|\\.\\./|[\"'"'"'(<])(\\.\\./)*prototypes/"
+      if (ENVIRON["D"] == "into-production") re = "(\\.\\./)+(" alt ")/"
+      else re = "(\\.\\./|[\"'"'"'(<])(\\.\\./)*prototypes/"
     }
     { l = $0; sub(/\r$/, "", l) }
     l ~ re { gsub(/\t/, " ", l); printf "PROTOTYPE_IMPORT\t%s\t%s\t%d\t%s\n", ENVIRON["P"], ENVIRON["D"], NR, l }
@@ -355,7 +353,10 @@ rule_prototype() {
 # --------------------------------------------------------------------- freeze
 FREEZE_FILE=production/localization/freeze-status.md
 rule_freeze() {
-  case "$1" in assets/data/strings/*) applied freeze ;; *) return 0 ;; esac
+  # Case-insensitive: Unity's tables sit under Assets/Settings/Data/Strings/ (ProjectPaths.Data);
+  # the older Assets/Data/Strings/ spelling is still caught.
+  shopt -s nocasematch
+  case "$1" in assets/settings/data/strings/*|assets/data/strings/*) shopt -u nocasematch; applied freeze ;; *) shopt -u nocasematch; return 0 ;; esac
   [ -f "$FREEZE_FILE" ] || return 0
   # /localize writes **Status**: ACTIVE or LIFTED; "Active" is spelled both
   # ways in the skill, so the match ignores case.
@@ -376,6 +377,18 @@ rule_agent() {
     # (.claude/rules/agent-memory.md); they are not the subagent exception.
     .claude/agent-memory/*|production/session-state/active.md) return 0 ;;
   esac
+  # Art-stage exception (.claude/docs/art-pipeline/pipeline.md "Rules", CLAUDE.md): an agent whose definition
+  # carries a "Bounded art-stage exception" section rewrites inside one asset's workspace while its stage runs
+  # (the stage ends at the user's gate). Derived from the agent files, not a list, so a new art agent is covered
+  # by writing the section. sources/ stays append-only: only new files under sources/weave/.
+  if [ -f ".claude/agents/$AGENT.md" ] && grep -q 'Bounded art-stage exception' ".claude/agents/$AGENT.md" 2>/dev/null; then
+    case "$1" in
+      blender/assets/*|renders/*|blender/export/*|textures/*) return 0 ;;
+      sources/weave/*) _e="$EXISTED"; [ -n "$_e" ] || { [ -e "$1" ] && _e=yes || _e=no; }
+                       [ "$_e" = no ] && return 0
+                       printf 'AGENT_WRITE\t%s\t%s\texisting-file\n' "$(tsv "$1")" "$(tsv "$AGENT")"; return 0 ;;
+    esac
+  fi
   case "$1" in
     production/*|docs/*|tests/*) ;;
     *) printf 'AGENT_WRITE\t%s\t%s\toutside\n' "$(tsv "$1")" "$(tsv "$AGENT")"; return 0 ;;

@@ -126,7 +126,7 @@ analysis and must ask before recommending any file writes.
 ### `team`
 
 **Skills**: team-combat, team-narrative, team-audio, team-level, team-ui, team-qa,
-team-release, team-polish, team-live-ops
+team-release, team-polish, team-live-ops, produce-asset, art-stage
 
 Team skills orchestrate multiple specialist agents for a department. They must
 spawn the right agents, run independent ones in parallel, and surface blocks immediately.
@@ -208,7 +208,7 @@ systems-designer, level-designer
 **Agents**: gameplay-programmer, ai-programmer, technical-artist, sound-designer,
 engine-programmer, tools-programmer, network-programmer, security-engineer,
 accessibility-specialist, ux-designer, ui-programmer, performance-analyst, prototyper,
-writer, world-builder
+writer, world-builder, 3d-artist, texture-artist, rigger, animator, asset-critic
 
 | Metric | PASS criteria |
 |---|---|
@@ -218,17 +218,14 @@ writer, world-builder
 
 ### `engine`
 
-**Agents**: godot-specialist, godot-gdscript-specialist, godot-csharp-specialist,
-godot-shader-specialist, godot-gdextension-specialist, unity-specialist, unity-ui-specialist,
-unity-shader-specialist, unity-dots-specialist, unity-addressables-specialist,
-unreal-specialist, ue-blueprint-specialist, ue-gas-specialist, ue-umg-specialist,
-ue-replication-specialist
+**Agents**: unity-specialist, unity-ui-specialist, unity-shader-specialist,
+unity-dots-specialist, unity-addressables-specialist
 
 | Metric | PASS criteria |
 |---|---|
 | **E1 — Version-aware** | References engine version from `docs/engine-reference/` before suggesting API calls; flags post-cutoff risk |
-| **E2 — File routing** | Routes file types to the correct sub-specialist (e.g., `.gdshader` → godot-shader-specialist, not godot-gdscript-specialist) |
-| **E3 — Engine-specific patterns** | Enforces engine-specific idioms (e.g., GDScript static typing, C# attribute exports, Blueprint function libraries) |
+| **E2 — File routing** | Routes file types to the correct sub-specialist (e.g., `.shader` / `.shadergraph` → unity-shader-specialist, `.uxml` / `.uss` → unity-ui-specialist, not unity-specialist) |
+| **E3 — Engine-specific patterns** | Enforces engine-specific idioms (e.g., `[SerializeField]` over public fields, ScriptableObjects for data, Addressables over `Resources.Load`) |
 
 ### `qa`
 

@@ -1,0 +1,11 @@
+{
+  "name": "Crate",
+  "category": "Props",
+  "type": "prop",
+  "height_m": 0.6,
+  "budget": {"tris": 2000, "materials": 2, "bones": 0, "influences": 4, "uv_maps": 2},
+  "textures": {"size": 1024, "texel_density": 512},
+  "lods": [0.5, 0.25],
+  "rig": {"armature": null},
+  "animations": []
+}

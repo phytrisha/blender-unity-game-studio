@@ -104,19 +104,21 @@ OPTIONAL opportunities.
 Directories are created as needed. The system expects this layout:
 
 ```
-src/                  # Game source code (Godot; Unity: Assets/, Unreal: Source/<Module>/)
-  core/               # Engine/framework code
-  gameplay/           # Gameplay systems
-  ai/                 # AI systems
-  networking/         # Multiplayer code
-  ui/                 # UI code
-  tools/              # Dev tools
-assets/               # Game assets
-  art/                # Sprites, models, textures
-  audio/              # Music, SFX
-  vfx/                # Particle effects
-  shaders/            # Shader files
-  data/               # JSON config/balance data
+Assets/               # The Unity project's content AND code root (Unity project at the repo root)
+  Scripts/            # Game source code
+    Core/             # Engine/framework code
+    Gameplay/         # Gameplay systems
+    AI/               # AI systems
+    Networking/       # Multiplayer code
+    UI/               # UI code
+  Art/                # Models, textures, materials
+  Audio/              # Music, SFX
+  VFX/                # Particle effects
+  Shaders/            # Shader files
+  Data/               # JSON config/balance data
+  Tests/              # EditMode/ and PlayMode/ test assemblies
+Packages/             # Unity package manifest
+ProjectSettings/      # Unity project settings
 design/               # Design documents
   gdd/                # Game design documents
   narrative/          # Story, lore, dialogue
@@ -127,7 +129,7 @@ docs/                 # Technical documentation
   architecture/       # Architecture Decision Records
   api/                # API documentation
   postmortems/        # Post-mortems
-tests/                # Test suites
+tests/                # Test README and smoke-test seed (test code lives in Assets/Tests/)
 prototypes/           # Throwaway prototypes
 production/           # Sprint plans, milestones, releases
   sprints/
@@ -142,9 +144,8 @@ production/           # Sprint plans, milestones, releases
 > **Tip:** You do not need all of these on day one. Create directories as you
 > reach the phase that needs them. The important thing is to follow this
 > structure when you do create them, because the **rules system** enforces
-> standards based on file paths. Code in `src/gameplay/` gets gameplay rules,
-> code in `src/ai/` gets AI rules, and so on — and the same for C# and C++ in
-> Unity and Unreal `Gameplay/` and `AI/` folders.
+> standards based on file paths. C# in `Assets/**/Gameplay/` gets gameplay
+> rules, C# in `Assets/**/AI/` gets AI rules, and so on.
 
 ---
 
@@ -258,10 +259,10 @@ Validates structure and completeness before you proceed.
 /setup-engine
 ```
 
-Or with a specific engine:
+Or with a specific version (Unity is the only engine this studio supports):
 
 ```
-/setup-engine godot 4.7
+/setup-engine unity 6.3
 ```
 
 **What /setup-engine does:**
@@ -274,9 +275,9 @@ Or with a specific engine:
 - Creates version-pinned reference docs in `docs/engine-reference/`
 
 **Why this matters:** Once you set the engine, the system knows which
-engine-specialist agents to use. If you pick Godot, agents like
-`godot-specialist`, `godot-gdscript-specialist`, and `godot-shader-specialist`
-become your go-to experts.
+engine-specialist agents to use: `unity-specialist`, `unity-shader-specialist`,
+`unity-ui-specialist` and the other Unity sub-specialists become your go-to
+experts.
 
 ### Step 1.4: Decompose Your Concept Into Systems
 
@@ -711,6 +712,29 @@ dialogue box, etc.) with animation and sound standards.
 Validates UX specs for GDD alignment and accessibility tier compliance.
 Produces APPROVED / NEEDS REVISION / MAJOR REVISION NEEDED verdict.
 
+### Art Pipeline: First 3D Assets (Blender → Unity)
+
+Before production, prove the art pipeline on one or two key assets from
+`design/assets/asset-manifest.md` (made by `/asset-spec`):
+
+```
+/texture-set WoodPlanks "weathered pine planks, 15 cm wide"   # shared library materials (optional)
+/produce-asset ASSET-001                                     # spec → brief → model → UV → texture → rig → anim → Unity
+```
+
+`/produce-asset` runs the 3D art department: `art-director` writes the brief
+(`blender/assets/<Name>/asset.json`, `BRIEF.md`), then `3d-artist`,
+`technical-artist` (UVs, export), `texture-artist` (Figma Weave / AI Hub
+painting, bakes), `rigger` and `animator` each build one stage in Blender by
+script. Every stage renders its result, runs `qa_check.py`, gets an independent
+`asset-critic` review (AD-ASSET) and stops at your gate. Paid generation
+(Weave, AI Hub, Tripo) is quoted first and asks you before every run. The last
+stage imports into Unity (`tools/sync_to_unity.sh`): prefab with LODs and
+colliders, Humanoid/Generic rig, animator controller, and a capture to look at.
+Single stages: `/art-stage <stage> <Name>`; AI painting: `/paint-asset`;
+generated meshes: `/generate-model`; a second opinion: `/art-review`.
+Reference: `.claude/docs/art-pipeline/README.md`.
+
 ### Step 4.2: Build the Vertical Slice
 
 The vertical slice is the production-quality proof that you can build the full
@@ -1064,7 +1088,7 @@ Guides you through structured performance profiling:
 ### Step 6.2: Balance Analysis
 
 ```
-/balance-check assets/data/combat_damage.json
+/balance-check Assets/Settings/Data/combat_damage.json
 ```
 
 Analyzes balance data for statistical outliers, broken progression curves,
@@ -1378,14 +1402,10 @@ Tier 3 (Specialists):  gameplay-programmer, engine-programmer,
                        qa-tester, performance-analyst, devops-engineer,
                        analytics-engineer, accessibility-specialist,
                        live-ops-designer, prototyper, security-engineer,
-                       community-manager, godot-specialist,
-                       godot-gdscript-specialist, godot-shader-specialist,
-                       godot-csharp-specialist, godot-gdextension-specialist,
+                       community-manager,
                        unity-specialist, unity-dots-specialist,
                        unity-shader-specialist, unity-addressables-specialist,
-                       unity-ui-specialist, unreal-specialist,
-                       ue-blueprint-specialist, ue-gas-specialist,
-                       ue-replication-specialist, ue-umg-specialist
+                       unity-ui-specialist
 ```
 
 **Coordination rules:**
@@ -1412,7 +1432,7 @@ The system has 15 hooks that run automatically:
 | `validate-read.sh` | Before a file read | Refuses a whole-file read of a design doc over 40 KB and answers with its headings |
 | `validate-write.sh` | Before a file write | Warns when a write would break a rule the skills state (never blocks) |
 | `validate-registry.sh` | Before an entity or TR-ID registry write | Warns when an entry would be deleted or renumbered, or a status is not in the header's list |
-| `validate-assets.sh` | After a file write | Checks data-file JSON, and asset naming in Godot's `assets/` |
+| `validate-assets.sh` | After a file write | Checks data-file JSON in `Data/` folders under `Assets/` |
 | `validate-skill-change.sh` | Skill file written | Advises running `/skill-test` after `.claude/skills/` changes |
 | `log-agent.sh` | Agent start | Logs agent invocations for audit trail |
 | `log-agent-stop.sh` | Agent stop | Completes agent audit trail (start + stop) |
@@ -1503,7 +1523,7 @@ instead.
 For code that exists without design docs (common after brownfield adoption):
 
 ```
-/reverse-document design src/gameplay/combat/
+/reverse-document design Assets/Scripts/Gameplay/Combat/
 ```
 
 Reads existing code and generates GDD-format design documentation from it.
@@ -1551,20 +1571,11 @@ Reads existing code and generates GDD-format design documentation from it.
 | Prototype quickly | `prototyper` | 3 |
 | Audit security | `security-engineer` | 3 |
 | Communicate with players | `community-manager` | 3 |
-| Godot-specific help | `godot-specialist` | 3 |
-| GDScript-specific help | `godot-gdscript-specialist` | 3 |
-| Godot shader help | `godot-shader-specialist` | 3 |
-| GDExtension modules | `godot-gdextension-specialist` | 3 |
 | Unity-specific help | `unity-specialist` | 3 |
 | Unity DOTS/ECS | `unity-dots-specialist` | 3 |
 | Unity shaders/VFX | `unity-shader-specialist` | 3 |
 | Unity Addressables | `unity-addressables-specialist` | 3 |
 | Unity UI Toolkit | `unity-ui-specialist` | 3 |
-| Unreal-specific help | `unreal-specialist` | 3 |
-| Unreal GAS | `ue-gas-specialist` | 3 |
-| Unreal Blueprints | `ue-blueprint-specialist` | 3 |
-| Unreal replication | `ue-replication-specialist` | 3 |
-| Unreal UMG/CommonUI | `ue-umg-specialist` | 3 |
 
 ### Agent Hierarchy
 
@@ -1653,6 +1664,12 @@ conflicts go to `producer`.
 | `/balance-check` | Game balance formula analysis | 5-6 |
 | `/asset-audit` | Asset naming, format, size verification | 6 |
 | `/asset-spec` | Per-asset visual specs and AI generation prompts | 5-6 |
+| `/produce-asset` | One 3D asset end to end: Blender stages → Unity prefab, gate per stage | 4-6 |
+| `/art-stage` | One art stage (model/uv/texture/rig/anim/unity) for one asset | 4-6 |
+| `/paint-asset` | AI-paint an asset (Weave / AI Hub) projected onto its UVs | 4-6 |
+| `/texture-set` | Tileable PBR material for the shared `MI_` library | 4-6 |
+| `/generate-model` | Tripo / Hunyuan 3D mesh ingested into the pipeline | 4-6 |
+| `/art-review` | Independent AD-ASSET review of an asset stage | 4-6 |
 | `/content-audit` | GDD-specified content vs. implemented | 5 |
 | `/consistency-check` | Cross-GDD entity and formula inconsistency scan | 2+ |
 | `/scope-check` | Scope creep detection | 5 |

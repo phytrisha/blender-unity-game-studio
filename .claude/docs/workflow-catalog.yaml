@@ -38,9 +38,9 @@ paths:
         artifact:
           any_of:
             - glob: "project.yaml"
-              pattern: 'name:[[:space:]]*"?(Godot|Unity|Unreal)'
+              pattern: 'name:[[:space:]]*"?Unity'
             - glob: ".claude/docs/technical-preferences.md"
-              pattern: '\*\*Engine\*\*: [^[]'
+              pattern: '\*\*Engine\*\*: Unity'
         description: "Configure the engine and pin its version"
 
       - id: game-brief
@@ -94,19 +94,19 @@ phases:
         required: true
         # engine.name in project.yaml is the primary source; technical-
         # preferences.md is the legacy fallback. Either one completes the step.
-        # /setup-engine writes the value quoted (`name: "Godot"`), so the quote
+        # /setup-engine writes the value quoted (`name: "Unity"`), so the quote
         # is optional in the first alternative.
         # Single-quoted so the `"` needs no escape — artifact-check.sh strips
         # the outer quotes and does not unescape.
         artifact:
           any_of:
             - glob: "project.yaml"
-              pattern: 'name:[[:space:]]*"?(Godot|Unity|Unreal)'
-            # technical-preferences.md writes "- **Engine**: Godot 4.7", so the
-            # pattern must clear the bold markers. The [^[] guard rejects the
+              pattern: 'name:[[:space:]]*"?Unity'
+            # technical-preferences.md writes "- **Engine**: Unity 6.3", so the
+            # pattern must clear the bold markers. Naming Unity also rejects the
             # "[TO BE CONFIGURED]" placeholder.
             - glob: ".claude/docs/technical-preferences.md"
-              pattern: '\*\*Engine\*\*: [^[]'
+              pattern: '\*\*Engine\*\*: Unity'
         description: "Configure engine, pin version, set naming conventions and performance budgets"
 
       - id: game-concept
@@ -260,6 +260,24 @@ phases:
           glob: "design/assets/asset-manifest.md"
         description: "Generate per-asset visual specifications and AI generation prompts. Run once per entity, system, level, or character. If no source doc exists, /asset-spec interviews you inline — no narrative document required."
 
+      - id: texture-library
+        name: "Material Library (tiling sets)"
+        command: /texture-set
+        required: false
+        repeatable: true
+        artifact:
+          glob: "textures/*/T_*_BC.png"
+        description: "Build the shared MI_ material library the art bible names (wood, stone, metal...): AI-generated seamless base colour (Figma Weave or the HfG AI Hub, every paid run approved) → Unity PBR maps. Most environment assets and kits use these instead of unique textures."
+
+      - id: first-assets
+        name: "First 3D Assets (art pipeline proof)"
+        command: /produce-asset
+        required: false
+        repeatable: true
+        artifact:
+          glob: "blender/assets/*/asset.json"
+        description: "Take one or two key ASSET-NNN entries from the manifest through the whole Blender → Unity pipeline (brief, model, UV, texture, rig, anim, prefab) before production, so budgets, style and import rules are proven on real assets. Each stage ends at your gate; asset-critic reviews each stage (AD-ASSET)."
+
       - id: ux-design
         name: "UX Specs (key screens)"
         command: /ux-design
@@ -357,8 +375,17 @@ phases:
         required: true
         repeatable: true
         artifact:
-          note: "Check the code root (src/, Assets/ or Source/ by engine) for active code and production/epics/**/*.md for In Progress stories"
+          note: "Check the code root (Assets/) for active code and production/epics/**/*.md for In Progress stories"
         description: "Pick the next ready story and implement it with /dev-story [story-path]. Routes to the correct programmer agent."
+
+      - id: art-production
+        name: "Produce 3D Assets"
+        command: /produce-asset
+        required: false
+        repeatable: true
+        artifact:
+          glob: "Assets/Art/**/PF_*.prefab"
+        description: "Work through design/assets/asset-manifest.md: /produce-asset ASSET-NNN per asset (or /art-stage for one stage, /paint-asset, /generate-model). Finished prefabs land in Assets/Art/; the manifest row goes to Done. Run alongside /dev-story — gameplay can use placeholder prefabs until the art arrives."
 
       - id: code-review
         name: "Code Review"

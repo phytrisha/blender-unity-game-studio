@@ -3,7 +3,7 @@ name: asset-audit
 description: "Audit assets against naming conventions, file size budgets, format standards. Finds orphaned assets, missing references."
 argument-hint: "[category|all]"
 user-invocable: true
-allowed-tools: Read, Glob, Grep, Bash(stat *), Bash(file *), Bash(od *), Bash(wc *), Bash(du *)
+allowed-tools: Read, Glob, Grep, Bash(stat *), Bash(file *), Bash(od *), Bash(wc *), Bash(du *), Bash(tools/unity_run.sh unity/unused_assets.cs*)
 model: sonnet
 # Read-only diagnostic skill — no specialist agent delegation needed
 ---
@@ -73,18 +73,14 @@ Asset Standards section sets budgets, formats and the naming convention.
 
 ## Phase 2: Scan Asset Directories
 
-Assets live under the engine's asset root: `assets/` on Godot, `Assets/` on
-Unity, `Content/` on Unreal. Resolve the engine and its code root per
+Assets live under Unity's asset root, `Assets/`. Resolve the engine and its code root per
 `.claude/docs/code-root-resolution.md`; that code root is the one Phase 3's
 orphan and missing-asset searches read. If it is unresolved, stop:
 `NOT ASSESSED — engine unresolved`, naming `/setup-engine`.
 
 Scan the asset root using Glob:
 
-- **Godot** — `assets/art/**/*`, `assets/audio/**/*`, `assets/vfx/**/*`,
-  `assets/shaders/**/*`, `assets/data/**/*`
-- **Unity** — `Assets/**/*`, leaving out scripts (`*.cs`, `*.asmdef`) and `*.meta` files
-- **Unreal** — `Content/**/*.uasset` and `Content/**/*.umap`
+- `Assets/**/*`, leaving out scripts (`*.cs`, `*.asmdef`) and `*.meta` files
 
 The files matched are `Total assets scanned`. If there are none, the checks on
 scanned files — Naming, Size, Format, Orphaned — are
@@ -94,14 +90,15 @@ scanned files — Naming, Size, Format, Orphaned — are
 
 ## Phase 3: Run Compliance Checks
 
-**Naming conventions:**
-- Art: `[category]_[name]_[variant]_[size].[ext]`
-- Audio: `[category]_[context]_[name]_[variant].[ext]`
-- All files must be lowercase with underscores
-
-These are Godot's conventions. Unity and Unreal name assets in PascalCase, so on
-those engines check names only against a naming rule the art bible states; with
-none, Naming is `NOT ASSESSED — no naming rule for <engine>` (name `/art-bible`).
+**Naming conventions:** check names against the naming rule the art bible
+states (§8 Asset Standards, 8.2). With none, check `Assets/Art/**` against the
+art pipeline's naming contract (`.claude/docs/art-pipeline/pipeline.md`
+"Naming contract": `SM_ SK_ PF_ MI_ M_ T_<Stem>_{BC,N,MS,AO,E,H,Mask} AC_ AM_ TL_`),
+which `Assets/Scripts/Editor/AssetImportRules.cs` and `ProjectPaths.cs` enforce on
+import — and say in the report which rule was used. Files outside `Assets/Art/`
+with no bible rule: Naming is `NOT ASSESSED — no naming rule for <folder>`
+(name `/art-bible`). A model or texture in `Assets/Art/` without its prefix is a
+violation either way: the import rules skip it, so it imports with default settings.
 
 **File standards:**
 - Textures: Power-of-two dimensions, correct format (PNG for UI, compressed for 3D), within size budget
@@ -111,17 +108,23 @@ none, Naming is `NOT ASSESSED — no naming rule for <engine>` (name `/art-bible
   `NOT ASSESSED — duration not measurable here`, naming the files it covers.
 - Data: Valid JSON/YAML, schema-compliant
 
-On Unreal an asset file (`.uasset`, `.umap`) does not keep its source file's
-format or dimensions, so Format is `NOT ASSESSED` there; its size is still measured.
-
 **Orphaned assets:** Search the code root for references to each asset file. Flag any with no references.
 
 **Missing assets:** Search the code root for asset references and verify the files exist.
 
-Both searches need code: if the code root holds no source files, Orphaned and
-Missing are `NOT ASSESSED — no code to search`. On Unity and Unreal most asset
-references live in scenes, prefabs and other assets rather than code, so an
-asset no code names may still be in use: Orphaned is `NOT ASSESSED` there.
+Missing needs code: if the code root holds no source files, Missing is
+`NOT ASSESSED — no code to search`.
+
+On Unity most references live in scenes, prefabs and other assets rather than
+code, so a code search cannot decide Orphaned. Use Unity's dependency graph
+instead: with the editor open, `tools/unity_run.sh unity/unused_assets.cs` writes
+`unity/reports/unused_assets.tsv` (everything under `Assets/` that no scene under
+`Scenes/` and no project setting depends on; code, shaders, `Settings/` and
+`Terrain/Source/` are always kept) and returns `roots N, used N, unused N`. List
+those files as Orphaned candidates. Editor not open or the script fails →
+Orphaned is `NOT ASSESSED — Unity editor not reachable (unity/unused_assets.cs)`.
+Never delete from this report: deletions go through `AssetDatabase` after the user
+confirms, and the "used" count must not drop.
 
 ---
 

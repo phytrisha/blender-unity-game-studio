@@ -1,0 +1,3 @@
+# root GameObjects whose children are placed objects (none = all roots); walk routes as x z pairs
+Props
+walk -10 -10 10 -10 10 10
